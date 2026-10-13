@@ -1,0 +1,45 @@
+# Development / local full-stack run:  docker compose up --build
+# The app listens on http://127.0.0.1:3000. RustFS is optional (profile "storage"):
+#   docker compose --profile storage up --build
+# For day-to-day Go work you can also run `make dev` on the host and only start RustFS here.
+name: semestapro-dev
+
+services:
+  app:
+    build: .
+    image: semestapro:dev
+    env_file: .env
+    environment:
+      APP_ENV: local
+      APP_HOST: 0.0.0.0
+      APP_PORT: "3000"
+      DB_DATABASE: storage/database/semestapro.db
+      # Inside the compose network RustFS is reachable as "rustfs"; the browser uses MEDIA_URL.
+      MEDIA_ENDPOINT: http://rustfs:9000
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - semestapro_dev_data:/app/storage
+    depends_on:
+      rustfs:
+        condition: service_started
+        required: false
+
+  rustfs:
+    image: rustfs/rustfs:latest
+    profiles: ["storage"]
+    # TODO: verify env var names against the RustFS version you run (as of writing:
+    # RUSTFS_ACCESS_KEY / RUSTFS_SECRET_KEY / RUSTFS_VOLUMES).
+    environment:
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ROOT_USER:-rustfsadmin}
+      RUSTFS_SECRET_KEY: ${RUSTFS_ROOT_PASSWORD:-rustfsadmin}
+      RUSTFS_VOLUMES: /data
+    ports:
+      - "127.0.0.1:9000:9000" # S3 API
+      - "127.0.0.1:9001:9001" # console
+    volumes:
+      - rustfs_dev_data:/data
+
+volumes:
+  semestapro_dev_data:
+  rustfs_dev_data:

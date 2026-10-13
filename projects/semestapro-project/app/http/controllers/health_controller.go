@@ -10,7 +10,7 @@ type HealthController struct{}
 
 func NewHealthController() *HealthController { return &HealthController{} }
 
-// Check reports liveness and database reachability for Caddy/systemd/uptime
+// Check reports liveness and database reachability for Docker healthcheck/Nginx/uptime
 // monitors. It never exposes internal error details.
 func (c *HealthController) Check(ctx http.Context) http.Response {
 	var one int

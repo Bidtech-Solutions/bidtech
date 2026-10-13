@@ -23,11 +23,11 @@ Jika dokumen dan kode bertentangan, **dokumen menang**, kecuali kodenya jelas le
 - **Go 1.25+**, **Goravel v1.18**, driver HTTP **gin** (`github.com/goravel/gin`).
 - View: `html/template` Goravel, berkas **`.tmpl`** di `resources/views`, dirender di server.
 - Database: **SQLite** mode **WAL** lewat `github.com/goravel/sqlite` (berbasis `ncruces/go-sqlite3`, tanpa CGo).
-- Storage foto: **Garage** (S3-compatible) lewat `github.com/goravel/s3`.
+- Storage foto: **RustFS** (S3-compatible) lewat `github.com/goravel/s3`.
 - Gambar: `github.com/disintegration/imaging` (resize/orientasi) + `github.com/gen2brain/webp` (encode WebP, tanpa CGo).
 - Excel: `github.com/xuri/excelize/v2`.
 - CSS: **Tailwind CSS v4** (CLI standalone, tanpa Node di produksi). JS: **vanilla ES modules** + elemen `<dialog>` native. Tanpa React/Vue/Alpine/jQuery.
-- Build: binary statis `CGO_ENABLED=0`. Deploy: systemd + Caddy.
+- Build: binary statis `CGO_ENABLED=0`. Deploy: Docker (Dockerfile, `docker-compose.yml`, `docker-compose.prod.yml`) di balik Nginx host; storage foto RustFS.
 
 ## 4. Perintah
 

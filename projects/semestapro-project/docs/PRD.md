@@ -274,7 +274,7 @@ Bulan = bulan kalender zona waktu `Asia/Jakarta` (WIB, sama dengan Batam).
 | FR-IMG-02 | Format masukan: JPG, PNG, WebP (dideteksi dari isi berkas, bukan ekstensi). Maks. 15 MB dan 50 megapiksel per berkas; sisi terpendek minimal 400 px. | M |
 | FR-IMG-03 | Server **mengonversi ke WebP**, memutar sesuai EXIF, **mengecilkan agar muat dalam 1280×720** (lanskap) atau **720×1280** (potret) tanpa memperbesar, dan **mengompres hingga ≤ 300 KB** (target tipikal 50–300 KB). Metadata (termasuk GPS) dibuang. | M |
 | FR-IMG-04 | Thumbnail ≤ 640×360 (potret ≤ 360×640), ≤ 60 KB, dibuat untuk kartu & tabel. | M |
-| FR-IMG-05 | Foto disimpan di bucket S3 **Garage**; database hanya menyimpan kunci objek. | M |
+| FR-IMG-05 | Foto disimpan di bucket S3 **RustFS**; database hanya menyimpan kunci objek. | M |
 | FR-IMG-06 | Admin dapat mengubah urutan (tombol "← Geser"/"Geser →"), menjadikan foto utama, dan menghapus foto (konfirmasi). | M |
 | FR-IMG-07 | Indikator unggah: progres persen saat mengirim, lalu "Memproses foto…". | M |
 | FR-IMG-08 | Pengecilan di sisi browser sebelum unggah (sisi terpanjang 2560 px) untuk menghemat kuota; server tetap otoritatif. | S |
@@ -396,7 +396,7 @@ Definisi teknis (kolom tabel vs JSON, validasi) ada di `SCHEMA.md` §4.
 
 ### 10.4 Keandalan & data
 - SQLite mode WAL; cadangan otomatis (Litestream/snapshot) ke lokasi di luar VPS, RPO ≤ 1 jam.
-- Bucket foto Garage dicadangkan harian ke lokasi lain.
+- Bucket foto RustFS dicadangkan harian ke lokasi lain.
 - Zona waktu aplikasi `Asia/Jakarta`.
 
 ### 10.5 Kompatibilitas

@@ -35,15 +35,15 @@ func init() {
 				"root":   path.Storage("app/public"),
 				"url":    config.Env("APP_URL", "").(string) + "/storage",
 			},
-			// Foto properti di Garage (S3-compatible). Lihat docs/ARCHITECTURE.md §15.
+			// Foto properti di RustFS (S3-compatible). Lihat docs/ARCHITECTURE.md §15.
 			"media": map[string]any{
 				"driver":         "custom",
 				"key":            config.Env("MEDIA_KEY"),
 				"secret":         config.Env("MEDIA_SECRET"),
-				"region":         config.Env("MEDIA_REGION", "garage"),
+				"region":         config.Env("MEDIA_REGION", "us-east-1"),
 				"bucket":         config.Env("MEDIA_BUCKET", "semestapro-media"),
 				"url":            config.Env("MEDIA_URL"),
-				"endpoint":       config.Env("MEDIA_ENDPOINT", "http://127.0.0.1:3900"),
+				"endpoint":       config.Env("MEDIA_ENDPOINT", "http://127.0.0.1:9000"),
 				"use_path_style": config.Env("MEDIA_USE_PATH_STYLE", true),
 				"via": func() (filesystem.Driver, error) {
 					return s3facades.S3("media") // kunci di "disks"

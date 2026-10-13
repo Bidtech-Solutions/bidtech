@@ -1,0 +1,12 @@
+# Continuous SQLite backup to the RustFS bucket (pakai bucket & access key terpisah dari bucket media) (docs/SCHEMA.md §11).
+dbs:
+  - path: /app/storage/database/semestapro.db
+    replicas:
+      - type: s3
+        bucket: semestapro-backup
+        path: db
+        endpoint: http://127.0.0.1:9000
+        region: us-east-1
+        force-path-style: true
+        access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
+        secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}

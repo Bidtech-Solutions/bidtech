@@ -1,6 +1,6 @@
 # SCHEMA — Semesta Pro
 
-> Desain basis data (SQLite, mode WAL), struktur JSON spesifikasi, skema kunci object storage (Garage), dan kueri penting, lengkap dengan alasan keputusan desainnya. Kebutuhan fungsional ada di `PRD.md`; cara mengakses data dari kode ada di `ARCHITECTURE.md`.
+> Desain basis data (SQLite, mode WAL), struktur JSON spesifikasi, skema kunci object storage (RustFS), dan kueri penting, lengkap dengan alasan keputusan desainnya. Kebutuhan fungsional ada di `PRD.md`; cara mengakses data dari kode ada di `ARCHITECTURE.md`.
 
 ---
 
@@ -17,7 +17,7 @@
 | D7 | **Hapus properti = hard delete** | Klien meminta hapus; jejak tetap ada di `activity_logs`. Status `sold` dipakai untuk menyembunyikan tanpa menghapus. |
 | D8 | **Akun admin tidak dihapus**, hanya `is_active = 0` | Menjaga integritas FK `created_by`, `sold_by`, dan log. |
 | D9 | **Tepat satu master** lewat *partial unique index* | Ditegakkan di DB, bukan hanya di aplikasi. |
-| D10 | **Foto: DB menyimpan kunci objek**, berkas di Garage | DB tetap kecil; foto dilayani langsung oleh Garage/reverse proxy dengan cache panjang. |
+| D10 | **Foto: DB menyimpan kunci objek**, berkas di RustFS | DB tetap kecil; foto dilayani oleh reverse proxy dari RustFS dengan cache panjang. |
 | D11 | **Kunci objek foto bersifat permanen & acak** (tidak mengandung id properti) | Tidak perlu memindahkan objek saat unggahan sementara dilampirkan; URL bisa di-cache selamanya (`immutable`). |
 | D12 | **Waktu disimpan UTC**, ditampilkan `Asia/Jakarta` | Konsisten; batas "bulan ini" dihitung di Go dalam WIB lalu dikonversi ke UTC untuk kueri. |
 | D13 | **Kolom `search_text` ter-normalisasi** + `LIKE` | Cukup cepat untuk < 10.000 baris. FTS5 (tersedia di build ncruces) disiapkan sebagai peningkatan bila data membesar (§9). |
@@ -304,7 +304,7 @@ CREATE TABLE temp_uploads (
 CREATE INDEX temp_uploads_created ON temp_uploads(created_at);
 ```
 
-**Alur:** admin memilih foto → browser mengunggah satu per satu ke `POST /admin/unggah-foto` (dengan progres) → server memproses (WebP, resize, kompres), menyimpan ke Garage di kunci **final**, dan membuat baris `temp_uploads` → form menyimpan id ULID di input tersembunyi `photo_ids[]` → saat form disimpan, service memverifikasi setiap id milik admin yang sama, memindahkan metadata ke `property_photos` (objek tidak dipindah, D11), dan menghapus baris `temp_uploads`.
+**Alur:** admin memilih foto → browser mengunggah satu per satu ke `POST /admin/unggah-foto` (dengan progres) → server memproses (WebP, resize, kompres), menyimpan ke RustFS di kunci **final**, dan membuat baris `temp_uploads` → form menyimpan id ULID di input tersembunyi `photo_ids[]` → saat form disimpan, service memverifikasi setiap id milik admin yang sama, memindahkan metadata ke `property_photos` (objek tidak dipindah, D11), dan menghapus baris `temp_uploads`.
 
 **Alasan:** progres per foto, kegagalan satu foto tidak menggagalkan seluruh form, galat validasi form tidak memaksa unggah ulang, dan request simpan tetap kecil.
 
@@ -572,7 +572,7 @@ Hasilnya di-cache di memori (`facades.Cache()` driver memory) dengan kunci `cata
 |---|---|---|
 | Listing | ±500/tahun → 5.000 dalam 10 tahun | `LIKE` pada `search_text` tetap < 10 ms. |
 | Ukuran DB | < 50 MB dalam 10 tahun | Deskripsi maks. 5.000 karakter. |
-| Foto | 8 × (300 + 60) KB ≈ 2,9 MB/listing maks. → ±1,4 GB/tahun maks., tipikal ±0,6 GB | Garage di VPS; pantau disk. |
+| Foto | 8 × (300 + 60) KB ≈ 2,9 MB/listing maks. → ±1,4 GB/tahun maks., tipikal ±0,6 GB | RustFS di VPS; pantau disk. |
 | Penulis bersamaan | 1–5 admin | Jauh di bawah batas WAL. |
 
 **Jalur peningkatan bila dibutuhkan:**
@@ -582,16 +582,16 @@ Hasilnya di-cache di memori (`facades.Cache()` driver memory) dengan kunci `cata
 
 ---
 
-## 10. Object storage (Garage)
+## 10. Object storage (RustFS)
 
 | Hal | Nilai |
 |---|---|
-| Bucket | `semestapro-media` (publik baca lewat website endpoint Garage) |
-| Region | `garage` (nilai `s3_region` di `garage.toml`) |
-| Endpoint S3 (internal) | `http://127.0.0.1:3900` |
-| URL publik | `https://media.semestapro.co.id` → reverse proxy ke website endpoint Garage (`:3902`) |
+| Bucket | `semestapro-media` (baca-anonim hanya untuk prefiks `listings/*` lewat bucket policy; tulis butuh access key khusus) |
+| Region | `us-east-1` (default RustFS; harus sama dengan konfigurasi server) |
+| Endpoint S3 | Produksi `https://cdn.semestapro.co.id` (path-style); dev `http://127.0.0.1:9000` |
+| URL publik | `https://cdn.semestapro.co.id/semestapro-media/<key>` (Nginx meneruskan path bucket apa adanya ke RustFS `:9000`). Dev: `http://127.0.0.1:9000/semestapro-media` |
 | Path style | `use_path_style = true` |
-| ACL | Tidak dipakai (Garage tidak mendukung ACL objek); akses publik diatur per bucket |
+| ACL | Tidak dipakai (jangan mengandalkan ACL objek); akses publik diatur per bucket policy |
 
 **Skema kunci objek** (D11):
 

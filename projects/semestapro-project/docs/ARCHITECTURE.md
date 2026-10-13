@@ -10,11 +10,11 @@
 
 ```mermaid
 flowchart LR
-    U[Pengunjung / Admin<br/>browser] -->|HTTPS| C[Caddy<br/>TLS, gzip/zstd, header cache]
+    U[Pengunjung / Admin<br/>browser] -->|HTTPS| C[Nginx host<br/>TLS, gzip, header cache]
     B[Googlebot & crawler AI] -->|HTTPS| C
     C -->|semestapro.co.id| A[Aplikasi Goravel<br/>binary Go tunggal :3000]
-    C -->|media.semestapro.co.id| GW[Garage<br/>website endpoint :3902]
-    A -->|S3 API :3900| G[(Garage<br/>bucket semestapro-media)]
+    C -->|cdn.semestapro.co.id| GW[RustFS :9000<br/>path /semestapro-media]
+    A -->|S3 API via cdn.semestapro.co.id| G[(RustFS<br/>bucket semestapro-media)]
     GW --- G
     A -->|ncruces/go-sqlite3| D[(SQLite WAL<br/>storage/database)]
     D -. Litestream .-> R[(S3 cadangan<br/>di luar VPS)]
@@ -22,7 +22,7 @@ flowchart LR
 ```
 
 - **Satu proses** aplikasi (SQLite hanya aman dengan satu penulis antar-proses yang terkoordinasi; kita tidak menjalankan replika).
-- Halaman publik **dirender di server** (Go `html/template`), foto dilayani langsung oleh Garage lewat Caddy dengan cache panjang.
+- Halaman publik **dirender di server** (Go `html/template`), foto dilayani oleh RustFS lewat Nginx (rewrite ke bucket publik-baca) dengan cache panjang.
 - Tidak ada CGo: SQLite (`ncruces/go-sqlite3`) dan encoder WebP (`gen2brain/webp`) memakai WebAssembly via `wazero`, sehingga build `CGO_ENABLED=0` menghasilkan binary statis.
 
 ## 2. Stack & versi
@@ -33,7 +33,7 @@ flowchart LR
 | Framework | Goravel | v1.18.x | Driver HTTP gin |
 | HTTP driver | `github.com/goravel/gin` | sesuai v1.18 | Template `html/template` + FuncMap kustom |
 | Database | SQLite via `github.com/goravel/sqlite` | sesuai v1.18 | `ncruces/go-sqlite3`, WAL, lihat `SCHEMA.md` §2 |
-| Storage | `github.com/goravel/s3` → Garage | sesuai v1.18 | `endpoint`, `use_path_style` |
+| Storage | `github.com/goravel/s3` → RustFS | sesuai v1.18 | `endpoint`, `use_path_style` |
 | Gambar | `github.com/disintegration/imaging`, `golang.org/x/image/webp` (decode), `github.com/gen2brain/webp` (encode) | terbaru stabil | tanpa CGo |
 | Excel | `github.com/xuri/excelize/v2` | v2 terbaru | |
 | ID | `github.com/oklog/ulid/v2` | v2 | kunci objek & `temp_uploads.id` |
@@ -41,7 +41,8 @@ flowchart LR
 | JS | Vanilla ES modules, `<dialog>` native | – | tanpa framework, tanpa bundler |
 | Ikon | Lucide (SVG inline, disalin ke `resources/views/icons/`) | dipin | lisensi ISC |
 | Font | Plus Jakarta Sans, Atkinson Hyperlegible Next (woff2, self-hosted, subset latin) | – | OFL |
-| Reverse proxy | Caddy 2 | – | HTTPS otomatis |
+| Reverse proxy | Nginx (host VPS) | 1.24 | TLS via certbot/Cloudflare; konfigurasi di `deploy/nginx/` |
+| Kontainer | Docker + Compose | – | `Dockerfile`, `docker-compose.yml` (dev), `docker-compose.prod.yml` (VPS) |
 | Cadangan | Litestream, rclone | – | |
 
 Menambah dependensi WAJIB dijelaskan di PR (kenapa pustaka standar tidak cukup, lisensi, ukuran).
@@ -101,7 +102,7 @@ semestapro/
 ├── storage/                      database/, framework/sessions/, logs/, app/
 ├── tests/                        feature/ (HTTP), unit/, fixtures/
 ├── docs/                         PRD, ARCHITECTURE, SCHEMA, DESIGN, design-reference/
-├── deploy/ ★                     Caddyfile, semestapro.service, litestream.yml, garage.toml.example
+├── deploy/ ★                     nginx/*.conf, litestream.yml
 ├── .air.toml  .env.example  .golangci.yml  Makefile  artisan  main.go  go.mod
 ```
 
@@ -130,7 +131,7 @@ Service menerima dependensi lewat constructor (`listing.NewService(db, storage, 
 
 ## 5. Routing
 
-Semua rute di `routes/web.go`. URL publik **bahasa Indonesia**, huruf kecil, kebab-case, tanpa garis miring akhir (Caddy mengalihkan `/x/` → `/x`).
+Semua rute di `routes/web.go`. URL publik **bahasa Indonesia**, huruf kecil, kebab-case, tanpa garis miring akhir (Nginx mengalihkan `/x/` → `/x`).
 
 ### 5.1 Publik
 
@@ -260,7 +261,7 @@ resources/views/
 | `dateID` / `dateTimeID` | `{{ dateID .CreatedAt }}` | `10 Oktober 2026` / `10 Okt 2026, 14.05 WIB` |
 | `phoneID` | `{{ phoneID "+6281285552016" }}` | `0812-8555-2016` |
 | `asset` | `{{ asset "css/app.css" }}` | `/static/css/app.css?v=3f9a1c2b` (hash isi berkas, dihitung saat boot) |
-| `media` | `{{ media .ThumbKey }}` | URL publik Garage (`facades.Storage().Disk("media").Url`) |
+| `media` | `{{ media .ThumbKey }}` | URL publik media (`facades.Storage().Disk("media").Url`) |
 | `waLink` | `{{ waLink .WAMessage }}` | `https://wa.me/6281285552016?text=...` |
 | `jsonLD` | `{{ jsonLD .Meta.Schema }}` | `template.JS` dari `json.Marshal` |
 | `nl2p` | `{{ nl2p .Description }}` | paragraf `<p>` dari teks yang sudah di-escape |
@@ -436,7 +437,7 @@ Harga dalam Rupiah (IDR). Properti yang sudah terjual tidak dicantumkan. Data di
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains   (production)
-Content-Security-Policy: default-src 'self'; img-src 'self' https://media.semestapro.co.id data:; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+Content-Security-Policy: default-src 'self'; img-src 'self' https://cdn.semestapro.co.id data:; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
@@ -514,14 +515,14 @@ APP_PORT=3000
 DB_CONNECTION=sqlite
 DB_DATABASE=storage/database/semestapro.db
 
-# Foto selalu memakai disk "media" (Garage); disk default tetap local.
+# Foto selalu memakai disk "media" (RustFS); disk default tetap local.
 FILESYSTEM_DISK=local
 MEDIA_KEY=
 MEDIA_SECRET=
-MEDIA_REGION=garage
+MEDIA_REGION=us-east-1
 MEDIA_BUCKET=semestapro-media
-MEDIA_ENDPOINT=http://127.0.0.1:3900
-MEDIA_URL=https://media.semestapro.co.id
+MEDIA_ENDPOINT=https://cdn.semestapro.co.id
+MEDIA_URL=https://cdn.semestapro.co.id/semestapro-media
 MEDIA_USE_PATH_STYLE=true
 
 SESSION_DRIVER=file
@@ -553,12 +554,12 @@ Disk `media` di `config/filesystems.go`:
     },
     "key":            config.Env("MEDIA_KEY"),
     "secret":         config.Env("MEDIA_SECRET"),
-    "region":         config.Env("MEDIA_REGION", "garage"),
+    "region":         config.Env("MEDIA_REGION", "us-east-1"),
     "bucket":         config.Env("MEDIA_BUCKET"),
     "url":            config.Env("MEDIA_URL"),
     "endpoint":       config.Env("MEDIA_ENDPOINT"),
     "use_path_style": config.Env("MEDIA_USE_PATH_STYLE", true),
-    // object_canned_acl dikosongkan: Garage tidak mendukung ACL
+    // object_canned_acl dikosongkan: jangan mengandalkan ACL objek; akses publik lewat bucket policy
 },
 ```
 
@@ -566,15 +567,37 @@ Instal paket dengan `./artisan package:install github.com/goravel/s3` dan `./art
 
 ## 16. Deploy
 
-- **Build:** `CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o bin/semestapro .` + `make css`. Artefak: binary, `public/`, `resources/views/`, `resources/data/`, `.env`.
-- **Server:** VPS Linux; user non-root `semestapro`; direktori `/srv/semestapro`. Proses dijalankan systemd (`deploy/semestapro.service`, `Restart=always`).
-- **Caddy** (`deploy/Caddyfile`):
-  - `semestapro.co.id` → `reverse_proxy 127.0.0.1:3000`, `encode zstd gzip`, redirect `www` → apex, hapus garis miring akhir.
-  - `media.semestapro.co.id` → `reverse_proxy 127.0.0.1:3902` (website endpoint Garage) + `header Cache-Control "public, max-age=31536000, immutable"`.
-- **Garage:** satu node, `replication_factor = 1`, bucket `semestapro-media` dengan `garage bucket website --allow`, kunci akses khusus aplikasi (read/write hanya bucket itu).
-- **Migrasi saat rilis:** cadangkan dulu (snapshot `.backup`), `./artisan migrate --force`, restart service.
+- **Build:** `Dockerfile` multi-stage (Go 1.25 + Tailwind standalone → `alpine`, user non-root, `CGO_ENABLED=0`). GitHub Actions (`.github/workflows/deploy-semestapro.yml` (di root repositori)) menjalankan lint + test lalu membangun dan mendorong image ke GHCR (`ghcr.io/<owner>/semestapro:latest` dan `:<sha>`). VPS **tidak** membangun image.
+- **Server:** VPS bersama (lihat catatan infrastruktur), direktori `/opt/semestapro` berisi `docker-compose.prod.yml` dan `.env` (tidak masuk Git). Aplikasi berjalan sebagai container `semestapro-app`, port host `127.0.0.1:3050` → 3000, `restart: unless-stopped`, batas memori 512 MB, healthcheck `/healthz`.
+  ```bash
+  docker compose -f docker-compose.prod.yml pull
+  docker compose -f docker-compose.prod.yml up -d --wait
+  docker compose -f docker-compose.prod.yml exec app ./semestapro artisan migrate --force
+  ```
+- **Secret & variable GitHub** (Settings → Secrets and variables → Actions; environment `production`):
+
+  Konvensi: yang khusus Semesta Pro diawali `SEMESTAPRO_`; `SSH_*` dipakai bersama proyek lain.
+
+  | Jenis | Nama di GitHub | Isi |
+  |---|---|---|
+  | Secret | `SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY`, `SSH_PORT` (opsional) | Bersama: akses SSH ke VPS |
+  | Secret | `SEMESTAPRO_APP_KEY` | Tepat 32 karakter (Goravel, bukan format Laravel `base64:`): `openssl rand -hex 16`. Buat sekali; jangan diganti setelah ada sesi/data terenkripsi |
+  | Secret | `SEMESTAPRO_MEDIA_KEY`, `SEMESTAPRO_MEDIA_SECRET` | Access key RustFS khusus bucket `semestapro-media` |
+  | Variable (opsional) | `SEMESTAPRO_MEDIA_ENDPOINT` | Endpoint S3 RustFS; bawaan `https://cdn.semestapro.co.id` |
+  | Variable (opsional) | `SEMESTAPRO_APP_URL`, `SEMESTAPRO_MEDIA_URL`, `SEMESTAPRO_MEDIA_BUCKET` | Bawaan `https://semestapro.co.id`, `https://cdn.semestapro.co.id/semestapro-media`, `semestapro-media` |
+  | Variable (opsional) | `SEMESTAPRO_SITE_WHATSAPP`, `SEMESTAPRO_SITE_PHONE_DISPLAY`, `SEMESTAPRO_SITE_EMAIL`, `SEMESTAPRO_SECURITY_CONTACT` | Kosong = nilai bawaan `config/site.go` |
+
+  `GITHUB_TOKEN` otomatis (push/pull GHCR). Alur: test → build + smoke test → push GHCR (`:sha`, `:latest`) → artefak `deploy-config` → scp ke `/opt/semestapro` → `scripts/render_env.py` merender `.env` di VPS → `pull` → `artisan migrate` + `db:seed` → `up -d --wait` (rollback tag bila tidak sehat; migrasi hanya maju) → `scripts/smoke.sh` lokal dan publik. Nginx **tidak** di-reload otomatis; berkas contoh disalin ke `/opt/semestapro/deploy/nginx/`.
+- **Data:** volume bernama tetap `semestapro_data` (SQLite, sesi, log) dan `name: semestapro` pada Compose agar volume tidak "hilang" bila nama proyek berubah. Jangan jalankan `docker volume prune`.
+- **Nginx host** (`deploy/nginx/`):
+  - `semestapro.co.id.conf` → proxy ke `127.0.0.1:3050`, gzip, redirect `www` → apex dan HTTP → HTTPS, hapus garis miring akhir, `client_max_body_size 20m`, cache `immutable` untuk `/static/`.
+  - `cdn.semestapro.co.id.conf` → endpoint S3 **dan** host foto publik: hanya path `/semestapro-media/...` yang diteruskan ke RustFS `127.0.0.1:9000` (`Host` tidak diubah karena SigV4 menandatanganinya); sisanya 404 karena RustFS dipakai bersama proyek lain. Cache `immutable` hanya untuk GET/HEAD.
+  - `rustfs.semestapro.co.id.conf` → konsol web RustFS (`127.0.0.1:9001`, WebSocket). Konsol ini mengelola **seluruh** instans RustFS, jadi lindungi dengan Cloudflare Access dan/atau `allow`/`deny` IP.
+- **Akses app → RustFS:** lewat endpoint publik `https://cdn.semestapro.co.id` (path-style), seperti pola `media.bidtech.co.id`; container tidak perlu bergabung ke jaringan Docker RustFS. Konsekuensinya API S3 terbuka ke internet (tulis tetap butuh access key; baca anonim hanya `listings/*`).
+- **RustFS:** instans yang sudah berjalan di VPS (Docker, `/opt/rustfs`, S3 `:9000`, console `:9001`) dipakai bersama proyek lain, jadi buat **bucket `semestapro-media` dan access key khusus** (hanya bucket itu). Pasang bucket policy baca-anonim hanya untuk `listings/*` (mis. `mc anonymous set download` atau policy JSON `s3:GetObject`); tulis tetap butuh kunci. Verifikasi perilaku policy pada versi RustFS yang terpasang.
+- **Migrasi saat rilis:** cadangkan dulu (snapshot `.backup`), `exec app ./semestapro artisan migrate --force`, lalu `up -d --wait`.
 - **Scheduler** (Goravel task scheduling, berjalan di proses yang sama): `app:sweep-uploads` tiap jam, checkpoint WAL + `PRAGMA optimize` 03:00 WIB, `app:prune-logs` bulanan, `app:check-images` mingguan (laporan saja).
-- **Litestream** sebagai service terpisah mereplikasi `semestapro.db` ke S3 di luar VPS.
+- **Litestream** sebagai service Compose opsional (profil `backup`) mereplikasi `semestapro.db` ke S3 **di luar VPS** (`deploy/litestream.yml`); replika di disk yang sama bukan cadangan.
 - **Pemantauan:** uptime check `/` dan `/robots.txt`; peringatan disk > 80%.
 
 ## 17. Alur kerja Git

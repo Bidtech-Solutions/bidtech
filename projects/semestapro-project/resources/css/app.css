@@ -1,5 +1,7 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+/* Scan only our templates and scripts, not the whole repo. */
 @source "../views";
+@source "../../public/js";
 
 /* Design tokens: docs/DESIGN.md §11. Do not add loose hex values in templates. */
 @theme {

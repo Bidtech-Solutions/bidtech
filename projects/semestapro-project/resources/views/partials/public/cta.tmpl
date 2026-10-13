@@ -1,0 +1,11 @@
+{{ define "partials/public/cta.tmpl" }}
+<section class="bg-primary-900 py-12 text-white lg:py-16" aria-labelledby="cta-title">
+  <div class="container-page flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <div>
+      <h2 id="cta-title" class="font-heading text-[1.625rem] font-bold lg:text-h2">Ingin Titip Jual atau Cari Hunian?</h2>
+      <p class="mt-2 text-body-lg">Konsultasi gratis dengan tim {{ .Site.Name }}.</p>
+    </div>
+    <a class="btn-accent" href="{{ waLink "Halo, saya ingin konsultasi jual-beli properti." }}" rel="noopener">Chat WhatsApp</a>
+  </div>
+</section>
+{{ end }}

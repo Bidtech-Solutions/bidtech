@@ -1,0 +1,22 @@
+{{ define "partials/public/footer.tmpl" }}
+<footer class="bg-primary-900 text-white">
+  <div class="container-page grid gap-8 py-12 md:grid-cols-2">
+    <div>
+      <p class="font-heading text-h3 font-bold">{{ .Site.Name }} Batam</p>
+      <p class="mt-2">{{ .Site.LegalName }}</p>
+      <p class="mt-4">{{ .Site.Address }}</p>
+      <p class="mt-2"><a class="font-bold text-white underline" href="{{ .Site.MapsURL }}" rel="noopener">Lihat di Google Maps</a></p>
+    </div>
+    <div>
+      <p class="font-bold">Hubungi Kami</p>
+      <ul class="mt-2 space-y-2" role="list">
+        <li><a class="text-white underline" href="tel:+{{ .Site.WhatsApp }}">{{ .Site.PhoneDisplay }}</a></li>
+        <li><a class="text-white underline" href="mailto:{{ .Site.Email }}">{{ .Site.Email }}</a></li>
+        <li><a class="text-white underline" href="{{ .Site.Instagram }}" rel="noopener">Instagram</a></li>
+        <li><a class="text-white underline" href="{{ .Site.Facebook }}" rel="noopener">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="border-t border-primary-600 py-4 text-center text-body-sm">© {{ .Year }} {{ .Site.LegalName }}. Seluruh hak dilindungi.</p>
+</footer>
+{{ end }}

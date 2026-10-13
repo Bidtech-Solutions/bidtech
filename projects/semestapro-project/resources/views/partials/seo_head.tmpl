@@ -1,0 +1,19 @@
+{{ define "partials/seo_head.tmpl" }}
+<title>{{ .Meta.Title }}</title>
+<meta name="description" content="{{ .Meta.Description }}">
+<meta name="robots" content="{{ .Meta.Robots }}">
+{{ if .Meta.Canonical }}<link rel="canonical" href="{{ .Meta.Canonical }}">{{ end }}
+<meta name="theme-color" content="#0A2F66">
+<meta property="og:locale" content="id_ID">
+<meta property="og:site_name" content="{{ .Site.Name }}">
+<meta property="og:type" content="{{ .Meta.OGType }}">
+<meta property="og:title" content="{{ .Meta.Title }}">
+<meta property="og:description" content="{{ .Meta.Description }}">
+{{ if .Meta.Canonical }}<meta property="og:url" content="{{ .Meta.Canonical }}">{{ end }}
+{{ if .Meta.Image }}<meta property="og:image" content="{{ .Meta.Image }}">
+<meta property="og:image:alt" content="{{ .Meta.ImageAlt }}">{{ end }}
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="text/markdown" href="/llms.txt">
+{{ range .Meta.Schema }}<script type="application/ld+json">{{ jsonLD . }}</script>
+{{ end }}
+{{ end }}

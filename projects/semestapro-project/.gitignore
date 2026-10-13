@@ -1,0 +1,32 @@
+# Editor / OS
+.idea
+.vscode
+.DS_Store
+
+# Secrets and local state (never commit: AGENTS.md §7.7)
+.env
+.env.*
+!.env.example
+*.db
+*.db-shm
+*.db-wal
+storage/
+
+# Build output
+bin/
+tmp/
+/public/css/app.css
+/tools/
+
+# Stray tool folders that can appear in a sandbox home directory
+.cache/
+.npm/
+.npm-global/
+.config/
+.claude/
+.agents/
+.pki/
+.ssh/
+.gitconfig
+.wget-hsts
+/out/

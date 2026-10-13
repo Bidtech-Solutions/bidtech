@@ -1,0 +1,11 @@
+{{ define "public/home.tmpl" }}
+{{ template "layouts/public/top.tmpl" . }}
+<section class="bg-primary-50 py-12 lg:py-24" aria-labelledby="hero-title">
+  <div class="container-page">
+    <h1 id="hero-title" class="h1">Jual Beli Rumah Secondary di Batam</h1>
+    <p class="mt-4 max-w-[70ch] text-body-lg text-neutral-700">Katalog properti terpercaya dari {{ .Site.Name }}. Halaman ini masih kerangka awal; desain final menunggu tim desain.</p>
+    <p class="mt-6"><a class="btn-primary" href="/cari">Cari Properti</a></p>
+  </div>
+</section>
+{{ template "layouts/public/bottom.tmpl" . }}
+{{ end }}

@@ -88,7 +88,7 @@ func init() {
 				// Format: Duration string (e.g., "5s", "1m", "500ms").
 				"interval": config.Env("OTEL_TRACE_EXPORT_INTERVAL", "5s"),
 
-				// Timeout: Max time allowed for export before cancelling.
+				// Timeout: Max time allowed for export before canceling.
 				// Format: Duration string (e.g., "30s", "10s").
 				"timeout": config.Env("OTEL_TRACE_EXPORT_TIMEOUT", "30s"),
 			},
@@ -114,7 +114,7 @@ func init() {
 				// Format: Duration string (e.g., "60s", "1m", "500ms").
 				"interval": config.Env("OTEL_METRIC_EXPORT_INTERVAL", "60s"),
 
-				// Timeout: Max time allowed for export before cancelling.
+				// Timeout: Max time allowed for export before canceling.
 				// Format: Duration string (e.g., "30s", "10s").
 				"timeout": config.Env("OTEL_METRIC_EXPORT_TIMEOUT", "30s"),
 			},
@@ -143,7 +143,7 @@ func init() {
 				// Format: Duration string (e.g., "1s", "1m", "500ms").
 				"interval": config.Env("OTEL_LOG_EXPORT_INTERVAL", "1s"),
 
-				// Timeout: Max time allowed for export before cancelling.
+				// Timeout: Max time allowed for export before canceling.
 				// Format: Duration string (e.g., "30s", "10s").
 				"timeout": config.Env("OTEL_LOG_EXPORT_TIMEOUT", "30s"),
 			},

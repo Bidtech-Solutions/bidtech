@@ -30,8 +30,8 @@ func TestSlugify(t *testing.T) {
 }
 
 func TestSearchTokens(t *testing.T) {
-	got := SearchTokens("  Rumah   di  BATAM Centre  x ")
-	want := []string{"rumah", "di", "batam", "centre"}
+	got := SearchTokens("  Rumah   di  BATAM Center  x ")
+	want := []string{"rumah", "di", "batam", "center"}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}

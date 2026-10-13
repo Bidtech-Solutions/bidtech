@@ -63,21 +63,21 @@ func TestViewsParseAndHomeRenders(t *testing.T) {
 	}
 }
 
-// AGENTS.md rule 8: no loose colours in templates.
-var looseColour = regexp.MustCompile(`#[0-9a-fA-F]{6}\b|rgba?\(`)
+// AGENTS.md rule 8: no loose colors in templates.
+var looseColor = regexp.MustCompile(`#[0-9a-fA-F]{6}\b|rgba?\(`)
 
-func TestNoLooseColoursInViews(t *testing.T) {
+func TestNoLooseColorsInViews(t *testing.T) {
 	_ = filepath.WalkDir(viewsDir, func(p string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() || !strings.HasSuffix(p, ".tmpl") {
 			return err
 		}
 		b, _ := os.ReadFile(p)
-		for _, m := range looseColour.FindAllString(string(b), -1) {
+		for _, m := range looseColor.FindAllString(string(b), -1) {
 			// theme-color meta needs a literal hex; it mirrors primary-900.
 			if m == "#0A2F66" && strings.HasSuffix(p, "seo_head.tmpl") {
 				continue
 			}
-			t.Errorf("%s: loose colour %q (use design tokens)", p, m)
+			t.Errorf("%s: loose color %q (use design tokens)", p, m)
 		}
 		return nil
 	})

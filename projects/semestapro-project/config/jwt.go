@@ -20,7 +20,7 @@ func init() {
 		// Defaults to 1 hour.
 		//
 		// You can also set this to 0, to yield a never expiring token.
-		// Some people may want this behaviour for e.g. a mobile app.
+		// Some people may want this behavior for e.g. a mobile app.
 		// This is not particularly recommended, so make sure you have appropriate
 		// systems in place to revoke the token if necessary.
 		"ttl": config.Env("JWT_TTL", 60),

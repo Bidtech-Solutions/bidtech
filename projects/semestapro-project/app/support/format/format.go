@@ -62,7 +62,7 @@ func RupiahShort(n int64) string {
 	}
 }
 
-// Area renders square metres: "120 m²", "72,5 m²".
+// Area renders square meters: "120 m²", "72,5 m²".
 func Area(v float64) string { return trimDecimal(v) + " m²" }
 
 // Percent renders "7,5%".

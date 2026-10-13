@@ -1,7 +1,5 @@
 package seeders
 
-import ()
-
 // DatabaseSeeder is the entry point of `./artisan db:seed`.
 type DatabaseSeeder struct{}
 

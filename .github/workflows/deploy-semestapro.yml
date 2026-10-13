@@ -100,7 +100,49 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Render throw-away CI .env
-        run: python3 scripts/render_env.py ci .env.example ci.env
+        env:
+          RENDER_APP_ENV: production
+          RENDER_APP_DEBUG: "false"
+          RENDER_APP_HOST: 0.0.0.0   # must listen on all interfaces inside the container
+          RENDER_APP_PORT: "3000"
+          RENDER_APP_KEY: "0123456789abcdef0123456789abcdef"   # throw-away, CI only
+          RENDER_APP_URL: http://127.0.0.1:3000
+          RENDER_DB_DATABASE: storage/database/semestapro.db
+          # The S3 driver rejects empty config at boot; the CI smoke test never touches storage.
+          RENDER_MEDIA_KEY: ci-key
+          RENDER_MEDIA_SECRET: ci-secret
+          RENDER_MEDIA_ENDPOINT: http://127.0.0.1:9000
+          RENDER_MEDIA_URL: http://127.0.0.1:9000/semestapro-media
+        # Inline renderer: every RENDER_<KEY> env var becomes <KEY>=<value> in the template (empty values
+        # are skipped, so the template default stays). Plain values are written bare, because
+        # `docker run --env-file` keeps quotes literally; anything else is single-quoted for Docker
+        # Compose and refused in "strict" mode.
+        run: |
+          python3 - .env.example ci.env strict <<'PY'
+          import os, re, sys
+          os.umask(0o077)
+          tpl, out, strict = sys.argv[1], sys.argv[2], len(sys.argv) > 3
+          ov = {k[7:]: v.strip() for k, v in os.environ.items() if k.startswith("RENDER_") and v.strip()}
+          def fmt(k, v):
+              if "\n" in v or "\r" in v or "'" in v:
+                  sys.exit(f"render_env: {k} contains a newline or single quote")
+              if re.fullmatch(r"[A-Za-z0-9_./:@,+=-]*", v):
+                  return v
+              if strict:
+                  sys.exit(f"render_env: {k} needs quoting, which docker run --env-file does not support")
+              return f"'{v}'"
+          seen, lines = set(), []
+          for line in open(tpl).read().splitlines():
+              k = line.split("=", 1)[0].strip() if "=" in line and not line.lstrip().startswith("#") else None
+              if k in ov:
+                  lines.append(f"{k}={fmt(k, ov[k])}")
+                  seen.add(k)
+              else:
+                  lines.append(line)
+          lines += [f"{k}={fmt(k, v)}" for k, v in ov.items() if k not in seen]
+          open(out, "w").write("\n".join(lines) + "\n")
+          print(f"render_env: wrote {out} ({len(ov)} keys overridden)")
+          PY
 
       - name: Migrate & seed in a scratch volume
         run: |
@@ -112,7 +154,7 @@ jobs:
         run: docker run -d --name sp-ci --env-file ci.env -v sp-ci-data:/app/storage -p 127.0.0.1:3000:3000 "$IMAGE_NAME:ci"
 
       - name: Smoke test container
-        run: scripts/smoke.sh http://127.0.0.1:3000 /healthz /
+        run: bash scripts/smoke.sh http://127.0.0.1:3000 /healthz /
         # Add /robots.txt /sitemap.xml /llms.txt here once those endpoints exist.
 
       - name: Dump logs on failure
@@ -148,7 +190,7 @@ jobs:
         run: |
           mkdir -p deploy-staging/scripts deploy-staging/deploy/nginx
           cp docker-compose.prod.yml .env.example deploy-staging/
-          cp scripts/render_env.py scripts/smoke.sh deploy-staging/scripts/
+          cp scripts/smoke.sh deploy-staging/scripts/
           cp deploy/litestream.yml deploy-staging/deploy/
           cp deploy/nginx/*.conf deploy-staging/deploy/nginx/
 
@@ -167,6 +209,7 @@ jobs:
     needs: [build]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: read
       actions: read
@@ -185,6 +228,9 @@ jobs:
           for v in SSH_HOST SSH_USER SSH_PRIVATE_KEY APP_KEY MEDIA_KEY MEDIA_SECRET; do
             if [ -z "${!v}" ]; then echo "::error::Missing $v (app-specific ones are named SEMESTAPRO_* in GitHub; SSH_* are shared)"; missing=1; fi
           done
+          if [ -n "$APP_KEY" ] && [ "${#APP_KEY}" -ne 32 ]; then
+            echo "::error::SEMESTAPRO_APP_KEY must be exactly 32 characters (Goravel, not Laravel: no base64: prefix). Generate: openssl rand -hex 16"; missing=1
+          fi
           exit $missing
 
       - name: Download deploy artifact
@@ -201,35 +247,81 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: mkdir -p ${{ env.VPS_DIR }}/scripts ${{ env.VPS_DIR }}/deploy/nginx
 
-      - name: Copy compose, env template and scripts to VPS
+      # Secrets are only ever written to this runner's disk and the VPS .env (mode 600); never printed.
+      - name: Render production .env (values from secrets and variables)
+        env:
+          RENDER_APP_ENV: production
+          RENDER_APP_DEBUG: "false"
+          RENDER_APP_HOST: 0.0.0.0   # must listen on all interfaces inside the container
+          RENDER_APP_PORT: "3000"
+          RENDER_LOG_LEVEL: info
+          RENDER_DB_DATABASE: storage/database/semestapro.db
+          RENDER_SESSION_SECURE: "true"
+          RENDER_APP_KEY: ${{ secrets.SEMESTAPRO_APP_KEY }}
+          RENDER_APP_URL: ${{ vars.SEMESTAPRO_APP_URL || 'https://semestapro.co.id' }}
+          RENDER_MEDIA_KEY: ${{ secrets.SEMESTAPRO_MEDIA_KEY }}
+          RENDER_MEDIA_SECRET: ${{ secrets.SEMESTAPRO_MEDIA_SECRET }}
+          RENDER_MEDIA_ENDPOINT: ${{ vars.SEMESTAPRO_MEDIA_ENDPOINT || 'https://cdn.semestapro.co.id' }}
+          RENDER_MEDIA_BUCKET: ${{ vars.SEMESTAPRO_MEDIA_BUCKET || 'semestapro-media' }}
+          RENDER_MEDIA_REGION: us-east-1
+          RENDER_MEDIA_URL: ${{ vars.SEMESTAPRO_MEDIA_URL || 'https://cdn.semestapro.co.id/semestapro-media' }}
+          RENDER_MEDIA_USE_PATH_STYLE: "true"
+          # Read by docker-compose.prod.yml for variable substitution.
+          RENDER_APP_IMAGE: ${{ needs.build.outputs.image }}
+          RENDER_APP_TAG: ${{ github.sha }}
+          # Optional business overrides (empty = keep the value from .env.example / config/site.go).
+          RENDER_SITE_WHATSAPP: ${{ vars.SEMESTAPRO_SITE_WHATSAPP }}
+          RENDER_SITE_PHONE_DISPLAY: ${{ vars.SEMESTAPRO_SITE_PHONE_DISPLAY }}
+          RENDER_SITE_EMAIL: ${{ vars.SEMESTAPRO_SITE_EMAIL }}
+          RENDER_SECURITY_CONTACT: ${{ vars.SEMESTAPRO_SECURITY_CONTACT }}
+        # Inline renderer: every RENDER_<KEY> env var becomes <KEY>=<value> in the template (empty values
+        # are skipped, so the template default stays). Plain values are written bare, because
+        # `docker run --env-file` keeps quotes literally; anything else is single-quoted for Docker
+        # Compose and refused in "strict" mode.
+        run: |
+          python3 - .env.example .env.new <<'PY'
+          import os, re, sys
+          os.umask(0o077)
+          tpl, out, strict = sys.argv[1], sys.argv[2], len(sys.argv) > 3
+          ov = {k[7:]: v.strip() for k, v in os.environ.items() if k.startswith("RENDER_") and v.strip()}
+          def fmt(k, v):
+              if "\n" in v or "\r" in v or "'" in v:
+                  sys.exit(f"render_env: {k} contains a newline or single quote")
+              if re.fullmatch(r"[A-Za-z0-9_./:@,+=-]*", v):
+                  return v
+              if strict:
+                  sys.exit(f"render_env: {k} needs quoting, which docker run --env-file does not support")
+              return f"'{v}'"
+          seen, lines = set(), []
+          for line in open(tpl).read().splitlines():
+              k = line.split("=", 1)[0].strip() if "=" in line and not line.lstrip().startswith("#") else None
+              if k in ov:
+                  lines.append(f"{k}={fmt(k, ov[k])}")
+                  seen.add(k)
+              else:
+                  lines.append(line)
+          lines += [f"{k}={fmt(k, v)}" for k, v in ov.items() if k not in seen]
+          open(out, "w").write("\n".join(lines) + "\n")
+          print(f"render_env: wrote {out} ({len(ov)} keys overridden)")
+          PY
+
+      - name: Copy compose, env and scripts to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT || 22 }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.prod.yml,.env.example,scripts/render_env.py,scripts/smoke.sh,deploy/litestream.yml,deploy/nginx/*.conf"
+          source: "docker-compose.prod.yml,.env.new,scripts/smoke.sh,deploy/litestream.yml,deploy/nginx/*.conf"
           target: ${{ env.VPS_DIR }}
           overwrite: true
 
-      - name: Render .env, pull image, migrate, start (on VPS)
+      - name: Pull image, migrate, start (on VPS)
         uses: appleboy/ssh-action@v1.0.3
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHCR_USER: ${{ github.actor }}
-          APP_IMAGE: ${{ needs.build.outputs.image }}
           APP_TAG: ${{ github.sha }}
-          APP_KEY: ${{ secrets.SEMESTAPRO_APP_KEY }}
-          MEDIA_KEY: ${{ secrets.SEMESTAPRO_MEDIA_KEY }}
-          MEDIA_SECRET: ${{ secrets.SEMESTAPRO_MEDIA_SECRET }}
-          MEDIA_ENDPOINT: ${{ vars.SEMESTAPRO_MEDIA_ENDPOINT }}
-          MEDIA_BUCKET: ${{ vars.SEMESTAPRO_MEDIA_BUCKET }}
-          MEDIA_URL: ${{ vars.SEMESTAPRO_MEDIA_URL }}
-          APP_URL: ${{ vars.SEMESTAPRO_APP_URL }}
-          SITE_WHATSAPP: ${{ vars.SEMESTAPRO_SITE_WHATSAPP }}
-          SITE_PHONE_DISPLAY: ${{ vars.SEMESTAPRO_SITE_PHONE_DISPLAY }}
-          SITE_EMAIL: ${{ vars.SEMESTAPRO_SITE_EMAIL }}
-          SECURITY_CONTACT: ${{ vars.SEMESTAPRO_SECURITY_CONTACT }}
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT || 22 }}
@@ -237,16 +329,17 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 2m
           command_timeout: 15m
-          envs: GHCR_TOKEN,GHCR_USER,APP_IMAGE,APP_TAG,APP_KEY,MEDIA_KEY,MEDIA_SECRET,MEDIA_ENDPOINT,MEDIA_BUCKET,MEDIA_URL,APP_URL,SITE_WHATSAPP,SITE_PHONE_DISPLAY,SITE_EMAIL,SECURITY_CONTACT
+          envs: GHCR_TOKEN,GHCR_USER,APP_TAG
           script: |
             set -euo pipefail
             cd /opt/semestapro
             COMPOSE="docker compose -f docker-compose.prod.yml"
 
-            echo "1.) Render .env (secrets never leave the VPS)"
+            echo "1.) Activate the new .env (rendered by the workflow, mode 600)"
             PREV_TAG=""
             if [ -f .env ]; then PREV_TAG="$(grep -E '^APP_TAG=' .env | head -1 | cut -d= -f2- | tr -d "'" || true)"; fi
-            python3 scripts/render_env.py prod .env.example .env
+            chmod 600 .env.new
+            mv -f .env.new .env
             echo "previous tag: ${PREV_TAG:-none} -> new tag: $APP_TAG"
 
             echo "2.) Login to GHCR and pull the image"
@@ -263,7 +356,7 @@ jobs:
               $COMPOSE logs --tail 100 app || true
               if [ -n "$PREV_TAG" ]; then
                 echo "Rolling back container to $PREV_TAG (database migrations are forward-only)"
-                sed -i "s/^APP_TAG=.*/APP_TAG='$PREV_TAG'/" .env
+                sed -i "s/^APP_TAG=.*/APP_TAG=$PREV_TAG/" .env
                 $COMPOSE up -d --wait --wait-timeout 120 app || true
               fi
               exit 1
@@ -288,5 +381,5 @@ jobs:
       - name: Smoke test public URL
         env:
           SMOKE_URL: ${{ vars.SEMESTAPRO_APP_URL || 'https://semestapro.co.id' }}
-        run: scripts/smoke.sh "$SMOKE_URL" /healthz /
+        run: bash scripts/smoke.sh "$SMOKE_URL" /healthz /
         # Add /robots.txt /sitemap.xml /llms.txt once those endpoints exist.

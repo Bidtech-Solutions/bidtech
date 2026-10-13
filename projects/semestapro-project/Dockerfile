@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Semesta Pro — multi-stage image. No Node and no CGo: Tailwind standalone CLI + static Go binary.
 
-FROM golang:1.25-alpine AS build
+FROM golang:1.25-bookworm AS build
 WORKDIR /src
 ENV CGO_ENABLED=0 GOFLAGS=-trimpath
 
@@ -9,7 +9,8 @@ COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod go mod download
 
 COPY . .
-# Build CSS (downloads the Tailwind standalone binary for linux), then the Go binary.
+# Build CSS (Tailwind standalone binary needs glibc, hence a Debian build stage), then the Go binary.
+# The resulting Go binary is static (CGO_ENABLED=0), so it still runs on the Alpine runtime stage.
 RUN --mount=type=cache,target=/go/pkg/mod \
     go run scripts/fetch_tailwind.go v4.1.13 \
  && ./tools/tailwindcss -i resources/css/app.css -o public/css/app.css --minify \

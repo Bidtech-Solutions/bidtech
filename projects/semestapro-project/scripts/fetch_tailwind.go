@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
 )
 
@@ -24,6 +25,10 @@ func main() {
 		os.Exit(1)
 	}
 	name, out := "tailwindcss-"+osName+"-"+arch, "tools/tailwindcss"
+	if runtime.GOOS == "linux" && isMusl() {
+		// Alpine (musl) cannot run the glibc binary: the shell reports "not found" (exit 127).
+		name += "-musl"
+	}
 	if runtime.GOOS == "windows" {
 		name += ".exe"
 		out += ".exe"
@@ -57,4 +62,10 @@ func main() {
 func fail(err error) {
 	fmt.Fprintln(os.Stderr, err)
 	os.Exit(1)
+}
+
+// isMusl reports whether the running Linux uses the musl libc (e.g. golang:alpine).
+func isMusl() bool {
+	m, _ := filepath.Glob("/lib/ld-musl-*")
+	return len(m) > 0
 }

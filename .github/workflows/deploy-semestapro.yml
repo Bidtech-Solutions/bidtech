@@ -209,7 +209,6 @@ jobs:
     needs: [build]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: production
     permissions:
       contents: read
       actions: read
@@ -304,6 +303,9 @@ jobs:
           open(out, "w").write("\n".join(lines) + "\n")
           print(f"render_env: wrote {out} ({len(ov)} keys overridden)")
           PY
+          # The scp action runs in a container under another user and cannot read a mode-600 file;
+          # the file only lives on this throw-away runner and is chmod 600 again on the VPS.
+          chmod 644 .env.new
 
       - name: Copy compose, env and scripts to VPS
         uses: appleboy/scp-action@v0.1.7

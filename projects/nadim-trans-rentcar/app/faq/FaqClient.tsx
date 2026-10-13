@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { getFaqs } from "@/lib/localizedData";
+import { COMPANY_INFO } from "@/lib/data";
 import type { Locale } from "@/lib/i18n";
 
 // Categorized FAQs
@@ -218,7 +219,7 @@ export default function FaqClient() {
               </p>
 
               <a
-                href="https://wa.me/6281331412062"
+                href={`https://wa.me/${COMPANY_INFO.whatsapp}`}
                 target="_blank"
                 rel="noreferrer"
                 className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm px-8 py-4 rounded-full inline-flex items-center gap-2 shadow-lg shadow-amber-500/25 transition-all hover:scale-105 active:scale-95"

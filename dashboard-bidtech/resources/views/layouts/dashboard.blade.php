@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -113,6 +113,13 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="mb-6 flex items-center gap-3 p-4 rounded-2xl bg-danger-bg border border-danger/20 text-danger-text text-sm font-medium shadow-xs">
+                <i data-lucide="alert-circle" class="w-5 h-5 text-danger shrink-0"></i>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+
         @if(isset($errors) && $errors->any())
             <div class="mb-6 p-4 rounded-2xl bg-danger-bg border border-danger/20 text-danger-text text-sm font-medium shadow-xs">
                 <div class="flex items-center gap-2 mb-2 font-semibold">
@@ -158,18 +165,104 @@
                 lucide.createIcons();
             }
 
-            // Hilangkan Dashboard Skeleton dengan transisi halus
+            // Hilangkan Dashboard Skeleton secara instan tanpa delay artifisial
             const skeleton = document.getElementById('dashboard-page-skeleton');
             if (skeleton) {
+                skeleton.classList.add('fade-out');
                 setTimeout(function() {
-                    skeleton.classList.add('fade-out');
-                    setTimeout(function() {
-                        if (skeleton && skeleton.parentNode) {
-                            skeleton.parentNode.removeChild(skeleton);
-                        }
-                    }, 400);
-                }, 350);
+                    if (skeleton && skeleton.parentNode) {
+                        skeleton.parentNode.removeChild(skeleton);
+                    }
+                }, 80);
             }
+        });
+    </script>
+
+    <!-- Realtime Live Update View Counter -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const totalViewsDashboardEl = document.getElementById('dashboard-total-views');
+            const totalViewsKelolaEl = document.getElementById('kelola-total-views');
+            const hasBadges = document.querySelector('.template-view-badge');
+
+            if (!totalViewsDashboardEl && !totalViewsKelolaEl && !hasBadges) return;
+
+            function formatNumber(num) {
+                return new Intl.NumberFormat('id-ID').format(num);
+            }
+
+            function triggerPulse(el) {
+                el.classList.add('transition-all', 'duration-300', 'scale-110', 'text-emerald-600');
+                setTimeout(() => {
+                    el.classList.remove('scale-110', 'text-emerald-600');
+                }, 800);
+            }
+
+            let isPolling = false;
+
+            async function syncTemplateViews() {
+                if (isPolling || document.hidden) return;
+                isPolling = true;
+
+                try {
+                    const res = await fetch('/dashboard/api/template-views', {
+                        headers: { 'Accept': 'application/json' },
+                        cache: 'no-store'
+                    });
+
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    if (data.status !== 'success') return;
+
+                    // 1. Update KPI total views
+                    const newTotal = Number(data.total_views);
+                    if (totalViewsDashboardEl && !isNaN(newTotal)) {
+                        const current = parseInt(totalViewsDashboardEl.textContent.replace(/\D/g, ''), 10) || 0;
+                        if (current !== newTotal) {
+                            totalViewsDashboardEl.textContent = formatNumber(newTotal);
+                            triggerPulse(totalViewsDashboardEl);
+                        }
+                    }
+
+                    if (totalViewsKelolaEl && !isNaN(newTotal)) {
+                        const current = parseInt(totalViewsKelolaEl.textContent.replace(/\D/g, ''), 10) || 0;
+                        if (current !== newTotal) {
+                            totalViewsKelolaEl.textContent = formatNumber(newTotal);
+                            triggerPulse(totalViewsKelolaEl);
+                        }
+                    }
+
+                    // 2. Update badge tiap template
+                    if (Array.isArray(data.templates)) {
+                        data.templates.forEach(tpl => {
+                            const badges = document.querySelectorAll(`.template-view-badge[data-template-id="${tpl.id}"]`);
+                            badges.forEach(badge => {
+                                const currentViews = parseInt(badge.textContent.replace(/\D/g, ''), 10) || 0;
+                                const newViews = Number(tpl.views);
+                                if (currentViews !== newViews) {
+                                    const suffix = badge.getAttribute('data-suffix') || '';
+                                    badge.textContent = formatNumber(newViews) + suffix;
+                                    triggerPulse(badge);
+                                }
+                            });
+                        });
+                    }
+                } catch (e) {
+                    // Non-blocking
+                } finally {
+                    isPolling = false;
+                }
+            }
+
+            // Polling interval 10 detik agar tidak memonopoli thread server lokal
+            const pollInterval = setInterval(syncTemplateViews, 10000);
+
+            // Re-sync saat tab aktif kembali
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden) {
+                    syncTemplateViews();
+                }
+            });
         });
     </script>
     @stack('scripts')

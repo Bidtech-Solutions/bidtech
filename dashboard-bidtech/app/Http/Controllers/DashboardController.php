@@ -23,6 +23,10 @@ class DashboardController extends Controller
             return redirect()->route('dashboard.articles.index');
         }
 
+        if ($user->isMarketing()) {
+            return view('pages.dashboard', $orders->dashboardMarketing($user));
+        }
+
         $data = $user->isAdmin() ? $orders->dashboardAdmin($user) : $orders->dashboardClient($user);
 
         return view('pages.dashboard', $data);

@@ -1,18 +1,22 @@
 <aside id="sidebar" class="w-64 min-h-screen bg-surface border-r border-border px-5 py-6 flex flex-col justify-between flex-shrink-0 sticky top-0 h-screen overflow-y-auto select-none">
     <div>
         <!-- Brand Logo & Top Action -->
-        <div class="flex items-center justify-between sidebar-top-wrapper px-1 transition-all">
-            <a href="{{ route('dashboard') }}" class="sidebar-logo-full flex items-center gap-2">
-                <img src="{{ asset('images/logo/logo.webp') }}" alt="Logo Bidtech" class="h-7 w-auto object-contain">
+        <div class="flex items-center justify-between gap-1 sidebar-top-wrapper transition-all">
+            <div class="sidebar-logo-full flex items-center gap-1.5 min-w-0 flex-1">
+                <a href="{{ route('dashboard') }}" class="flex items-center shrink-0">
+                    <img src="{{ asset('images/logo/logo.webp') }}" alt="Logo Bidtech" class="h-6 w-auto object-contain">
+                </a>
                 @if(auth()->check() && auth()->user()->isAdmin())
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-100 text-primary-800 uppercase tracking-wider">Admin</span>
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-extrabold bg-primary-100 text-primary-800 uppercase tracking-wider shrink-0">Admin</span>
+                @elseif(auth()->check() && auth()->user()->isMarketing())
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-extrabold bg-blue-100 text-blue-800 uppercase tracking-wider shrink-0">Marketing</span>
                 @endif
-            </a>
+            </div>
             <a href="{{ route('dashboard') }}" class="sidebar-logo-mini hidden w-8 h-8 rounded-xl bg-primary text-primary-foreground font-black text-sm items-center justify-center shadow-xs" title="Bidtech Portal">
                 B
             </a>
             <button type="button" onclick="toggleSidebar()" id="sidebar-toggle-btn"
-                class="text-ink-muted hover:text-ink p-1.5 rounded-lg hover:bg-canvas transition cursor-pointer"
+                class="text-ink-muted hover:text-ink p-1.5 rounded-lg hover:bg-canvas transition cursor-pointer shrink-0 ml-auto"
                 title="Ciutkan/Perluas Sidebar">
                 <i data-lucide="panel-left" class="w-4 h-4"></i>
             </button>
@@ -28,6 +32,18 @@
                         class="sidebar-nav-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl font-semibold text-sm transition {{ request()->routeIs('dashboard') && !request()->routeIs('dashboard.order*') ? 'bg-success-surface text-success' : 'text-ink-muted hover:bg-canvas hover:text-ink' }} cursor-pointer">
                         <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i>
                         <span class="sidebar-text truncate">Dashboard</span>
+                    </a>
+                @elseif(auth()->user()->isMarketing())
+                    <a href="{{ route('dashboard') }}" id="nav-dashboard" title="Dashboard Marketing"
+                        class="sidebar-nav-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl font-semibold text-sm transition {{ request()->routeIs('dashboard') && !request()->routeIs('dashboard.order*') ? 'bg-success-surface text-success' : 'text-ink-muted hover:bg-canvas hover:text-ink' }} cursor-pointer">
+                        <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i>
+                        <span class="sidebar-text truncate">Dashboard</span>
+                    </a>
+
+                    <a href="{{ route('dashboard.order') }}" id="nav-nasabah" title="Kelola Nasabah & Transaksi"
+                        class="sidebar-nav-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl font-medium text-sm transition {{ request()->routeIs('dashboard.order*') ? 'bg-success-surface text-success font-semibold' : 'text-ink-muted hover:bg-canvas hover:text-ink' }} cursor-pointer">
+                        <i data-lucide="users" class="w-4 h-4 shrink-0"></i>
+                        <span class="sidebar-text truncate">Kelola Nasabah</span>
                     </a>
                 @else
                     <a href="{{ route('dashboard') }}" id="nav-dashboard" title="Dashboard"
@@ -75,10 +91,16 @@
                     <span class="sidebar-text truncate">Riwayat Redeem</span>
                 </a>
 
-                <a href="{{ route('dashboard.promos.partners') }}" title="Afiliasi Mitra & Komisi"
-                   class="sidebar-nav-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl font-medium text-sm transition {{ request()->routeIs('dashboard.promos.partners') ? 'bg-success-surface text-success font-semibold' : 'text-ink-muted hover:bg-canvas hover:text-ink' }} cursor-pointer">
+                <a href="{{ route('dashboard.partners.index') }}" title="Afiliasi Mitra & Komisi"
+                   class="sidebar-nav-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl font-medium text-sm transition {{ request()->routeIs('dashboard.partners.*') ? 'bg-success-surface text-success font-semibold' : 'text-ink-muted hover:bg-canvas hover:text-ink' }} cursor-pointer">
                     <i data-lucide="users" class="w-4 h-4 shrink-0"></i>
                     <span class="sidebar-text truncate">Mitra & Komisi</span>
+                </a>
+
+                <a href="{{ route('dashboard.users.index') }}" title="Kelola Pengguna Sistem"
+                   class="sidebar-nav-btn w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl font-medium text-sm transition {{ request()->routeIs('dashboard.users.*') ? 'bg-success-surface text-success font-semibold' : 'text-ink-muted hover:bg-canvas hover:text-ink' }} cursor-pointer">
+                    <i data-lucide="user-cog" class="w-4 h-4 shrink-0"></i>
+                    <span class="sidebar-text truncate">Kelola User</span>
                 </a>
             </nav>
         </div>

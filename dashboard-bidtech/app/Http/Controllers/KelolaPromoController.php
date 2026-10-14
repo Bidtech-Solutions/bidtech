@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DiscountMode;
 use App\Models\Coupon;
 use App\Services\PromoService;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,7 @@ class KelolaPromoController extends Controller
 
     public function index(Request $request, PromoService $promos): View
     {
-        return view('pages.kelola-promo', array_merge(['mode' => 'index'], $promos->list($request->only(['search', 'is_partner', 'is_active']))));
+        return view('pages.kelola-promo', array_merge(['mode' => 'index'], $promos->list($request->only(['search', 'is_partner', 'is_active', 'discount_mode']))));
     }
 
     public function create(PromoService $promos): View
@@ -88,9 +89,12 @@ class KelolaPromoController extends Controller
     /**
      * Riwayat siapa yang memakai kode promo ini.
      */
-    public function usages(Coupon $promo, PromoService $promos): View
+    public function usages(Request $request, Coupon $promo, PromoService $promos): View
     {
-        return view('pages.riwayat-redeem', array_merge(['mode' => 'usages'], $promos->usages($promo)));
+        return view('pages.riwayat-redeem', array_merge(
+            ['mode' => 'usages'],
+            $promos->usages($promo, $request->only(['search', 'status']))
+        ));
     }
 
     /**
@@ -101,15 +105,18 @@ class KelolaPromoController extends Controller
         return view('pages.riwayat-redeem', array_merge(['mode' => 'all_usages'], $promos->allUsages(
             $request->filled('promo_id') ? $request->integer('promo_id') : null,
             $request->filled('search') ? (string) $request->search : null,
+            $request->filled('status') ? (string) $request->status : null,
         )));
     }
 
     /**
      * Rekapitulasi afiliasi dan komisi mitra.
      */
-    public function partners(PromoService $promos): View
+    public function partners(Request $request, PromoService $promos): View
     {
-        return view('pages.kelola-mitra', $promos->partners());
+        return view('pages.kelola-mitra', $promos->partners(
+            $request->only(['search', 'status', 'commission_type', 'has_promo', 'sort'])
+        ));
     }
 
     /**
@@ -147,6 +154,7 @@ class KelolaPromoController extends Controller
         $rules = [
             'code' => ['required', 'string', 'max:50', Rule::unique('coupons', 'code')->ignore($ignore)],
             'name' => 'required|string|max:150',
+            'discount_mode' => ['required', Rule::enum(DiscountMode::class)],
             'min_order_amount' => 'nullable|integer|min:0',
             'partner_id' => 'nullable|exists:partners,id',
             'usage_limit' => 'nullable|integer|min:1',
@@ -166,16 +174,40 @@ class KelolaPromoController extends Controller
     }
 
     /**
-     * Data tervalidasi ditambah status aktif (default aktif bila tidak dikirim); tipe diskon
-     * kosong (komponen tanpa diskon) dinormalisasi jadi null agar tidak tersimpan string "".
+     * Data tervalidasi ditambah status aktif; normalisasi data sesuai mode diskon yang dipilih.
      */
     private function promoData(array $validated, Request $request): array
     {
-        foreach (self::COMPONENTS as $component) {
-            if (empty($validated["{$component}_discount_type"])) {
-                $validated["{$component}_discount_type"] = null;
-                $validated["{$component}_discount_amount"] = null;
-                $validated["{$component}_discount_max"] = null;
+        $mode = $validated['discount_mode'];
+        if ($mode instanceof DiscountMode) {
+            $mode = $mode->value;
+        }
+
+        if (in_array($mode, [DiscountMode::SubtotalDomain->value, DiscountMode::SubtotalNonDomain->value], true)) {
+            // Bersihkan field per komponen agar tidak ada data sampah di database
+            foreach (['service', 'template', 'server', 'domain'] as $comp) {
+                $validated["{$comp}_discount_type"] = null;
+                $validated["{$comp}_discount_amount"] = null;
+                $validated["{$comp}_discount_max"] = null;
+            }
+            if (empty($validated['subtotal_discount_type'])) {
+                $validated['subtotal_discount_type'] = null;
+                $validated['subtotal_discount_amount'] = null;
+                $validated['subtotal_discount_max'] = null;
+            }
+        } elseif ($mode === DiscountMode::PerComponent->value) {
+            // Bersihkan field subtotal
+            $validated['subtotal_discount_type'] = null;
+            $validated['subtotal_discount_amount'] = null;
+            $validated['subtotal_discount_max'] = null;
+
+            // Normalisasi komponen kosong
+            foreach (['service', 'template', 'server', 'domain'] as $comp) {
+                if (empty($validated["{$comp}_discount_type"])) {
+                    $validated["{$comp}_discount_type"] = null;
+                    $validated["{$comp}_discount_amount"] = null;
+                    $validated["{$comp}_discount_max"] = null;
+                }
             }
         }
 

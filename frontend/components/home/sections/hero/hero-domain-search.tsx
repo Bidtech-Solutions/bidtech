@@ -224,6 +224,20 @@ export function HeroDomainSearch() {
           </button>
         </form>
 
+        {/* Subtle hint for users who already have a domain */}
+        <div className="mt-2.5 px-2 flex items-center justify-between text-xs text-slate-500">
+          <span>
+            Sudah memiliki domain sendiri?{" "}
+            <Link
+              href="/template-website"
+              className="font-semibold text-[#5bb82e] hover:text-[#4ea625] hover:underline inline-flex items-center gap-0.5"
+            >
+              Langsung pilih template website
+              <ArrowRight className="size-3 ml-0.5" />
+            </Link>
+          </span>
+        </div>
+
         {/* Results — muncul di dalam card setelah search */}
         {hasSearched && (
           <div className="mt-4 pt-4 border-t border-slate-100">
@@ -328,7 +342,7 @@ export function HeroDomainSearch() {
                           </p>
                         )}
                       </div>
-                      {item.available && (
+                      {item.available ? (
                         <button
                           type="button"
                           disabled={isNavigating !== null}
@@ -341,6 +355,15 @@ export function HeroDomainSearch() {
                             <>Pilih <ArrowRight className="size-3" /></>
                           )}
                         </button>
+                      ) : (
+                        <a
+                          href={`${LARAVEL_CHECKOUT_URL}/checkout/pilih-template?domain=${encodeURIComponent(item.domain)}&own=1&price=0`}
+                          className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-white hover:border-[#5bb82e] hover:text-[#5bb82e] px-2.5 py-1 text-[11px] font-semibold text-slate-600 transition-all cursor-pointer shadow-xs"
+                          title="Gunakan domain milik Anda sendiri"
+                        >
+                          <span>Milik Anda?</span>
+                          <ArrowRight className="size-3" />
+                        </a>
                       )}
                     </div>
                   ))}

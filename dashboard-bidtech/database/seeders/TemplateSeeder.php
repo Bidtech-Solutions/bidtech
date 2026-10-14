@@ -34,7 +34,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/automotive',
                 'description' => 'Showcase kendaraan dan penyewaan kendaraan untuk usaha Penyewaan Kendaraan',
                 'tags' => 'Automotive, Rental Mobil, Responsive',
-                'views' => 142,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -52,7 +52,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/restaurant-cafe-2',
                 'description' => 'Cafe atau restaurant anak muda dengan gaya animasi kalcer, cocok untuk portofolio usaha.',
                 'tags' => 'Restaurant, Cafe, Kalcer',
-                'views' => 98,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -70,7 +70,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/restaurant-cafe',
                 'description' => 'Restaurant otentik, mewah dan berprestisius, dengan target korporat dan kelas internasional.',
                 'tags' => 'Restaurant, Diner, Modern Theme',
-                'views' => 115,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -88,7 +88,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/beauty-wellness',
                 'description' => 'Tempat kebugaran dan latihan anak gen z, tersebar sekitar jabodetabek, dengan fasilitas lengkap dan pelatih professional.',
                 'tags' => 'Fitness, Gym, Personal Trainer',
-                'views' => 230,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -106,7 +106,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/community-pro',
                 'description' => 'Organisasi nirlaba sosial kemasyarakatan independen yang mendedikasikan diri untuk pengentasan kemiskinan, pemberdayaan ekonomi warga, dan kemanusiaan di Indonesia.',
                 'tags' => 'Community, Yayasan, Donation',
-                'views' => 74,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -124,7 +124,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/organization',
                 'description' => 'Organisasi non-profit mandiri dengan visi pengembangan pendidikan pada anak-anak di wilayah 3T (Tertinggal, Terdepan, dan Terluar).',
                 'tags' => 'Community, Organization, Information Portal',
-                'views' => 88,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -142,7 +142,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/e-commerce',
                 'description' => 'Branding dan digitalisasi usaha penjualan Handphone',
                 'tags' => 'UMKM, Smartphone, Penjualan',
-                'views' => 165,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -160,7 +160,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/property',
                 'description' => 'Agen Penjualan atau Penyewaan Properti Harian, Bulanan dan Tahunan.',
                 'tags' => 'Properti, Rumah, Showcase',
-                'views' => 92,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -178,7 +178,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/beauty-wellness-2',
                 'description' => 'Branding skincare professional dengan tampilan website standar brand skincare lokal dan internasional',
                 'tags' => 'Skincare, Kecantikan, Kosmetik',
-                'views' => 210,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -196,7 +196,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/smartbelajar',
                 'description' => 'SmartBelajar membantu anak mengembangkan kemampuan belajar mandiri dalam Matematika dan Membaca sejak usia dini',
                 'tags' => 'Les, Sekolah, Kursus',
-                'views' => 134,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -214,7 +214,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/nivoraacademy',
                 'description' => 'Akademi keterampilan digital Indonesia — kursus praktis, bootcamp intensif, dan mentor praktisi industri nyata.',
                 'tags' => 'Akademi, Kursus, Profesi',
-                'views' => 178,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -232,7 +232,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/aliansi-kepemimpinan-indonesia',
                 'description' => 'Wadah kolaborasi kepemimpinan, transformasi sosial, dan inovasi strategis generasi muda.',
                 'tags' => 'Organisasi, Company Profile, Komunitas',
-                'views' => 84,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -250,7 +250,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/tehin',
                 'description' => 'Kesegaran teh asli nusantara, Diseduh segar setiap 4 jam dari pucuk daun teh hitam pegunungan tropis nusantara.',
                 'tags' => 'UMKM, Teh, FnB',
-                'views' => 122,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -268,7 +268,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/agak-rapi',
                 'description' => 'Barbershop ekslusif Jakarta; Pangkas presisi untuk yang mau agak rapi.',
                 'tags' => 'Barbershop, Skena, Eksperimental',
-                'views' => 156,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -286,7 +286,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/pinjammobil',
                 'description' => 'Pinjam Mobil adalah tempat sewa mobil terbaik untuk anda yang ingin jalan-jalan, atau sekedar flexing ke cewe yang anda dekati.',
                 'tags' => 'Otomotif, Penyewaan, Mobil',
-                'views' => 105,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -304,7 +304,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/forcevault',
                 'description' => 'Sepatu Nike Air Force 1 Premium Berkualitas',
                 'tags' => 'Toko, Thrifting, Sepatu',
-                'views' => 193,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -322,7 +322,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/elevasi',
                 'description' => 'Solusi kontraktor dan konstruksi bangunan terpercaya dengan kualitas terbaik dan bergaransi.',
                 'tags' => 'Jasa, Konstruksi, Perusahaan',
-                'views' => 87,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -340,7 +340,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/jayawijaya',
                 'description' => 'Penyedia armada alat berat terkemuka di Indonesia untuk mega-proyek pertambangan, jalan tol, dan rekayasa sipil berstandar keselamatan tertinggi.',
                 'tags' => 'Alat Berat, Konstruksi, Penyediaan',
-                'views' => 87,
+                'views' => 0,
                 'is_active' => true,
             ],
             [
@@ -358,7 +358,7 @@ class TemplateSeeder extends Seeder
                 'demo_url' => 'https://bidtech.co.id/demo/afindo',
                 'description' => 'PT Afindo Construction memadukan perhitungan matematis tanah canggih dengan armada hidraulik generasi terbaru.',
                 'tags' => 'Jasa, Konstruksi, PT',
-                'views' => 87,
+                'views' => 0,
                 'is_active' => true,
             ],                       
         ];

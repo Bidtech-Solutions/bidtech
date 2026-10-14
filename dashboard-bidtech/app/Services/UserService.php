@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Throwable;
+
 class UserService
 {
     private const DEFAULT_PASSWORD = 'Password123!';
@@ -46,6 +51,112 @@ class UserService
     public function updateAuthorProfile(User $user, array $data): void
     {
         $user->update($data);
+    }
+
+    /**
+     * Simpan file foto profil pengguna (S3/RustFS atau fallback disk public).
+     */
+    public function uploadProfilePhoto(User $user, UploadedFile $file): string
+    {
+        $ext = $file->getClientOriginalExtension() ?: 'webp';
+        $filename = Str::uuid()->toString() . '.' . strtolower($ext);
+
+        // Hapus foto kustom lama jika ada
+        $this->removeOldPhotoFile($user->photo);
+
+        $storedPath = null;
+
+        // Coba simpan ke S3/RustFS jika endpoint aktif
+        $s3Available = false;
+        $endpoint = config('filesystems.disks.s3.endpoint');
+        if ($endpoint) {
+            $parsed = parse_url($endpoint);
+            $host = $parsed['host'] ?? '127.0.0.1';
+            $port = $parsed['port'] ?? (($parsed['scheme'] ?? 'http') === 'https' ? 443 : 80);
+            $fp = @fsockopen($host, $port, $errno, $errstr, 0.5);
+            if ($fp) {
+                fclose($fp);
+                $s3Available = true;
+            }
+        } elseif (! empty(config('filesystems.disks.s3.bucket'))) {
+            $s3Available = true;
+        }
+
+        if ($s3Available) {
+            try {
+                $disk = Storage::disk('s3');
+                $path = $disk->putFileAs('profiles', $file, $filename);
+                if ($path) {
+                    $storedPath = $path;
+                }
+            } catch (Throwable) {
+                $storedPath = null;
+            }
+        }
+
+        // Fallback simpan ke storage public lokal jika S3 tidak aktif
+        if (! $storedPath) {
+            $publicPath = Storage::disk('public')->putFileAs('profiles', $file, $filename);
+            $storedPath = '/storage/' . $publicPath;
+        }
+
+        $user->update(['photo' => $storedPath]);
+
+        return $storedPath;
+    }
+
+    /**
+     * Hapus foto profil kustom dan kembalikan ke avatar placeholder default.
+     */
+    public function deleteProfilePhoto(User $user): void
+    {
+        $this->removeOldPhotoFile($user->photo);
+        $user->update(['photo' => 'profiles/placeholder_profile.webp']);
+    }
+
+    /**
+     * Perbarui data profil lengkap pengguna (nama, author_name, whatsapp, dan foto).
+     */
+    public function updateMediaProfile(User $user, array $data, ?UploadedFile $photo = null, bool $removePhoto = false): void
+    {
+        if ($removePhoto) {
+            $this->deleteProfilePhoto($user);
+        } elseif ($photo instanceof UploadedFile) {
+            $this->uploadProfilePhoto($user, $photo);
+        }
+
+        $attributes = [
+            'name' => $data['name'],
+        ];
+
+        if (array_key_exists('author_name', $data)) {
+            $attributes['author_name'] = $data['author_name'] ?: null;
+        }
+
+        if (array_key_exists('whatsapp', $data)) {
+            $attributes['whatsapp'] = $data['whatsapp'] ?: null;
+        }
+
+        $user->update($attributes);
+    }
+
+    private function removeOldPhotoFile(?string $currentPhoto): void
+    {
+        if (empty($currentPhoto) || $currentPhoto === 'profiles/placeholder_profile.webp') {
+            return;
+        }
+
+        try {
+            if (str_starts_with($currentPhoto, '/storage/') || str_starts_with($currentPhoto, 'storage/')) {
+                $rel = preg_replace('#^/?storage/#', '', $currentPhoto);
+                Storage::disk('public')->delete($rel);
+            } elseif (str_starts_with($currentPhoto, 'profiles/')) {
+                Storage::disk('s3')->delete($currentPhoto);
+                Storage::disk('public')->delete($currentPhoto);
+            }
+        } catch (Throwable) {
+            // Abaikan kesalahan penghapusan file lama jika storage sedang tidak tersedia
+        }
     }
 
     // ---- Client accounts ----

@@ -20,7 +20,13 @@ class PengaturanController extends Controller
     public function edit(Request $request, OrderService $orders): View
     {
         $user = $request->user();
-        $portal = $orders->clientPortal($user);
+        $portal = $user->isKlien()
+            ? $orders->clientPortal($user)
+            : [
+                'domainName' => '-',
+                'isDomainRegistered' => false,
+                'domainExpiryDate' => '-',
+            ];
 
         return view('pages.edit-profil', [
             'user' => $user,
@@ -31,43 +37,48 @@ class PengaturanController extends Controller
     }
 
     /**
-     * Perbarui profil akun (Nama & No. WhatsApp)
+     * Perbarui profil akun (Nama, Byline, WhatsApp, dan Foto Profil)
      */
     public function updateProfile(Request $request, UserService $users): RedirectResponse
     {
-        $validated = $request->validate([
+        $user = $request->user();
+
+        $rules = [
             'name' => ['required', 'string', 'max:150'],
-            'whatsapp' => ['required', 'string', 'max:30'],
-        ], [
+            'whatsapp' => $user->isKlien() ? ['required', 'string', 'max:30'] : ['nullable', 'string', 'max:30'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'remove_photo' => ['nullable', 'boolean'],
+        ];
+
+        if ($user->isMedia() || $user->isAdmin()) {
+            $rules['author_name'] = ['nullable', 'string', 'max:150'];
+        }
+
+        $validated = $request->validate($rules, [
             'name.required' => 'Nama lengkap wajib diisi.',
             'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+            'photo.image' => 'File yang diunggah harus berupa gambar.',
+            'photo.mimes' => 'Format foto profil harus JPG, PNG, atau WebP.',
+            'photo.max' => 'Ukuran foto profil maksimal 2 MB.',
         ]);
 
-        $users->updateProfile($request->user(), $validated);
+        $users->updateMediaProfile(
+            $user,
+            $validated,
+            $request->file('photo'),
+            $request->boolean('remove_photo')
+        );
 
         return $this->backToSettings()
-            ->with('profile_success', 'Profil dan nomor kontak berhasil diperbarui.');
+            ->with('profile_success', 'Profil akun dan foto berhasil diperbarui.');
     }
 
     /**
-     * Perbarui byline publik (nama tampil & foto) milik akun media sendiri.
+     * Alias pembaruan byline publik milik akun media.
      */
     public function updateAuthorProfile(Request $request, UserService $users): RedirectResponse
     {
-        $user = $request->user();
-        abort_unless($user->isMedia(), 403);
-
-        $validated = $request->validate([
-            'author_name' => ['required', 'string', 'max:150'],
-            'photo' => ['nullable', 'string', 'max:2048'],
-        ], [
-            'author_name.required' => 'Nama tampil publik wajib diisi.',
-        ]);
-
-        $users->updateAuthorProfile($user, $validated);
-
-        return $this->backToSettings()
-            ->with('profile_success', 'Profil penulis (byline) berhasil diperbarui.');
+        return $this->updateProfile($request, $users);
     }
 
     /**

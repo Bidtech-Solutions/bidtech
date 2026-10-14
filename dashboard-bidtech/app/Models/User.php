@@ -51,9 +51,19 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'client_id');
     }
 
+    public function latestOrder(): HasOne
+    {
+        return $this->hasOne(Order::class, 'client_id')->latestOfMany();
+    }
+
     public function partner(): HasOne
     {
         return $this->hasOne(Partner::class);
+    }
+
+    public function articles(): HasMany
+    {
+        return $this->hasMany(Article::class, 'created_by');
     }
 
     /**
@@ -106,16 +116,27 @@ class User extends Authenticatable
      */
     public function getPhotoUrlAttribute(): string
     {
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = Storage::disk('s3');
-
-        if (empty($this->photo)) {
-            return $disk->url('profiles/placeholder_profile.webp');
-        }
-        if (str_starts_with($this->photo, 'http://') || str_starts_with($this->photo, 'https://')) {
+        if (str_starts_with($this->photo ?? '', 'http://') || str_starts_with($this->photo ?? '', 'https://')) {
             return $this->photo;
         }
 
-        return $disk->url(ltrim($this->photo, '/'));
+        if (str_starts_with($this->photo ?? '', '/storage/') || str_starts_with($this->photo ?? '', 'storage/')) {
+            return asset($this->photo);
+        }
+
+        $path = !empty($this->photo) ? ltrim($this->photo, '/') : 'profiles/placeholder_profile.webp';
+
+        try {
+            $bucket = config('filesystems.disks.s3.bucket');
+            $url = config('filesystems.disks.s3.url');
+
+            if (empty($bucket) && empty($url)) {
+                return 'https://media.bidtech.co.id/bidtech/' . $path;
+            }
+
+            return Storage::disk('s3')->url($path);
+        } catch (\Throwable) {
+            return 'https://media.bidtech.co.id/bidtech/' . $path;
+        }
     }
 }

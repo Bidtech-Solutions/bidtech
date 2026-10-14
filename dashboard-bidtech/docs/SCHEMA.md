@@ -195,6 +195,7 @@ Transaksi checkout sekaligus unit proyek/website. Tabel ini menyimpan foreign ke
 | `domain_price` | `BIGINT UNSIGNED` | tidak null | - | Snapshot harga domain |
 | `domain_duration` | `INT UNSIGNED` | default `1` | - | Durasi domain dalam tahun |
 | `domain_price_per_year` | `BIGINT UNSIGNED` | nullable | - | Snapshot harga domain per tahun |
+| `is_own_domain` | `BOOLEAN` | default `false` | - | Domain milik klien sendiri (tidak didaftarkan Bidtech, cukup arahkan DNS); domain wajib sudah terdaftar saat checkout |
 | `template_price` | `BIGINT UNSIGNED` | nullable | - | Snapshot harga template |
 | `template_desc` | `VARCHAR(255)` | nullable | - | Snapshot deskripsi template |
 | `server_price` | `BIGINT UNSIGNED` | nullable | - | Snapshot harga server |

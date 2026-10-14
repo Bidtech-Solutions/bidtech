@@ -123,7 +123,19 @@ class Template extends Model
         if (str_starts_with($this->preview, 'http://') || str_starts_with($this->preview, 'https://')) {
             return $this->preview;
         }
-        return Storage::disk('s3')->url(ltrim($this->preview, '/'));
+
+        try {
+            $bucket = config('filesystems.disks.s3.bucket');
+            $url = config('filesystems.disks.s3.url');
+
+            if (empty($bucket) && empty($url)) {
+                return 'https://media.bidtech.co.id/bidtech/templates/rentcar.webp';
+            }
+
+            return Storage::disk('s3')->url(ltrim($this->preview, '/'));
+        } catch (\Throwable) {
+            return 'https://media.bidtech.co.id/bidtech/templates/rentcar.webp';
+        }
     }
 
     /**
@@ -192,12 +204,17 @@ class Template extends Model
      * @return array{templatePrice: int, serverPrice: int, servicePrice: int, domainPrice: int, discountAmount: int,
      *     packageTotal: int, subtotal: int, totalPrice: int}
      */
-    public function priceBreakdown(int $domainPrice, int $discountAmount = 0): array
+    public function priceBreakdown(int $domainPrice, int $discountAmount = 0, int $duration = 1): array
     {
+        $duration = max(1, $duration);
+        $templatePerYear = (int) ($this->template_price ?? self::DEFAULT_TEMPLATE_PRICE);
+        $serverPerYear = (int) ($this->server_price ?? self::DEFAULT_SERVER_PRICE);
+        $servicePerYear = (int) ($this->service_price ?? self::DEFAULT_SERVICE_PRICE);
+
         return static::breakdown(
-            (int) ($this->template_price ?? self::DEFAULT_TEMPLATE_PRICE),
-            (int) ($this->server_price ?? self::DEFAULT_SERVER_PRICE),
-            (int) ($this->service_price ?? self::DEFAULT_SERVICE_PRICE),
+            $templatePerYear * $duration,
+            $serverPerYear * $duration,
+            $servicePerYear * $duration,
             $domainPrice,
             $discountAmount,
         );

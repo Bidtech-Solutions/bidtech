@@ -163,18 +163,18 @@ class OrderExportService
                 default => (string) $order->status?->value,
             };
 
-            $domainStatusText = match ($order->domain_status) {
+            $domainStatusText = $order->isPaid() ? match ($order->domain_status) {
                 DomainStatus::Registered => 'Terdaftar',
                 DomainStatus::PendingRegistration => 'Pending',
                 default => (string) $order->domain_status?->value,
-            };
+            } : '-';
 
-            $websiteStatusText = match ($order->website_status) {
+            $websiteStatusText = $order->isPaid() ? match ($order->website_status) {
                 WebsiteStatus::Deployed => 'Deployed',
                 WebsiteStatus::InProgress => 'Dalam Pengerjaan',
                 WebsiteStatus::Maintenance => 'Maintenance',
                 default => (string) $order->website_status?->value,
-            };
+            } : '-';
 
             $sheet->setCellValue("A{$currentRow}", $index + 1);
             $sheet->setCellValueExplicit("B{$currentRow}", $order->order_number, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);

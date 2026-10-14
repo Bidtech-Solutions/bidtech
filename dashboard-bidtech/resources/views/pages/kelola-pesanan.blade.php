@@ -1,6 +1,15 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Kelola Pesanan Klien - Admin CMS Bidtech')
+@php
+    $isMarketingRole = (isset($isMarketing) && $isMarketing) || (auth()->check() && auth()->user()->isMarketing());
+    $pageTitle = $isMarketingRole ? 'Kelola Nasabah - Marketing Portal Bidtech' : 'Kelola Pesanan Klien - Admin CMS Bidtech';
+    $headingTitle = $isMarketingRole ? 'Kelola Nasabah' : 'Kelola Pesanan Klien';
+    $headingSubtitle = $isMarketingRole 
+        ? 'Pantau seluruh transaksi nasabah, riwayat pesanan klien, dan unduh berkas invoice resmi pembelian.' 
+        : 'Pantau seluruh transaksi, filter periode pesanan bulanan/tahunan, dan ubah status domain & website klien secara manual.';
+@endphp
+
+@section('title', $pageTitle)
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-8">
@@ -8,8 +17,8 @@
     <!-- Top Bar Title & Quick Action -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Kelola Pesanan Klien</h1>
-            <p class="text-sm text-slate-500 mt-1">Pantau seluruh transaksi, filter periode pesanan bulanan/tahunan, dan ubah status domain & website klien secara manual.</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{{ $headingTitle }}</h1>
+            <p class="text-sm text-slate-500 mt-1">{{ $headingSubtitle }}</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
             @php
@@ -24,13 +33,6 @@
                 <i data-lucide="calendar" class="w-4 h-4"></i>
                 <span>Periode: {{ $activePeriodText }}</span>
             </span>
-
-            <a href="{{ route('dashboard.order.export', request()->query()) }}"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-bold transition shadow-sm cursor-pointer"
-               title="Unduh laporan penjualan format Excel (.xlsx) sesuai filter aktif">
-                <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-200"></i>
-                <span>Ekspor Excel</span>
-            </a>
         </div>
     </div>
 
@@ -115,11 +117,11 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
             <div>
                 <h2 class="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                    <i data-lucide="layers" class="w-5 h-5 text-emerald-600"></i>
-                    <span>Daftar Pesanan Klien</span>
+                    <i data-lucide="{{ $isMarketingRole ? 'users' : 'layers' }}" class="w-5 h-5 text-emerald-600"></i>
+                    <span>{{ $isMarketingRole ? 'Daftar Nasabah & Pesanan' : 'Daftar Pesanan Klien' }}</span>
                 </h2>
                 <p class="text-xs text-slate-500 mt-0.5">
-                    Total <strong class="text-slate-800">{{ $orders->total() }}</strong> pesanan ditemukan di sistem
+                    Total <strong class="text-slate-800">{{ $orders->total() }}</strong> {{ $isMarketingRole ? 'nasabah/transaksi' : 'pesanan' }} ditemukan di sistem
                 </p>
             </div>
             <div class="flex items-center gap-2">
@@ -221,16 +223,17 @@
                         <th class="py-3 px-3.5 text-center">Status Website</th>
                         <th class="py-3 px-3.5 text-center">Status Pembayaran</th>
                         <th class="py-3 px-3.5 text-right">Total</th>
-                        <th class="py-3 px-3.5 text-center">Aksi Cepat</th>
+                        <th class="py-3 px-3.5 text-center">{{ $isMarketingRole ? 'Aksi Invoice' : 'Aksi Cepat' }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($orders as $ro)
                         @php
                             $sVal = $ro->status->value ?? $ro->status;
-                            $orderUser = $ro->user;
-                            $domainStatusVal = $orderUser?->domain_status?->value ?? ($ro->isPaid() ? 'pending_registration' : '-');
-                            $websiteStatusVal = $orderUser?->website_status?->value ?? ($ro->isPaid() ? 'in_progress' : '-');
+                            $isPaid = $ro->isPaid();
+                            $domainStatusVal = $isPaid ? ($ro->domain_status?->value ?? 'pending_registration') : '-';
+                            $websiteStatusVal = $isPaid ? ($ro->website_status?->value ?? 'in_progress') : '-';
+                            $domainFinalVal = $ro->domain_final ?: $ro->domain_name;
                         @endphp
                         <tr class="hover:bg-slate-50/60 transition">
                             <td class="py-3.5 px-3.5">
@@ -251,44 +254,50 @@
                                 @endif
                                 <p class="text-[11px] text-emerald-700 font-bold flex items-center gap-1 mt-0.5">
                                     <i data-lucide="globe" class="w-3 h-3"></i>
-                                    <span>{{ $orderUser?->domain_final ?: $ro->domain_name }}</span>
+                                    <span>{{ $domainFinalVal }}</span>
                                 </p>
+                                @if($ro->is_own_domain)
+                                    <span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/60" title="Domain sudah dimiliki klien, tidak perlu didaftarkan. Cukup arahkan DNS.">
+                                        <i data-lucide="link-2" class="w-3 h-3"></i>
+                                        <span>Domain Milik Klien</span>
+                                    </span>
+                                @endif
                             </td>
                             <!-- Status Domain -->
                             <td class="py-3.5 px-3.5 text-center">
-                                @if($domainStatusVal === 'registered')
+                                @if($isPaid && $domainStatusVal === 'registered')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#DCFCE7] text-[#166534]">
                                         <i data-lucide="check" class="w-3 h-3"></i>
                                         <span>Aktif</span>
                                     </span>
-                                @elseif($domainStatusVal === 'pending_registration')
+                                @elseif($isPaid && $domainStatusVal === 'pending_registration')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FEF3C7] text-[#92400E]">
                                         <i data-lucide="clock" class="w-3 h-3"></i>
-                                        <span>Diproses</span>
+                                        <span>{{ $ro->is_own_domain ? 'Arahkan DNS' : 'Diproses' }}</span>
                                     </span>
                                 @else
-                                    <span class="text-[11px] text-slate-400">-</span>
+                                    <span class="text-xs text-slate-400 font-bold">-</span>
                                 @endif
                             </td>
                             <!-- Status Website -->
                             <td class="py-3.5 px-3.5 text-center">
-                                @if($websiteStatusVal === 'deployed')
+                                @if($isPaid && $websiteStatusVal === 'deployed')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#DCFCE7] text-[#166534]">
                                         <i data-lucide="sparkles" class="w-3 h-3"></i>
                                         <span>Live</span>
                                     </span>
-                                @elseif($websiteStatusVal === 'in_progress')
+                                @elseif($isPaid && $websiteStatusVal === 'in_progress')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700">
                                         <i data-lucide="code" class="w-3 h-3"></i>
                                         <span>Dikerjakan</span>
                                     </span>
-                                @elseif($websiteStatusVal === 'maintenance')
+                                @elseif($isPaid && $websiteStatusVal === 'maintenance')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
                                         <i data-lucide="wrench" class="w-3 h-3"></i>
                                         <span>Maintenance</span>
                                     </span>
                                 @else
-                                    <span class="text-[11px] text-slate-400">-</span>
+                                    <span class="text-xs text-slate-400 font-bold">-</span>
                                 @endif
                             </td>
                             <!-- Status Pembayaran -->
@@ -313,63 +322,73 @@
                             <td class="py-3.5 px-3.5 text-right font-mono font-bold text-xs text-slate-900">
                                 Rp {{ number_format($ro->total_price, 0, ',', '.') }}
                             </td>
-                            <!-- Aksi Cepat -->
                             <td class="py-3.5 px-3.5 text-center">
                                 <div class="flex items-center justify-center gap-1.5">
-                                    <!-- Tombol Ubah Status (Modal) -->
-                                    <button type="button" 
-                                            onclick='openStatusModal({
-                                                id: {{ $ro->id }},
-                                                order_number: "{{ $ro->order_number }}",
-                                                full_name: "{{ addslashes($ro->full_name) }}",
-                                                status: "{{ $sVal }}",
-                                                domain_name: "{{ addslashes($ro->domain_name) }}",
-                                                domain_status: "{{ $domainStatusVal }}",
-                                                domain_final: "{{ addslashes($orderUser?->domain_final ?: '') }}",
-                                                website_status: "{{ $websiteStatusVal }}"
-                                            })'
-                                            class="p-1.5 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition cursor-pointer" 
-                                            title="Ubah Status Klien & Pesanan">
-                                        <i data-lucide="settings-2" class="w-4 h-4"></i>
-                                    </button>
+                                    @if(auth()->check() && auth()->user()->isAdmin())
+                                        <!-- Tombol Ubah Status (Modal) - Khusus Admin -->
+                                        <button type="button" 
+                                                onclick='openStatusModal({
+                                                    id: {{ $ro->id }},
+                                                    order_number: "{{ $ro->order_number }}",
+                                                    full_name: "{{ addslashes($ro->full_name) }}",
+                                                    whatsapp: "{{ addslashes($ro->whatsapp) }}",
+                                                    status: "{{ $sVal }}",
+                                                    domain_name: "{{ addslashes($ro->domain_name) }}",
+                                                    domain_status: "{{ $domainStatusVal }}",
+                                                    domain_final: "{{ addslashes($ro->domain_final ?: '') }}",
+                                                    website_status: "{{ $websiteStatusVal }}"
+                                                })'
+                                                class="p-1.5 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition cursor-pointer" 
+                                                title="Ubah Status Klien & Pesanan">
+                                            <i data-lucide="settings-2" class="w-4 h-4"></i>
+                                        </button>
 
-                                    <!-- Tombol Lihat Invoice Modal (Identik Bayar) -->
-                                    <button type="button" 
-                                            onclick='openInvoiceModal({
-                                                order_number: "{{ $ro->order_number }}",
-                                                date_formatted: "{{ $ro->created_at ? $ro->created_at->format('d M Y') : '-' }}",
-                                                full_name: "{{ addslashes($ro->full_name) }}",
-                                                email: "{{ addslashes($ro->email) }}",
-                                                whatsapp: "{{ addslashes($ro->whatsapp) }}",
-                                                status: "{{ $sVal }}",
-                                                template_name: "{{ addslashes($ro->template?->name ?? 'Template Website') }}",
-                                                template_desc: "{{ addslashes($ro->template_desc ?? $ro->template?->template_desc ?? 'Lisensi Desain UI/UX Eksklusif') }}",
-                                                template_price: {{ (int) ($ro->template_price ?? $ro->template?->template_price ?? 1000000) }},
-                                                server_price: {{ (int) ($ro->server_price ?? $ro->template?->server_price ?? 500000) }},
-                                                server_desc: "{{ addslashes($ro->server_desc ?? 'Cloud Server Hosting 1 Tahun, NVMe High Speed & SSL') }}",
-                                                service_price: {{ (int) ($ro->service_price ?? $ro->template?->service_price ?? 500000) }},
-                                                service_desc: "{{ addslashes($ro->service_desc ?? 'Setup Domain, Deployment Instan & Garansi Pemeliharaan') }}",
-                                                domain_name: "{{ addslashes($orderUser?->domain_final ?: $ro->domain_name) }}",
-                                                domain_duration: {{ (int) ($ro->domain_duration ?: 1) }},
-                                                domain_price: {{ (int) ($ro->domain_price ?? 0) }},
-                                                promo_code: "{{ addslashes($ro->promo_code ?? '') }}",
-                                                discount_amount: {{ (int) ($ro->discount_amount ?? 0) }},
-                                                total_price: {{ (int) $ro->total_price }},
-                                                preview_url: "{{ $ro->template ? $ro->template->preview_url : asset('images/design_thumbnail/rentcar.webp') }}",
-                                                download_url: "{{ route('checkout.invoice.download', $ro->order_number) }}",
-                                                direct_bayar_url: "{{ route('checkout.bayar.direct', $ro->order_number) }}"
-                                            })'
-                                            class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer" 
-                                            title="Lihat Invoice Resmi">
-                                        <i data-lucide="file-text" class="w-4 h-4"></i>
-                                    </button>
+                                        <!-- Tombol Lihat Invoice Modal (Identik Bayar) - Khusus Admin -->
+                                        <button type="button" 
+                                                onclick='openInvoiceModal({
+                                                    order_number: "{{ $ro->order_number }}",
+                                                    date_formatted: "{{ $ro->created_at ? $ro->created_at->format('d M Y') : '-' }}",
+                                                    full_name: "{{ addslashes($ro->full_name) }}",
+                                                    email: "{{ addslashes($ro->email) }}",
+                                                    whatsapp: "{{ addslashes($ro->whatsapp) }}",
+                                                    status: "{{ $sVal }}",
+                                                    template_name: "{{ addslashes($ro->template?->name ?? 'Template Website') }}",
+                                                    template_desc: "{{ addslashes($ro->template_desc ?? $ro->template?->template_desc ?? 'Lisensi Desain UI/UX Eksklusif') }}",
+                                                    template_price: {{ (int) ($ro->template_price ?? $ro->template?->template_price ?? 1000000) }},
+                                                    server_price: {{ (int) ($ro->server_price ?? $ro->template?->server_price ?? 500000) }},
+                                                    server_desc: "{{ addslashes($ro->server_desc ?? 'Cloud Server Hosting 1 Tahun, NVMe High Speed & SSL') }}",
+                                                    service_price: {{ (int) ($ro->service_price ?? $ro->template?->service_price ?? 500000) }},
+                                                    service_desc: "{{ addslashes($ro->service_desc ?? 'Setup Domain, Deployment Instan & Garansi Pemeliharaan') }}",
+                                                    domain_name: "{{ addslashes($domainFinalVal) }}",
+                                                    domain_duration: {{ (int) ($ro->domain_duration ?: 1) }},
+                                                    domain_price: {{ (int) ($ro->domain_price ?? 0) }},
+                                                    is_own_domain: {{ $ro->is_own_domain ? 'true' : 'false' }},
+                                                    promo_code: "{{ addslashes($ro->promo_code ?? '') }}",
+                                                    discount_amount: {{ (int) ($ro->discount_amount ?? 0) }},
+                                                    total_price: {{ (int) $ro->total_price }},
+                                                    preview_url: "{{ $ro->template ? $ro->template->preview_url : asset('images/design_thumbnail/rentcar.webp') }}",
+                                                    download_url: "{{ route('checkout.invoice.download', $ro->order_number) }}",
+                                                    direct_bayar_url: "{{ route('checkout.bayar.direct', $ro->order_number) }}"
+                                                })'
+                                                class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer" 
+                                                title="Lihat Detail Invoice Resmi">
+                                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                                        </button>
 
-                                    <!-- Unduh PDF Langsung -->
-                                    <a href="{{ route('checkout.invoice.download', $ro->order_number) }}" target="_blank"
-                                       class="p-1.5 rounded-lg bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition"
-                                       title="Unduh PDF Resmi">
-                                        <i data-lucide="download" class="w-4 h-4"></i>
-                                    </a>
+                                        <!-- Unduh PDF Langsung (Admin) -->
+                                        <a href="{{ route('checkout.invoice.download', $ro->order_number) }}" target="_blank"
+                                           class="p-1.5 rounded-lg bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition"
+                                           title="Unduh PDF Resmi">
+                                            <i data-lucide="download" class="w-4 h-4"></i>
+                                        </a>
+                                    @else
+                                        <!-- Unduh Invoice Resmi (Marketing: Hanya Ikon Unduh) -->
+                                        <a href="{{ route('checkout.invoice.download', $ro->order_number) }}" target="_blank"
+                                           class="p-1.5 rounded-lg bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition inline-flex items-center justify-center"
+                                           title="Unduh PDF Resmi">
+                                            <i data-lucide="download" class="w-4 h-4"></i>
+                                        </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -393,6 +412,7 @@
     </div>
 </div>
 
+@if(auth()->check() && auth()->user()->isAdmin())
 <!-- ================= MODAL 1: UBAH STATUS KLIEN & PESANAN MANUAL ================= -->
 <div id="status-modal-backdrop" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden overflow-y-auto">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-5 my-auto animate-in fade-in zoom-in-95 duration-200">
@@ -432,6 +452,10 @@
                     <div class="min-w-0">
                         <span class="text-[10px] uppercase font-bold text-slate-400 block">Pemesan</span>
                         <strong id="modal-client-name" class="text-slate-900 text-xs font-bold truncate block">Nama Klien</strong>
+                        <span id="modal-client-phone-top" class="text-[11px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
+                            <i data-lucide="phone" class="w-2.5 h-2.5 text-emerald-600 shrink-0"></i>
+                            <span id="modal-client-phone-top-val">-</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -506,6 +530,17 @@
                 </p>
             </div>
 
+            <!-- Notice jika status pesanan bukan LUNAS -->
+            <div id="modal-not-paid-notice" class="hidden p-3 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-900 text-xs flex items-start gap-2.5">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+                <div class="space-y-0.5">
+                    <strong class="font-bold block text-xs text-amber-900" id="modal-not-paid-notice-title">Status Domain & Website Nonaktif</strong>
+                    <p class="text-[11px] text-amber-700 leading-relaxed" id="modal-not-paid-notice-text">
+                        Pesanan ini belum/tidak lunas sehingga status domain dan status pengerjaan website otomatis dinonaktifkan (tampil strip - pada tabel).
+                    </p>
+                </div>
+            </div>
+
             <!-- Input 2: Custom Dropdown Status Domain Klien -->
             <div class="space-y-1.5 relative" id="dropdown-domain-status-container">
                 <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 uppercase tracking-wider">
@@ -559,7 +594,7 @@
             </div>
 
             <!-- Input 3: Nama Domain Final -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" id="domain-final-container">
                 <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 uppercase tracking-wider">
                     <i data-lucide="link-2" class="w-3.5 h-3.5 text-emerald-600"></i>
                     <span>3. Nama Domain Final (URL Aktif)</span>
@@ -640,6 +675,38 @@
                         </div>
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">MAINTENANCE</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- Catatan Pembaruan Progres (Opsional untuk Histori Klien) -->
+            <div>
+                <label for="modal-notes" class="text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                    <span>Catatan Pembaruan untuk Klien (Opsional)</span>
+                    <span class="text-[10px] text-slate-400 font-normal">Akan tercatat di riwayat progres klien</span>
+                </label>
+                <textarea name="notes" id="modal-notes" rows="2"
+                          placeholder="Contoh: DNS domain telah terhubung ke IP hosting, sedang instalasi template website..."
+                          class="w-full text-xs rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-slate-400 resize-none"></textarea>
+            </div>
+
+            <!-- Kontrol Notifikasi WhatsApp ke Klien (Opsi 1) -->
+            <div id="modal-wa-toggle-container" class="p-3.5 bg-emerald-50/70 border border-emerald-200/90 rounded-2xl flex items-start gap-3 transition">
+                <div class="flex items-center h-5 mt-0.5">
+                    <input type="checkbox" name="notify_client_whatsapp" id="modal-notify-client-whatsapp" value="1" checked
+                           class="w-4 h-4 text-emerald-600 bg-white border-emerald-300 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer">
+                </div>
+                <div class="text-xs flex-1">
+                    <label for="modal-notify-client-whatsapp" class="font-bold text-slate-800 cursor-pointer flex flex-wrap items-center gap-1.5">
+                        <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span>Kirim notifikasi WhatsApp ke Klien</span>
+                        <span id="modal-client-wa-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80">
+                            <i data-lucide="phone" class="w-2.5 h-2.5 text-emerald-700"></i>
+                            <span id="modal-client-wa-text">-</span>
+                        </span>
+                    </label>
+                    <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Broadcast otomatis dikirim ke nomor WA klien (<strong id="modal-client-wa-desc" class="text-emerald-800 font-mono font-bold">-</strong>) jika status diubah ke <strong class="text-emerald-700">Domain Aktif</strong> atau <strong class="text-emerald-700">Website Live</strong>. Hilangkan centang jika Anda tidak ingin mengirim pesan ke klien.
+                    </p>
                 </div>
             </div>
 
@@ -790,6 +857,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <script>
     function togglePeriodInputs(val) {
@@ -865,8 +933,45 @@
         }
         
         closeAllCustomDropdowns();
+        if (field === 'order_status') {
+            updateModalFieldsVisibility(value);
+        }
         if (window.lucide) {
             lucide.createIcons();
+        }
+    }
+
+    function updateModalFieldsVisibility(orderStatus) {
+        const warningBox = document.getElementById('modal-not-paid-notice');
+        const domainSection = document.getElementById('dropdown-domain-status-container');
+        const domainFinalSection = document.getElementById('domain-final-container');
+        const websiteSection = document.getElementById('dropdown-website-status-container');
+        const waContainer = document.getElementById('modal-wa-toggle-container');
+
+        if (orderStatus === 'paid') {
+            if (warningBox) warningBox.classList.add('hidden');
+            if (waContainer) waContainer.classList.remove('hidden');
+            [domainSection, domainFinalSection, websiteSection].forEach(el => {
+                if (el) {
+                    el.classList.remove('opacity-40', 'pointer-events-none');
+                }
+            });
+        } else {
+            if (warningBox) {
+                warningBox.classList.remove('hidden');
+                const warningText = document.getElementById('modal-not-paid-notice-text');
+                if (warningText) {
+                    warningText.innerText = orderStatus === 'invalid'
+                        ? 'Pesanan BATAL / Kedaluwarsa. Status domain dan pengerjaan website tidak diproses (tampil strip - pada tabel).'
+                        : 'Pesanan BELUM LUNAS. Status domain dan website akan aktif setelah pembayaran terverifikasi LUNAS.';
+                }
+            }
+            if (waContainer) waContainer.classList.add('hidden');
+            [domainSection, domainFinalSection, websiteSection].forEach(el => {
+                if (el) {
+                    el.classList.add('opacity-40', 'pointer-events-none');
+                }
+            });
         }
     }
 
@@ -891,6 +996,17 @@
         document.getElementById('modal-order-number').innerText = data.order_number;
         document.getElementById('modal-client-name').innerText = data.full_name;
         
+        const clientPhone = data.whatsapp || '-';
+        if (document.getElementById('modal-client-wa-text')) {
+            document.getElementById('modal-client-wa-text').innerText = clientPhone;
+        }
+        if (document.getElementById('modal-client-wa-desc')) {
+            document.getElementById('modal-client-wa-desc').innerText = clientPhone;
+        }
+        if (document.getElementById('modal-client-phone-top-val')) {
+            document.getElementById('modal-client-phone-top-val').innerText = clientPhone;
+        }
+        
         const ordVal = data.status || 'paid';
         const ordOpt = (statusOptionsMap.order_status && statusOptionsMap.order_status[ordVal]) || statusOptionsMap.order_status.paid;
         selectCustomOption('order_status', ordVal, ordOpt.icon, ordOpt.colorClass, ordOpt.label);
@@ -904,6 +1020,17 @@
         const webVal = (!data.website_status || data.website_status === '-') ? 'in_progress' : data.website_status;
         const webOpt = (statusOptionsMap.website_status && statusOptionsMap.website_status[webVal]) || statusOptionsMap.website_status.in_progress;
         selectCustomOption('website_status', webVal, webOpt.icon, webOpt.colorClass, webOpt.label);
+
+        if (document.getElementById('modal-notes')) {
+            document.getElementById('modal-notes').value = '';
+        }
+
+        const waCheckbox = document.getElementById('modal-notify-client-whatsapp');
+        if (waCheckbox) {
+            waCheckbox.checked = true;
+        }
+
+        updateModalFieldsVisibility(ordVal);
 
         closeAllCustomDropdowns();
         document.getElementById('status-modal-backdrop').classList.remove('hidden');
@@ -925,8 +1052,10 @@
         document.getElementById('inv-modal-tpl-desc').innerText = data.template_desc;
         document.getElementById('inv-modal-srv-desc').innerText = data.server_desc;
         document.getElementById('inv-modal-lay-desc').innerText = data.service_desc;
-        document.getElementById('inv-modal-dom-desc').innerText = 'Registrasi Domain: ' + data.domain_name + ' • Termasuk PPN 11%';
-        document.getElementById('inv-modal-dom-duration').innerText = data.domain_duration + ' Tahun';
+        document.getElementById('inv-modal-dom-desc').innerText = data.is_own_domain
+            ? 'Domain Milik Sendiri: ' + data.domain_name + ' • Konfigurasi DNS (Gratis)'
+            : 'Registrasi Domain: ' + data.domain_name + ' • Termasuk PPN 11%';
+        document.getElementById('inv-modal-dom-duration').innerText = data.is_own_domain ? '-' : data.domain_duration + ' Tahun';
 
         document.getElementById('inv-modal-tpl-price').innerText = 'Rp ' + Number(data.template_price).toLocaleString('id-ID');
         document.getElementById('inv-modal-srv-price').innerText = 'Rp ' + Number(data.server_price).toLocaleString('id-ID');

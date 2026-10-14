@@ -21,7 +21,7 @@ on:
 # Same group as the other projects' workflows: one Docker deploy at a time on the shared VPS.
 # Never cancel a running deploy half-way.
 concurrency:
-  group: vps-shared-repository
+  group: deploy-semestapro
   cancel-in-progress: false
 
 env:
@@ -209,6 +209,9 @@ jobs:
     needs: [build]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment:
+      name: semestapro
+      url: ${{ vars.APP_URL || 'https://semestapro.co.id' }}    
     permissions:
       contents: read
       actions: read

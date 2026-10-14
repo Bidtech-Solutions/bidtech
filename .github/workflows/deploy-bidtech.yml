@@ -182,6 +182,9 @@ jobs:
     needs: [build]
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    environment:
+      name: bidtech
+      url: https://bidtech.co.id
     permissions:
       actions: read
       packages: read

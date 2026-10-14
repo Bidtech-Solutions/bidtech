@@ -8,6 +8,7 @@ use App\Enums\WebsiteStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Order extends Model
@@ -24,6 +25,7 @@ class Order extends Model
         'domain_price',
         'domain_duration',
         'domain_price_per_year',
+        'is_own_domain',
 
         // Snapshot Rincian Harga
         'template_price',
@@ -56,6 +58,9 @@ class Order extends Model
         'payment_expires_at',
         'paid_at',
         'paid_email_sent_at',
+        'domain_wa_sent_at',
+        'website_wa_sent_at',
+        'admin_paid_wa_sent_at',
     ];
 
     protected function casts(): array
@@ -64,6 +69,7 @@ class Order extends Model
             'domain_price'              => 'integer',
             'domain_duration'           => 'integer',
             'domain_price_per_year'     => 'integer',
+            'is_own_domain'             => 'boolean',
             'template_price'            => 'integer',
             'server_price'              => 'integer',
             'service_price'             => 'integer',
@@ -77,6 +83,9 @@ class Order extends Model
             'payment_expires_at'        => 'datetime',
             'paid_at'                   => 'datetime',
             'paid_email_sent_at'        => 'datetime',
+            'domain_wa_sent_at'         => 'datetime',
+            'website_wa_sent_at'        => 'datetime',
+            'admin_paid_wa_sent_at'     => 'datetime',
         ];
     }
 
@@ -93,6 +102,11 @@ class Order extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'client_id');
+    }
+
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class)->latest();
     }
 
     public function isPaid(): bool

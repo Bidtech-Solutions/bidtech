@@ -59,6 +59,15 @@ class KonfirmasiController extends Controller
             'new_total' => $result['new_total'],
             'formatted_total' => $result['formatted_new_total'],
             'message' => $result['message'],
+            'is_percentage' => $result['is_percentage'] ?? false,
+            'percentage' => $result['percentage'] ?? null,
+            'formatted_percentage' => $result['formatted_percentage'] ?? null,
+            'badge_text' => $result['badge_text'] ?? null,
+            'discount_label' => $result['discount_label'] ?? null,
+            'max_discount' => $result['max_discount'] ?? null,
+            'formatted_max_discount' => $result['formatted_max_discount'] ?? null,
+            'is_max_reached' => $result['is_max_reached'] ?? false,
+            'pricing_structure' => $result['pricing_structure'] ?? null,
         ]);
     }
 

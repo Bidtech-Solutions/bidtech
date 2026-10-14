@@ -166,20 +166,38 @@ class CheckoutFlowTest extends TestCase
         $this->assertSame(18333, session('checkout.domain_tax'));
     }
 
-    public function test_choose_domain_forces_one_year_duration(): void
+    public function test_choose_domain_supports_custom_duration_and_scales_server_and_domain_price(): void
     {
-        $response = $this->postJson(route('checkout.domain.select', $this->template), [
+        // Pilihan 3 Tahun
+        $response3 = $this->postJson(route('checkout.domain.select', $this->template), [
             'domain' => 'tokoku.com',
             'price' => 200000,
             'duration' => 3,
         ]);
 
-        $response->assertOk()->assertJson([
-            'domain_duration' => 1,
-            'domain_price' => 200000,
-            'total_price' => $this->template->price + 200000,
+        $response3->assertOk()->assertJson([
+            'domain_duration' => 3,
+            'domain_price' => 600000,
+            'server_price' => 1500000,
+            'total_price' => 1000000 + 1500000 + 500000 + 600000,
         ]);
         $this->assertSame('template-first', session('checkout.flow'));
+        $this->assertSame(3, session('checkout.domain_duration'));
+
+        // Pilihan 1 Tahun
+        $response1 = $this->postJson(route('checkout.domain.select', $this->template), [
+            'domain' => 'tokoku.com',
+            'price' => 200000,
+            'duration' => 1,
+        ]);
+
+        $response1->assertOk()->assertJson([
+            'domain_duration' => 1,
+            'domain_price' => 200000,
+            'server_price' => 500000,
+            'total_price' => 1000000 + 500000 + 500000 + 200000,
+        ]);
+        $this->assertSame(1, session('checkout.domain_duration'));
     }
 
     public function test_duration_update_requires_a_chosen_domain(): void
@@ -187,6 +205,47 @@ class CheckoutFlowTest extends TestCase
         $this->postJson(route('checkout.domain.duration', $this->template), ['duration' => 2])
             ->assertStatus(400)
             ->assertJson(['status' => 'error']);
+    }
+
+    public function test_update_duration_scales_both_server_and_domain(): void
+    {
+        // Pilih domain awal
+        $this->postJson(route('checkout.domain.select', $this->template), [
+            'domain' => 'tokoku.com',
+            'price' => 185000,
+            'duration' => 1,
+        ])->assertOk();
+
+        // Update ke 2 tahun
+        $response = $this->postJson(route('checkout.domain.duration', $this->template), [
+            'duration' => 2,
+        ]);
+
+        $response->assertOk()->assertJson([
+            'domain_duration' => 2,
+            'domain_price' => 370000,
+            'server_price' => 1000000,
+            'total_price' => 1000000 + 1000000 + 500000 + 370000, // 2.870.000
+        ]);
+        $this->assertSame(2, session('checkout.domain_duration'));
+    }
+
+    public function test_own_domain_scales_server_duration_with_zero_domain_fee(): void
+    {
+        $response = $this->postJson(route('checkout.domain.own', $this->template), [
+            'domain' => 'bisnissaya.com',
+            'duration' => 3,
+        ]);
+
+        $response->assertOk()->assertJson([
+            'is_own_domain' => true,
+            'domain_duration' => 3,
+            'domain_price' => 0,
+            'server_price' => 1500000,
+            'total_price' => 1000000 + 1500000 + 500000 + 0, // 3.000.000
+        ]);
+        $this->assertSame(3, session('checkout.domain_duration'));
+        $this->assertTrue(session('checkout.is_own_domain'));
     }
 
     public function test_customer_details_page_redirects_when_no_domain(): void

@@ -274,6 +274,29 @@
                     <h2 class="text-base font-bold text-[#0B1B17] mb-3">
                         Rincian Pesanan
                     </h2>
+                    @php
+                        $duration = (int) ($order->domain_duration ?: 1);
+                        $durationText = $duration . ' Tahun';
+                        $templateDesc = $order->template_desc ?? $template->template_desc ?? 'Lisensi Desain UI/UX Eksklusif & Source Code Clean';
+                        $serverDesc = $order->server_desc ?? $template->server_desc ?? ('Cloud Server Hosting ' . $durationText . ', NVMe High Speed & Free SSL');
+                        $serviceDesc = $order->service_desc ?? $template->service_desc ?? 'Setup Domain, Deployment Instan & Garansi Pemeliharaan';
+                        $pricePerYear = (int) round($domainPrice / max(1, $duration));
+                        $struct = (!empty($pricingStructure) && is_array($pricingStructure)) ? $pricingStructure : [
+                            'mode' => 'umum',
+                            'package_subtotal' => $templatePrice + $serverPrice + $servicePrice,
+                            'package_promo_price' => $templatePrice + $serverPrice + $servicePrice,
+                            'domain_price' => $domainPrice,
+                            'total' => $totalPrice,
+                            'components' => [
+                                'template' => ['name' => 'Lisensi Template Website', 'price' => $templatePrice, 'formatted_price' => 'Rp' . number_format($templatePrice, 0, ',', '.'), 'discount' => 0, 'discount_label' => null, 'has_discount' => false],
+                                'server' => ['name' => 'Cloud Server Hosting', 'price' => $serverPrice, 'formatted_price' => 'Rp' . number_format($serverPrice, 0, ',', '.'), 'discount' => 0, 'discount_label' => null, 'has_discount' => false],
+                                'service' => ['name' => 'Setup Deployment & Layanan Teknis', 'price' => $servicePrice, 'formatted_price' => 'Rp' . number_format($servicePrice, 0, ',', '.'), 'discount' => 0, 'discount_label' => null, 'has_discount' => false],
+                                'domain' => ['name' => 'Registrasi Domain', 'price' => $domainPrice, 'formatted_price' => 'Rp' . number_format($domainPrice, 0, ',', '.'), 'discount' => 0, 'discount_label' => null, 'has_discount' => false],
+                            ],
+                        ];
+                        $comps = $struct['components'] ?? [];
+                    @endphp
+
                     <div class="border border-[#E4E9E6] rounded-2xl overflow-hidden">
                         <table class="w-full text-left text-xs sm:text-sm">
                             <thead class="bg-[#F4F6F5] border-b border-[#E4E9E6] text-[#6B7B75] font-bold">
@@ -287,29 +310,29 @@
                                 <tr>
                                     <td class="p-3.5 sm:p-4">
                                         <strong class="font-bold text-[#0B1B17] block">
-                                            1. Lisensi Template Website: {{ $template->name }}
+                                            1. Lisensi Template Website
                                         </strong>
                                         <span class="text-[11px] text-[#6B7B75] block mt-0.5">
-                                            {{ $order->template_desc ?? $template->template_desc ?? 'Lisensi Desain UI/UX Eksklusif & Source Code Clean' }}
+                                            {{ $templateDesc }}
                                         </span>
                                     </td>
-                                    <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">Selamanya</td>
+                                    <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">-</td>
                                     <td class="p-3.5 sm:p-4 text-right font-bold text-[#0B1B17]">
-                                        Rp{{ number_format($templatePrice, 0, ',', '.') }}
+                                        Rp{{ number_format($comps['template']['price'] ?? $templatePrice, 0, ',', '.') }}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="p-3.5 sm:p-4">
                                         <strong class="font-bold text-[#0B1B17] block">
-                                            2. Cloud Server Hosting (1 Tahun)
+                                            2. Cloud Server Hosting ({{ $durationText }})
                                         </strong>
                                         <span class="text-[11px] text-[#6B7B75] block mt-0.5">
-                                            {{ $order->server_desc ?? $template->server_desc ?? 'High Speed NVMe, Dedicated Cloud Resources & Free SSL HTTPS' }}
+                                            {{ $serverDesc }}
                                         </span>
                                     </td>
-                                    <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">1 Tahun</td>
+                                    <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">{{ $durationText }}</td>
                                     <td class="p-3.5 sm:p-4 text-right font-bold text-[#0B1B17]">
-                                        Rp{{ number_format($serverPrice, 0, ',', '.') }}
+                                        Rp{{ number_format($comps['server']['price'] ?? $serverPrice, 0, ',', '.') }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -318,68 +341,156 @@
                                             3. Setup Deployment & Layanan Teknis
                                         </strong>
                                         <span class="text-[11px] text-[#6B7B75] block mt-0.5">
-                                            {{ $order->service_desc ?? $template->service_desc ?? 'Instalasi, Konfigurasi DNS Domain & Garansi Sistem' }}
+                                            {{ $serviceDesc }}
                                         </span>
                                     </td>
-                                    <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">Instan</td>
+                                    <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">-</td>
                                     <td class="p-3.5 sm:p-4 text-right font-bold text-[#0B1B17]">
-                                        Rp{{ number_format($servicePrice, 0, ',', '.') }}
+                                        Rp{{ number_format($comps['service']['price'] ?? $servicePrice, 0, ',', '.') }}
                                     </td>
                                 </tr>
-                                <tr>
+
+                                <!-- Subtotal 3 Item -->
+                                <tr class="bg-[#F8FAF9]">
                                     <td class="p-3.5 sm:p-4">
                                         <strong class="font-bold text-[#0B1B17] block">
-                                            4. Registrasi Domain: {{ $order->domain_name }}
+                                            Subtotal 3 Item
                                         </strong>
                                         <span class="text-[11px] text-[#6B7B75] block mt-0.5">
-                                            Registrasi Domain Resmi &bull; Termasuk PPN 11%
+                                            Akumulasi 3 komponen website sebelum diskon
                                         </span>
                                     </td>
-                                    <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">{{ $order->domain_duration ?: 1 }} Tahun</td>
+                                    <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">3 Item</td>
                                     <td class="p-3.5 sm:p-4 text-right font-bold text-[#0B1B17]">
-                                        Rp{{ number_format($domainPrice, 0, ',', '.') }}
+                                        Rp{{ number_format($struct['package_subtotal'] ?? ($templatePrice + $serverPrice + $servicePrice), 0, ',', '.') }}
                                     </td>
                                 </tr>
-                                @if($discountAmount > 0)
-                                    <tr class="bg-[#E7F4EE]">
+
+                                @if(($struct['mode'] ?? 'umum') === 'per_component')
+                                    {{-- DISKON PER KOMPONEN --}}
+                                    @foreach(['template', 'server', 'service'] as $cKey)
+                                        @if(!empty($comps[$cKey]['has_discount']))
+                                            <tr class="bg-[#F2FBF5]">
+                                                <td class="p-3.5 sm:p-4">
+                                                    <div class="flex items-center text-[#166534] font-semibold gap-1.5">
+                                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#10B981] shrink-0"></span>
+                                                        <strong>Potongan Diskon Promo (Diskon {{ $comps[$cKey]['name'] }})</strong>
+                                                    </div>
+                                                </td>
+                                                <td class="p-3.5 sm:p-4 text-center text-[#166534] font-bold">Hemat</td>
+                                                <td class="p-3.5 sm:p-4 text-right font-extrabold text-[#166534]">
+                                                    {{ $comps[$cKey]['discount_label'] }}
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+
+                                    <!-- Total 3 Item Setelah Diskon: High-End Highlight Bar -->
+                                    <tr class="bg-gradient-to-r from-[#F0FDF4] via-[#F2FBF5] to-[#ECFDF5] border-t-2 border-b-2 border-[#A7F3D0]">
                                         <td class="p-3.5 sm:p-4">
-                                            <div class="flex items-center gap-2">
-                                                <strong class="font-bold text-[#1E7A53] block">
-                                                    Diskon Kode Promo ({{ $order->promo_code }})
-                                                </strong>
-                                                @if($order->is_partner_order)
-                                                    <span class="inline-flex items-center gap-1 rounded-md bg-white border border-[#22C55E] px-2 py-0.5 text-[10px] font-bold text-[#1E7A53]">
-                                                        <svg class="size-3 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-1.42-1.42l4.24-4.24a1 1 0 0 0 0-1.42l-1.41-1.41a1 1 0 0 0-1.42 0l-9.9 9.9a2 2 0 0 0 0 2.83L6 20a2 2 0 0 0 2.83 0l2.17-2.17"/><path d="m12 12 4 4"/></svg>
-                                                        <span>Mitra: {{ $order->partner_name }}</span>
+                                            <strong class="font-bold text-[#065F46] block">
+                                                Total 3 Item Setelah Diskon
+                                            </strong>
+                                            <span class="text-[11px] text-[#047857] block mt-0.5">
+                                                Paket Website (Template + Server + Service) setelah diskon voucher
+                                            </span>
+                                        </td>
+                                        <td class="p-3.5 sm:p-4 text-center text-[#065F46] font-bold">3 Item</td>
+                                        <td class="p-3.5 sm:p-4 text-right font-black text-[#065F46] text-sm sm:text-base tabular-nums">
+                                            Rp{{ number_format($struct['package_promo_price'], 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+
+                                @elseif(($struct['mode'] ?? 'umum') === 'subtotal')
+                                    {{-- DISKON SUBTOTAL --}}
+                                    <tr class="bg-[#F2FBF5]">
+                                        <td class="p-3.5 sm:p-4">
+                                            <div class="flex items-center text-[#166534] font-semibold gap-1.5">
+                                                <span class="flex size-4 items-center justify-center rounded-full bg-[#10B981] text-white shrink-0">
+                                                    <svg class="size-2.5" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                                    </svg>
+                                                </span>
+                                                <strong>Potongan Diskon Promo</strong>
+                                                <span class="inline-flex items-center rounded-md bg-[#DCFCE7] border border-[#BBF7D0] px-2 py-0.5 text-[11px] font-bold text-[#166534] font-mono">
+                                                    {{ $order->promo_code ?? $order->coupon_code }}
+                                                </span>
+                                                @if($order->is_partner_order && !empty($order->partner_name))
+                                                    <span class="ml-1 inline-flex items-center gap-1 rounded-md bg-white border border-[#22C55E] px-2 py-0.5 text-[10px] font-bold text-[#1E7A53]">
+                                                        Mitra: {{ $order->partner_name }}
                                                     </span>
                                                 @endif
                                             </div>
-                                            <span class="text-[11px] text-[#1E7A53] block mt-0.5">
-                                                Potongan harga khusus promo yang telah berhasil diverifikasi
+                                        </td>
+                                        <td class="p-3.5 sm:p-4 text-center text-[#166534] font-bold">Hemat</td>
+                                        <td class="p-3.5 sm:p-4 text-right font-extrabold text-[#166534] tabular-nums">
+                                            {{ $struct['package_discount_label'] ?? ('-Rp' . number_format($struct['package_discount'] ?? 0, 0, ',', '.')) }}
+                                        </td>
+                                    </tr>
+
+                                    <!-- Total 3 Item Setelah Diskon: High-End Highlight Bar -->
+                                    <tr class="bg-gradient-to-r from-[#F0FDF4] via-[#F2FBF5] to-[#ECFDF5] border-t-2 border-b-2 border-[#A7F3D0]">
+                                        <td class="p-3.5 sm:p-4">
+                                            <strong class="font-bold text-[#065F46] block">
+                                                Total 3 Item Setelah Diskon
+                                            </strong>
+                                            <span class="text-[11px] text-[#047857] block mt-0.5">
+                                                Paket Website (Template + Server + Service) setelah diskon voucher
                                             </span>
                                         </td>
-                                        <td class="p-3.5 sm:p-4 text-center text-[#1E7A53] font-bold">Hemat</td>
-                                        <td class="p-3.5 sm:p-4 text-right font-extrabold text-[#1E7A53]">
-                                            -Rp{{ number_format($discountAmount, 0, ',', '.') }}
+                                        <td class="p-3.5 sm:p-4 text-center text-[#065F46] font-bold">3 Item</td>
+                                        <td class="p-3.5 sm:p-4 text-right font-black text-[#065F46] text-sm sm:text-base tabular-nums">
+                                            Rp{{ number_format($struct['package_promo_price'], 0, ',', '.') }}
                                         </td>
                                     </tr>
                                 @endif
+
+                                <!-- Item 4: Domain -->
+                                <tr>
+                                    @if($order->is_own_domain || (int)$domainPrice === 0)
+                                        <td class="p-3.5 sm:p-4">
+                                            <strong class="font-bold text-[#0B1B17] block">
+                                                4. Setup Domain Milik Sendiri
+                                            </strong>
+                                            <span class="text-[11px] text-blue-600 font-medium block mt-0.5">
+                                                {{ $order->domain_name }} &bull; Konfigurasi DNS Server (Gratis)
+                                            </span>
+                                        </td>
+                                        <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">-</td>
+                                        <td class="p-3.5 sm:p-4 text-right font-bold text-[#1E7A53] tabular-nums">
+                                            Rp0
+                                        </td>
+                                    @else
+                                        <td class="p-3.5 sm:p-4">
+                                            <strong class="font-bold text-[#0B1B17] block">
+                                                4. Registrasi Domain ({{ $durationText }})
+                                            </strong>
+                                            <span class="text-[11px] text-[#2E6806] font-medium block mt-0.5">
+                                                <strong class="text-[#0B1B17] font-semibold">{{ $order->domain_name }}</strong> &bull; Rp{{ number_format($pricePerYear, 0, ',', '.') }}/thn &bull; Termasuk PPN 11%
+                                            </span>
+                                        </td>
+                                        <td class="p-3.5 sm:p-4 text-center text-[#6B7B75] font-medium">{{ $durationText }}</td>
+                                        <td class="p-3.5 sm:p-4 text-right font-bold text-[#0B1B17] tabular-nums">
+                                            Rp{{ number_format($domainPrice, 0, ',', '.') }}
+                                        </td>
+                                    @endif
+                                </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Total Pembayaran Baris Besar -->
-                    <div class="flex items-baseline justify-between pt-4">
+                    <!-- Total Biaya Pembayaran Baris Besar -->
+                    <div class="flex items-baseline justify-between pt-5 border-t-2 border-dashed border-[#E4E9E6] mt-4">
                         <div>
-                            <span class="text-sm sm:text-base font-bold text-[#0B1B17]">Total Pembayaran</span>
-                                @if($order->is_partner_order && !empty($order->partner_name))
-                                    <div class="text-xs text-[#1E7A53] font-semibold mt-0.5 flex items-center gap-1.5">
-                                        <svg class="size-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-1.42-1.42l4.24-4.24a1 1 0 0 0 0-1.42l-1.41-1.41a1 1 0 0 0-1.42 0l-9.9 9.9a2 2 0 0 0 0 2.83L6 20a2 2 0 0 0 2.83 0l2.17-2.17"/><path d="m12 12 4 4"/></svg>
-                                        <span>Terdaftar dalam Program Kemitraan: {{ $order->partner_name }}</span>
-                                    </div>
-                                @endif
+                            <span class="text-base font-bold text-[#0B1B17] block">Total Biaya Pembayaran</span>
+                            <div class="flex items-center gap-1.5 text-xs text-[#6B7B75] mt-1">
+                                <svg class="size-4 text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                                </svg>
+                                <span>Sudah termasuk PPN 11% & garansi pengerjaan</span>
+                            </div>
                         </div>
-                        <strong class="text-2xl sm:text-3xl font-black text-[#1E7A53] tabular-nums">
+                        <strong class="text-3xl sm:text-4xl font-black text-[#046A38] tabular-nums tracking-tight">
                             Rp{{ number_format($totalPrice, 0, ',', '.') }}
                         </strong>
                     </div>
@@ -392,9 +503,87 @@
                     </div>
                     <div>
                         <strong class="block font-bold">Pembayaran Terverifikasi Otomatis</strong>
-                        <span class="text-[#4A5551]">Setelah pembayaran berhasil diverifikasi oleh sistem, domain Anda akan otomatis didaftarkan dan akun dashboard pelacakan website Anda akan langsung aktif.</span>
+                        @if($order->is_own_domain)
+                            <span class="text-[#4A5551]">Setelah pembayaran diverifikasi oleh sistem, website Anda akan mulai diproses dan Anda dapat mengarahkan DNS domain Anda ke server Bidtech sesuai petunjuk di bawah ini.</span>
+                        @else
+                            <span class="text-[#4A5551]">Setelah pembayaran berhasil diverifikasi oleh sistem, domain Anda akan otomatis didaftarkan dan akun dashboard pelacakan website Anda akan langsung aktif.</span>
+                        @endif
                     </div>
                 </div>
+
+                @if($order->is_own_domain)
+                    <!-- Panduan Pointing DNS untuk Domain Milik Sendiri -->
+                    <div class="rounded-2xl border-2 border-[#22C55E]/40 bg-[#F2FBF5] p-5 sm:p-6 space-y-4 shadow-xs">
+                        <div class="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
+                            <div class="flex items-center gap-3">
+                                <div class="flex size-10 items-center justify-center rounded-xl bg-[#22C55E] text-white shrink-0 shadow-xs">
+                                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm sm:text-base font-bold text-[#0B1B17]">
+                                        Petunjuk Pointing DNS Domain Anda
+                                    </h3>
+                                    <p class="text-xs text-[#6B7B75]">
+                                        Arahkan DNS domain <strong class="text-[#0B1B17]">{{ $order->domain_name }}</strong> ke server Bidtech agar website dapat diakses.
+                                    </p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center rounded-full bg-[#E7F4EE] border border-[#22C55E]/40 px-3 py-1 text-xs font-bold text-[#1E7A53] shrink-0">
+                                Domain Sendiri
+                            </span>
+                        </div>
+
+                        <!-- DNS Records Table -->
+                        <div class="border border-[#E4E9E6] rounded-xl overflow-hidden bg-white text-xs">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-[#E4E9E6] text-[#6B7B75] font-bold">
+                                    <tr>
+                                        <th class="p-3">Tipe Record</th>
+                                        <th class="p-3">Host / Name</th>
+                                        <th class="p-3">Nilai / Target (IP Server)</th>
+                                        <th class="p-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-[#E4E9E6]">
+                                    <tr>
+                                        <td class="p-3 font-mono font-bold text-[#0B1B17]">A Record</td>
+                                        <td class="p-3 font-mono text-[#6B7B75]">@</td>
+                                        <td class="p-3 font-mono font-bold text-[#1E7A53] select-all">103.189.234.18</td>
+                                        <td class="p-3 text-right">
+                                            <button type="button" onclick="salinTeks('103.189.234.18', 'IP Server')" class="inline-flex items-center gap-1 font-bold text-[#1E7A53] hover:underline px-2.5 py-1 rounded-lg bg-[#E7F4EE] cursor-pointer">
+                                                Salin IP
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-mono font-bold text-[#0B1B17]">CNAME</td>
+                                        <td class="p-3 font-mono text-[#6B7B75]">www</td>
+                                        <td class="p-3 font-mono font-bold text-[#0B1B17] select-all">{{ $order->domain_name }}</td>
+                                        <td class="p-3 text-right">
+                                            <button type="button" onclick="salinTeks('{{ $order->domain_name }}', 'Domain Target')" class="inline-flex items-center gap-1 font-bold text-[#1E7A53] hover:underline px-2.5 py-1 rounded-lg bg-[#E7F4EE] cursor-pointer">
+                                                Salin
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs">
+                            <span class="text-[#6B7B75]">
+                                Propagasi DNS biasanya membutuhkan waktu antara 15 menit hingga 24 jam.
+                            </span>
+                            <a href="https://wa.me/6281234567890?text=Halo%20Bidtech,%20saya%20butuh%20bantuan%20pointing%20DNS%20untuk%20domain%20{{ $order->domain_name }}%20(Order%20{{ $order->order_number }})" target="_blank" class="inline-flex items-center gap-1.5 font-bold text-[#1E7A53] hover:underline">
+                                <svg class="size-4 text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v5.999Z" />
+                                </svg>
+                                <span>Butuh Bantuan Setting DNS? Chat WhatsApp Tim Support</span>
+                            </a>
+                        </div>
+                    </div>
+                @endif
 
                 <!-- 6. Footer Kolom Kiri: Tombol Cek Status & Bantuan -->
                 <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
@@ -474,8 +663,8 @@
                             <strong class="font-bold text-[#0B1B17] truncate ml-2">{{ $order->domain_name }}</strong>
                         </div>
                         <div class="flex items-center justify-between py-0.5">
-                            <span class="text-[#6B7B75]">Durasi Domain</span>
-                            <span class="font-semibold text-[#0B1B17]">1 Tahun</span>
+                            <span class="text-[#6B7B75]">Durasi Paket & Domain</span>
+                            <span class="font-semibold text-[#0B1B17]">{{ ($order->domain_duration ?: 1) }} Tahun</span>
                         </div>
                         <div class="flex items-center justify-between py-0.5">
                             <span class="text-[#6B7B75]">Setup & Deployment</span>
@@ -487,8 +676,8 @@
 
                     <!-- Total Pembayaran -->
                     <div class="flex items-baseline justify-between pt-0.5">
-                        <span class="text-xs font-bold text-[#0B1B17]">Total Pembayaran</span>
-                        <strong class="text-lg sm:text-xl font-black text-[#1E7A53] tabular-nums">
+                        <span class="text-xs font-bold text-[#0B1B17]">Total Biaya Pembayaran</span>
+                        <strong class="text-lg sm:text-xl font-black text-[#046A38] tabular-nums">
                             Rp{{ number_format($totalPrice, 0, ',', '.') }}
                         </strong>
                     </div>

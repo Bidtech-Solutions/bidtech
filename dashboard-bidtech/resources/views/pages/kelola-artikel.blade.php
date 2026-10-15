@@ -99,8 +99,17 @@
                                     <a href="{{ route('dashboard.articles.edit', $article) }}" class="font-semibold text-slate-900 hover:text-emerald-600 transition">
                                         {{ $article->title ?: 'Artikel tanpa judul' }}
                                     </a>
-                                    <p class="text-xs text-slate-400 mt-0.5">
-                                        {{ $article->slug ? '/'.$article->slug : 'Slug dibuat setelah judul diisi' }}
+                                    <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                        <span class="font-mono text-slate-500">{{ $article->slug ? '/blog/'.$article->slug : 'Slug dibuat setelah judul diisi' }}</span>
+                                        @if($article->slug && $article->status === \App\Enums\ArticleStatus::Terbit)
+                                            <a href="{{ rtrim(config('app.frontend_url', 'http://localhost:3000'), '/') . '/blog/' . $article->slug }}"
+                                               target="_blank" rel="noopener noreferrer"
+                                               title="Lihat artikel di website publik"
+                                               class="inline-flex items-center gap-0.5 text-[11px] text-emerald-600 hover:text-emerald-800 hover:underline">
+                                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                                                <span>Buka di Web</span>
+                                            </a>
+                                        @endif
                                     </p>
                                 </td>
                                 <td class="py-3.5 px-4 whitespace-nowrap">

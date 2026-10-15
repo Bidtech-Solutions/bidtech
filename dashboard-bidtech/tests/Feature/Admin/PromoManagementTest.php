@@ -236,7 +236,7 @@ class PromoManagementTest extends TestCase
         $this->orderForCoupon($a2, 'b@example.com', 1000, 250, OrderStatus::Paid);
         $this->orderForCoupon($anon, 'c@example.com', 500, 50, OrderStatus::Paid);
 
-        $response = $this->actingAs($this->admin)->get(route('dashboard.promos.partners'))
+        $response = $this->actingAs($this->admin)->get(route('dashboard.partners.index'))
             ->assertOk()->assertViewIs('pages.kelola-mitra');
 
         $grouped = $response->viewData('partnersGrouped');

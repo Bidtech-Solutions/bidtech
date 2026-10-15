@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/templates", destination: "/template-website", permanent: true },
+      { source: "/article", destination: "/blog", permanent: true },
+      { source: "/article/:slug*", destination: "/blog/:slug*", permanent: true },
+      { source: "/artikel", destination: "/blog", permanent: true },
+      { source: "/artikel/:slug*", destination: "/blog/:slug*", permanent: true },
     ];
   },
   async rewrites() {

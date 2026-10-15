@@ -19,15 +19,18 @@ class KelolaPesananController extends Controller
     {
         $user = $request->user();
 
-        if ($user->isAdmin()) {
-            return view('pages.kelola-pesanan', $orders->list([
-                'category' => $request->query('category', 'all'),
-                'status' => $request->query('status', 'all'),
-                'period' => $request->query('period', 'all'),
-                'month' => (int) $request->query('month', date('n')),
-                'year' => (int) $request->query('year', date('Y')),
-                'search' => (string) $request->query('search', ''),
-            ]));
+        if ($user->isAdmin() || $user->isMarketing()) {
+            return view('pages.kelola-pesanan', array_merge(
+                $orders->list([
+                    'category' => $request->query('category', 'all'),
+                    'status' => $request->query('status', 'all'),
+                    'period' => $request->query('period', 'all'),
+                    'month' => (int) $request->query('month', date('n')),
+                    'year' => (int) $request->query('year', date('Y')),
+                    'search' => (string) $request->query('search', ''),
+                ]),
+                ['isMarketing' => $user->isMarketing()]
+            ));
         }
 
         if ($user->isMedia()) {
@@ -64,6 +67,8 @@ class KelolaPesananController extends Controller
             'domain_status' => ['nullable', 'string', 'in:pending_registration,registered'],
             'domain_final' => ['nullable', 'string', 'max:255'],
             'website_status' => ['nullable', 'string', 'in:in_progress,deployed,maintenance'],
+            'notes' => ['nullable', 'string', 'max:500'],
+            'notify_client_whatsapp' => ['nullable'],
         ], [
             'order_status.required' => 'Status pesanan wajib dipilih.',
             'order_status.in' => 'Status pesanan tidak valid.',
@@ -71,8 +76,10 @@ class KelolaPesananController extends Controller
             'website_status.in' => 'Status website tidak valid.',
         ]);
 
-        $orders->updateStatus($order, $validated);
+        $validated['notify_client_whatsapp'] = $request->boolean('notify_client_whatsapp');
 
-        return back()->with('success', "Status pesanan & dashboard klien #{$order->order_number} berhasil diperbarui!");
+        $orders->updateStatus($order, $validated, $request->user());
+
+        return back()->with('success', "Status pesanan & riwayat progres klien #{$order->order_number} berhasil diperbarui!");
     }
 }

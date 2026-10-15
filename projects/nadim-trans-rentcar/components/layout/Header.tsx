@@ -10,6 +10,7 @@ import { NAV_ITEMS } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 import { getLocalizedPath, removeLocalePrefix, type Locale } from "@/lib/i18n";
+import { COMPANY_INFO } from "@/lib/data";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -18,6 +19,12 @@ export default function Header() {
   const locale = useLocale() as Locale;
   const t = useTranslations();
   const currentPath = removeLocalePrefix(pathname);
+
+  const waContactUrl = `https://wa.me/${COMPANY_INFO.whatsapp}?text=${encodeURIComponent(
+    locale === "id"
+      ? "Halo NadimTrans RentCar, saya ingin konsultasi dan sewa mobil di Batam."
+      : "Hello NadimTrans RentCar, I would like to inquire about renting a car in Batam."
+  )}`;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,11 +96,11 @@ export default function Header() {
           {/* Desktop & Tablet Right CTA */}
           <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
             <LanguageSwitcher />
-            <Link href={getLocalizedPath(locale, "/#faq")}>
-              <Button size="sm" className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 rounded-xl font-bold px-3.5 sm:px-4 lg:px-6 h-9 lg:h-11 text-xs lg:text-sm shadow-md shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-95 whitespace-nowrap">
+            <a href={waContactUrl} target="_blank" rel="noreferrer">
+              <Button size="sm" className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 rounded-xl font-bold px-3.5 sm:px-4 lg:px-6 h-9 lg:h-11 text-xs lg:text-sm shadow-md shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-95 whitespace-nowrap cursor-pointer">
                 {t("nav.contact")}
               </Button>
-            </Link>
+            </a>
           </div>
 
           {/* Mobile Right Icons */}
@@ -132,11 +139,11 @@ export default function Header() {
                 );
               })}
               <div className="pt-3 mt-2 border-t border-white/10">
-                <Link href={getLocalizedPath(locale, "/#faq")} onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button size="lg" className="w-full justify-center bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-slate-950 font-bold rounded-xl py-3 shadow-md shadow-amber-500/30">
+                <a href={waContactUrl} target="_blank" rel="noreferrer" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button size="lg" className="w-full justify-center bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-slate-950 font-bold rounded-xl py-3 shadow-md shadow-amber-500/30 cursor-pointer">
                     {t("nav.contact")}
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
           </div>

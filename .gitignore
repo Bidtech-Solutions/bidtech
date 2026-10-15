@@ -16,3 +16,10 @@ backend/
 .agents
 frontend/public/demo/
 .sql
+# Build / temporary files
+**/tmp/
+**/*.exe
+
+# Tailwind standalone binaries
+**/tools/tailwindcss
+**/tools/tailwindcss.exe

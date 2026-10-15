@@ -66,6 +66,21 @@ class TemplateController extends Controller
         ]);
     }
 
+    /**
+     * Data realtime views untuk live polling dashboard admin.
+     */
+    public function realtimeStats(): JsonResponse
+    {
+        $totalViews = (int) \App\Models\Template::sum('views');
+        $items = \App\Models\Template::select('id', 'name', 'views')->get();
+
+        return $this->corsResponse([
+            'status' => 'success',
+            'total_views' => $totalViews,
+            'templates' => $items,
+        ]);
+    }
+
     private function notFound(): JsonResponse
     {
         return $this->corsResponse(['status' => 'error', 'message' => 'Template tidak ditemukan'], 404);

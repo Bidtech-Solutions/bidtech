@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\CommissionType;
+use App\Enums\DiscountMode;
 use App\Enums\OrderStatus;
 use App\Mail\InvoiceUnpaidMail;
 use App\Mail\PaymentSuccessAndAccountMail;
-use App\Models\Order;
 use App\Models\Coupon;
-use App\Enums\CommissionType;
+use App\Models\Order;
 use App\Models\Template;
 use App\Models\User;
 use Carbon\Carbon;
@@ -26,6 +27,7 @@ class PaymentService
     public function __construct(
         private readonly OrderService $orders,
         private readonly UserService $users,
+        private readonly WhatsappNotificationService $whatsapp,
     ) {}
 
     // ---- Confirmation and checkout promos ----
@@ -33,8 +35,11 @@ class PaymentService
     public function showSummary(Session $session, Template $template): array
     {
         $checkout = $session->get('checkout', []);
-        $domainPrice = (int) ($checkout['domain_price'] ?? config('domain.default_price'));
+        $isOwnDomain = (bool) ($checkout['is_own_domain'] ?? false);
+        $domainPrice = $isOwnDomain ? 0 : (int) ($checkout['domain_price'] ?? config('domain.default_price'));
+        $duration = (int) ($checkout['domain_duration'] ?? 1);
         $promo = $session->get('checkout.promo');
+        $couponModel = null;
         $discountAmount = 0;
 
         if (! empty($promo['code'])) {
@@ -42,29 +47,36 @@ class PaymentService
                 $promo['code'],
                 $template,
                 $domainPrice,
-                $checkout['customer']['email'] ?? null
+                $checkout['customer']['email'] ?? null,
+                $duration,
+                $isOwnDomain
             );
             if ($validation['valid']) {
                 $discountAmount = $validation['discount_amount'];
                 $promo['discount_amount'] = $discountAmount;
                 $promo['partner_commission_amount'] = $validation['partner_commission_amount'];
                 $session->put('checkout.promo', $promo);
+                $couponModel = Coupon::find($validation['coupon_id']);
             } else {
                 $session->forget('checkout.promo');
                 $promo = null;
             }
         }
 
-        return $template->priceBreakdown($domainPrice, $discountAmount) + [
+        $prices = $template->priceBreakdown($domainPrice, $discountAmount, $duration);
+        $pricingStructure = $this->buildPricingStructure($prices, $couponModel, $discountAmount, $duration, $isOwnDomain);
+
+        return $prices + [
             'template' => $template,
             'checkout' => $checkout,
             'promo' => $promo,
+            'pricingStructure' => $pricingStructure,
             'step' => 3,
             'flow' => $session->get('checkout.flow', OrderService::FLOW_TEMPLATE_FIRST),
         ];
     }
 
-    public function validatePromo(string $code, Template $template, int $domainPrice, ?string $email = null): array
+    public function validatePromo(string $code, Template $template, int $domainPrice, ?string $email = null, int $duration = 1, bool $isOwnDomain = false): array
     {
         try {
             $cleanCode = strtoupper(trim($code));
@@ -76,11 +88,16 @@ class PaymentService
                 throw new \DomainException('Kode promo tidak ditemukan. Periksa kembali penulisan kode promo Anda.');
             }
 
-            $prices = $template->priceBreakdown($domainPrice);
+            $prices = $template->priceBreakdown($domainPrice, 0, $duration);
             $subtotal = $prices['subtotal'];
             $this->checkPromoEligibility($promo, $template, $email, $subtotal);
             $discount = $this->calculatePromoDiscount($promo, $prices);
             $newTotal = max(0, $subtotal - $discount);
+            $meta = $promo->getDiscountMeta($prices, $discount);
+            $pricingStructure = $this->buildPricingStructure($prices, $promo, $discount, $duration, $isOwnDomain);
+
+            // Basis komisi mitra = harga paket website setelah diskon klien (tanpa domain)
+            $packagePromoPrice = $pricingStructure['package_promo_price'] ?? max(0, $prices['packageTotal'] - $discount);
 
             return [
                 'valid' => true,
@@ -94,10 +111,19 @@ class PaymentService
                 'partner_code' => null,
                 'discount_amount' => $discount,
                 'formatted_discount' => $this->rupiah($discount),
-                'partner_commission_amount' => $this->partnerCommission($promo, $subtotal),
+                'partner_commission_amount' => $this->partnerCommission($promo, $packagePromoPrice),
                 'new_total' => $newTotal,
                 'formatted_new_total' => $this->rupiah($newTotal),
-                'message' => $this->promoSuccessMessage($promo, $discount),
+                'is_percentage' => $meta['is_percentage'],
+                'percentage' => $meta['percentage'],
+                'formatted_percentage' => $meta['formatted_percentage'],
+                'badge_text' => $meta['badge_text'],
+                'discount_label' => $meta['discount_label'],
+                'max_discount' => $meta['max_discount'],
+                'formatted_max_discount' => $meta['formatted_max_discount'],
+                'is_max_reached' => $meta['is_max_reached'],
+                'pricing_structure' => $pricingStructure,
+                'message' => $this->promoSuccessMessage($promo, $discount, $meta),
             ];
         } catch (\DomainException $e) {
             return ['valid' => false, 'message' => $e->getMessage()];
@@ -108,6 +134,9 @@ class PaymentService
     {
         if (! $promo->is_active) {
             throw new \DomainException('Kode promo ini sedang tidak aktif.');
+        }
+        if ($promo->partner_id && $promo->partner && ! $promo->partner->is_active) {
+            throw new \DomainException('Mitra untuk kode promo ini sedang tidak aktif.');
         }
         if ($promo->isExpired()) {
             throw new \DomainException('Masa berlaku kode promo ini telah berakhir atau belum dimulai.');
@@ -124,19 +153,29 @@ class PaymentService
 
     public function calculatePromoDiscount(Coupon $promo, array $prices): int
     {
-        return $promo->discountFor('subtotal', $prices['subtotal'])
-            + $promo->discountFor('template', $prices['templatePrice'])
-            + $promo->discountFor('server', $prices['serverPrice'])
-            + $promo->discountFor('service', $prices['servicePrice'])
-            + $promo->discountFor('domain', $prices['domainPrice']);
+        return match ($promo->discount_mode) {
+            DiscountMode::SubtotalDomain => $promo->discountFor('subtotal', $prices['subtotal']),
+            DiscountMode::SubtotalNonDomain => min($prices['packageTotal'], $promo->discountFor('subtotal', $prices['packageTotal'])),
+            DiscountMode::PerComponent => $promo->discountFor('template', $prices['templatePrice'])
+                + $promo->discountFor('server', $prices['serverPrice'])
+                + $promo->discountFor('service', $prices['servicePrice'])
+                + $promo->discountFor('domain', $prices['domainPrice']),
+            default => $promo->discountFor('subtotal', $prices['subtotal'])
+                + $promo->discountFor('template', $prices['templatePrice'])
+                + $promo->discountFor('server', $prices['serverPrice'])
+                + $promo->discountFor('service', $prices['servicePrice'])
+                + $promo->discountFor('domain', $prices['domainPrice']),
+        };
     }
 
     public function applyPromo(Session $session, Template $template, string $code, string $fallbackEmail = ''): array
     {
         $checkout = $session->get('checkout', []);
-        $domainPrice = (int) ($checkout['domain_price'] ?? config('domain.default_price'));
+        $isOwnDomain = (bool) ($checkout['is_own_domain'] ?? false);
+        $domainPrice = $isOwnDomain ? 0 : (int) ($checkout['domain_price'] ?? config('domain.default_price'));
+        $duration = (int) ($checkout['domain_duration'] ?? 1);
         $customerEmail = $checkout['customer']['email'] ?? $fallbackEmail;
-        $result = $this->validatePromo(trim($code), $template, $domainPrice, $customerEmail);
+        $result = $this->validatePromo(trim($code), $template, $domainPrice, $customerEmail, $duration, $isOwnDomain);
         if ($result['valid']) {
             $session->put('checkout.promo', [
                 'coupon_id' => $result['coupon_id'],
@@ -149,6 +188,14 @@ class PaymentService
                 'partner_code' => $result['partner_code'],
                 'discount_amount' => $result['discount_amount'],
                 'partner_commission_amount' => $result['partner_commission_amount'],
+                'is_percentage' => $result['is_percentage'] ?? false,
+                'percentage' => $result['percentage'] ?? null,
+                'formatted_percentage' => $result['formatted_percentage'] ?? null,
+                'badge_text' => $result['badge_text'] ?? null,
+                'discount_label' => $result['discount_label'] ?? null,
+                'max_discount' => $result['max_discount'] ?? null,
+                'formatted_max_discount' => $result['formatted_max_discount'] ?? null,
+                'is_max_reached' => $result['is_max_reached'] ?? false,
             ]);
         }
 
@@ -159,8 +206,9 @@ class PaymentService
     {
         $session->forget('checkout.promo');
         $domainPrice = (int) ($session->get('checkout.domain_price') ?? config('domain.default_price'));
+        $duration = (int) ($session->get('checkout.domain_duration') ?? 1);
 
-        return $template->priceBreakdown($domainPrice)['totalPrice'];
+        return $template->priceBreakdown($domainPrice, 0, $duration)['totalPrice'];
     }
 
     public function claimPromoQuota(int|string $promoId, string $email): Coupon
@@ -237,13 +285,23 @@ class PaymentService
             ? $this->activatePaidOrder($order, withWhatsapp: false)
             : $order->client;
 
-        return $order->priceBreakdown($orderTemplate) + [
+        $orderPrices = $order->priceBreakdown($orderTemplate);
+        $pricingStructure = $this->buildPricingStructure(
+            $orderPrices,
+            $order->coupon,
+            (int) ($order->discount_amount ?? 0),
+            (int) ($order->domain_duration ?: 1),
+            (bool) $order->is_own_domain
+        );
+
+        return $orderPrices + [
             'template' => $orderTemplate,
             'order' => $order,
             'user' => $user,
             'isExistingUser' => false,
             'step' => 4,
             'flow' => $flow,
+            'pricingStructure' => $pricingStructure,
         ];
     }
 
@@ -295,9 +353,19 @@ class PaymentService
 
     public function renderInvoice(Order $order): string
     {
+        $orderPrices = $order->priceBreakdown();
+        $pricingStructure = $this->buildPricingStructure(
+            $orderPrices,
+            $order->coupon,
+            (int) ($order->discount_amount ?? 0),
+            (int) ($order->domain_duration ?: 1),
+            (bool) $order->is_own_domain
+        );
+
         return view('pdf.invoice', [
             'order' => $order,
             'template' => $order->template,
+            'pricingStructure' => $pricingStructure,
             'autoPrint' => true,
         ])->render();
     }
@@ -316,7 +384,7 @@ class PaymentService
     public function sendInvoiceWhatsapp(Order $order): void
     {
         try {
-            $this->sendWhatsapp($order->whatsapp, $this->invoiceWhatsappMessage($order));
+            $this->whatsapp->sendInvoice($order);
         } catch (\Throwable $e) {
             Log::warning("Gagal mengirim WhatsApp invoice via Fonnte untuk order {$order->order_number}: ".$e->getMessage());
         }
@@ -335,7 +403,7 @@ class PaymentService
     public function sendPaymentSuccessWhatsapp(Order $order, User $user): void
     {
         try {
-            $this->sendWhatsapp($order->whatsapp, $this->paymentSuccessWhatsappMessage($order, $user));
+            $this->whatsapp->sendPaymentSuccess($order, $user);
         } catch (\Throwable $e) {
             Log::warning("Gagal mengirim WhatsApp lunas via Fonnte untuk order {$order->order_number}: ".$e->getMessage());
         }
@@ -349,6 +417,22 @@ class PaymentService
         $this->sendPaymentSuccessMail($order, $user);
         if ($withWhatsapp) {
             $this->sendPaymentSuccessWhatsapp($order, $user);
+        }
+        $this->notifyAdminOrderPaid($order);
+    }
+
+    public function notifyAdminOrderPaid(Order $order): void
+    {
+        if (! empty($order->admin_paid_wa_sent_at)) {
+            return;
+        }
+        try {
+            $result = $this->whatsapp->sendAdminOrderPaid($order);
+            if (! empty($result['status'])) {
+                $order->update(['admin_paid_wa_sent_at' => now()]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Gagal mengirim WhatsApp admin pesanan lunas untuk order {$order->order_number}: ".$e->getMessage());
         }
     }
 
@@ -441,7 +525,12 @@ class PaymentService
 
     // ---- Internal helpers ----
 
-    private function partnerCommission(Coupon $promo, int $subtotal): int
+    /**
+     * Hitung komisi mitra berdasarkan tipe komisi.
+     * - Fixed: nominal tetap (Rupiah) per order.
+     * - Percentage: persentase dari harga paket website setelah diskon klien (tidak termasuk domain).
+     */
+    private function partnerCommission(Coupon $promo, int $packagePromoPrice): int
     {
         $partner = $promo->partner;
         if (! $partner) {
@@ -450,25 +539,40 @@ class PaymentService
 
         return match ($partner->type_commission) {
             CommissionType::Fixed => (int) $partner->amount_commission,
-            CommissionType::Percentage => (int) round(($subtotal * $partner->amount_commission) / 100),
+            CommissionType::Percentage => (int) round(($packagePromoPrice * $partner->amount_commission) / 100),
         };
     }
 
-    private function promoSuccessMessage(Coupon $promo, int $discount): string
+    private function promoSuccessMessage(Coupon $promo, int $discount, ?array $meta = null): string
     {
         $partner = $promo->partner?->user?->name;
+        $label = $meta && ! empty($meta['formatted_percentage'])
+            ? " ({$meta['badge_text']})"
+            : '';
+        $cappedInfo = ($meta['is_max_reached'] ?? false)
+            ? ' (maksimal promo tercapai)'
+            : '';
+
         return $partner
-            ? "Kode kupon kemitraan {$partner} berhasil digunakan! Anda hemat {$this->rupiah($discount)}"
-            : "Kode kupon {$promo->code} berhasil diterapkan! Anda hemat {$this->rupiah($discount)}";
+            ? "Kode kupon kemitraan {$partner}{$label} berhasil digunakan! Anda hemat {$this->rupiah($discount)}{$cappedInfo}"
+            : "Kode kupon {$promo->code}{$label} berhasil diterapkan! Anda hemat {$this->rupiah($discount)}{$cappedInfo}";
     }
 
     private function fullPriceItems(Order $order, Template $template, array $prices): array
     {
+        $duration = $order->domain_duration ?: 1;
+        $templateTitle = "Lisensi Template: {$template->name} ({$duration} Tahun)";
+        $serverTitle = "Cloud Server & Hosting ({$duration} Tahun)";
+        $serviceTitle = "Setup & Layanan Deployment ({$duration} Tahun)";
+        $domainTitle = $order->is_own_domain
+            ? "Setup Domain (Milik Sendiri: {$order->domain_name})"
+            : "Domain {$order->domain_name} ({$duration} Tahun)";
+
         return [
-            ['name' => "Lisensi Template: {$template->name}", 'quantity' => 1, 'price' => $prices['templatePrice'], 'category' => 'Website Template'],
-            ['name' => 'Cloud Server & Hosting (1 Tahun)', 'quantity' => 1, 'price' => $prices['serverPrice'], 'category' => 'Cloud Server'],
-            ['name' => 'Setup & Layanan Deployment', 'quantity' => 1, 'price' => $prices['servicePrice'], 'category' => 'Service & Setup'],
-            ['name' => "Domain {$order->domain_name} (".($order->domain_duration ?: 1).' Tahun)', 'quantity' => 1, 'price' => $prices['domainPrice'], 'category' => 'Domain Registration'],
+            ['name' => $templateTitle, 'quantity' => 1, 'price' => $prices['templatePrice'], 'category' => 'Website Template'],
+            ['name' => $serverTitle, 'quantity' => 1, 'price' => $prices['serverPrice'], 'category' => 'Cloud Server'],
+            ['name' => $serviceTitle, 'quantity' => 1, 'price' => $prices['servicePrice'], 'category' => 'Service & Setup'],
+            ['name' => $domainTitle, 'quantity' => 1, 'price' => $prices['domainPrice'], 'category' => 'Domain Registration'],
         ];
     }
 
@@ -552,37 +656,7 @@ class PaymentService
 
     private function sendWhatsapp(string $target, string $message, ?string $url = null, ?string $filename = null): array
     {
-        $token = config('services.fonnte.token');
-        if (empty($token)) {
-            Log::warning('SendWhatsappMessage: FONNTE_TOKEN belum dikonfigurasi di .env');
-
-            return ['status' => false, 'message' => 'Token not configured'];
-        }
-        $cleanTarget = $this->normalizePhone($target);
-        if (empty($cleanTarget)) {
-            Log::warning("SendWhatsappMessage: Nomor target WhatsApp tidak valid: '{$target}'");
-
-            return ['status' => false, 'message' => 'Invalid phone number'];
-        }
-        $payload = ['target' => $cleanTarget, 'message' => $message, 'countryCode' => '62'];
-        if (! empty($url)) {
-            $payload['url'] = $url;
-            if (! empty($filename)) {
-                $payload['filename'] = $filename;
-            }
-        }
-        try {
-            $response = Http::withHeaders(['Authorization' => $token])
-                ->timeout(15)->asForm()->post(self::FONNTE_API_URL, $payload);
-            $result = $response->json() ?? [];
-            Log::info("SendWhatsappMessage: Pesan WA terkirim ke {$cleanTarget}", ['response' => $result]);
-
-            return $result;
-        } catch (\Throwable $e) {
-            Log::error("SendWhatsappMessage: Gagal mengirim pesan WA ke {$cleanTarget}: ".$e->getMessage());
-
-            return ['status' => false, 'message' => $e->getMessage()];
-        }
+        return $this->whatsapp->send($target, $message, $url, $filename);
     }
 
     private function normalizePhone(string $phone): string
@@ -596,6 +670,183 @@ class PaymentService
         }
 
         return $phone;
+    }
+
+    /**
+     * Membangun struktur tata letak harga komprehensif sesuai 3 mode:
+     * 1. 'umum' (Normal tanpa diskon)
+     * 2. 'subtotal' (Diskon paket website)
+     * 3. 'per_component' (Diskon spesifik komponen)
+     */
+    public function buildPricingStructure(array $prices, ?Coupon $promo, int $calculatedDiscount = 0, int $duration = 1, bool $isOwnDomain = false): array
+    {
+        $duration = max(1, $duration);
+        $templatePrice = (int) ($prices['templatePrice'] ?? 0);
+        $serverPrice = (int) ($prices['serverPrice'] ?? 0);
+        $servicePrice = (int) ($prices['servicePrice'] ?? 0);
+        $domainPrice = $isOwnDomain ? 0 : (int) ($prices['domainPrice'] ?? 0);
+        $packageSubtotal = $templatePrice + $serverPrice + $servicePrice;
+
+        if (! $promo || $calculatedDiscount <= 0) {
+            return [
+                'mode' => 'umum',
+                'package_subtotal' => $packageSubtotal,
+                'package_discount' => 0,
+                'package_discount_label' => null,
+                'package_promo_price' => $packageSubtotal,
+                'domain_price' => $domainPrice,
+                'domain_discount' => 0,
+                'total' => $packageSubtotal + $domainPrice,
+                'formatted_package_subtotal' => $this->rupiah($packageSubtotal),
+                'formatted_package_promo_price' => $this->rupiah($packageSubtotal),
+                'formatted_domain_price' => $this->rupiah($domainPrice),
+                'formatted_total' => $this->rupiah($packageSubtotal + $domainPrice),
+                'components' => [
+                    'template' => ['name' => 'Lisensi Template Website', 'price' => $templatePrice, 'formatted_price' => $this->rupiah($templatePrice), 'discount' => 0, 'discount_label' => null, 'net' => $templatePrice, 'formatted_net' => $this->rupiah($templatePrice), 'has_discount' => false],
+                    'server'   => ['name' => 'Cloud Server Hosting', 'price' => $serverPrice, 'formatted_price' => $this->rupiah($serverPrice), 'discount' => 0, 'discount_label' => null, 'net' => $serverPrice, 'formatted_net' => $this->rupiah($serverPrice), 'has_discount' => false],
+                    'service'  => ['name' => 'Setup Deployment & Layanan Teknis', 'price' => $servicePrice, 'formatted_price' => $this->rupiah($servicePrice), 'discount' => 0, 'discount_label' => null, 'net' => $servicePrice, 'formatted_net' => $this->rupiah($servicePrice), 'has_discount' => false],
+                    'domain'   => ['name' => 'Registrasi Domain Resmi', 'price' => $domainPrice, 'formatted_price' => $this->rupiah($domainPrice), 'discount' => 0, 'discount_label' => null, 'net' => $domainPrice, 'formatted_net' => $this->rupiah($domainPrice), 'has_discount' => false],
+                ],
+            ];
+        }
+
+        $mode = $promo->discount_mode ?? \App\Enums\DiscountMode::SubtotalDomain;
+
+        if ($mode === \App\Enums\DiscountMode::PerComponent) {
+            $templateDisc = min($templatePrice, $promo->discountFor('template', $templatePrice));
+            $serverDisc = min($serverPrice, $promo->discountFor('server', $serverPrice));
+            $serviceDisc = min($servicePrice, $promo->discountFor('service', $servicePrice));
+            $domainDisc = $isOwnDomain ? 0 : min($domainPrice, $promo->discountFor('domain', $domainPrice));
+
+            $templateMeta = $this->componentDiscountMeta($promo, 'template', $templatePrice, $templateDisc);
+            $serverMeta = $this->componentDiscountMeta($promo, 'server', $serverPrice, $serverDisc);
+            $serviceMeta = $this->componentDiscountMeta($promo, 'service', $servicePrice, $serviceDisc);
+            $domainMeta = $this->componentDiscountMeta($promo, 'domain', $domainPrice, $domainDisc);
+
+            $netTemplate = max(0, $templatePrice - $templateDisc);
+            $netServer = max(0, $serverPrice - $serverDisc);
+            $netService = max(0, $servicePrice - $serviceDisc);
+            $netDomain = max(0, $domainPrice - $domainDisc);
+
+            $promoPackagePrice = $netTemplate + $netServer + $netService;
+            $total = $promoPackagePrice + $netDomain;
+
+            return [
+                'mode' => 'per_component',
+                'package_subtotal' => $packageSubtotal,
+                'package_discount' => $templateDisc + $serverDisc + $serviceDisc,
+                'package_discount_label' => null,
+                'package_promo_price' => $promoPackagePrice,
+                'domain_price' => $domainPrice,
+                'domain_discount' => $domainDisc,
+                'domain_discount_label' => $domainMeta['label'],
+                'domain_net' => $netDomain,
+                'total' => $total,
+                'formatted_package_subtotal' => $this->rupiah($packageSubtotal),
+                'formatted_package_promo_price' => $this->rupiah($promoPackagePrice),
+                'formatted_domain_price' => $this->rupiah($domainPrice),
+                'formatted_total' => $this->rupiah($total),
+                'components' => [
+                    'template' => [
+                        'name' => 'Lisensi Template Website',
+                        'price' => $templatePrice,
+                        'formatted_price' => $this->rupiah($templatePrice),
+                        'discount' => $templateDisc,
+                        'discount_label' => $templateMeta['label'],
+                        'net' => $netTemplate,
+                        'formatted_net' => $this->rupiah($netTemplate),
+                        'has_discount' => $templateDisc > 0,
+                    ],
+                    'server' => [
+                        'name' => 'Cloud Server Hosting',
+                        'price' => $serverPrice,
+                        'formatted_price' => $this->rupiah($serverPrice),
+                        'discount' => $serverDisc,
+                        'discount_label' => $serverMeta['label'],
+                        'net' => $netServer,
+                        'formatted_net' => $this->rupiah($netServer),
+                        'has_discount' => $serverDisc > 0,
+                    ],
+                    'service' => [
+                        'name' => 'Setup Deployment & Layanan Teknis',
+                        'price' => $servicePrice,
+                        'formatted_price' => $this->rupiah($servicePrice),
+                        'discount' => $serviceDisc,
+                        'discount_label' => $serviceMeta['label'],
+                        'net' => $netService,
+                        'formatted_net' => $this->rupiah($netService),
+                        'has_discount' => $serviceDisc > 0,
+                    ],
+                    'domain' => [
+                        'name' => 'Registrasi Domain Resmi',
+                        'price' => $domainPrice,
+                        'formatted_price' => $this->rupiah($domainPrice),
+                        'discount' => $domainDisc,
+                        'discount_label' => $domainMeta['label'],
+                        'net' => $netDomain,
+                        'formatted_net' => $this->rupiah($netDomain),
+                        'has_discount' => $domainDisc > 0,
+                    ],
+                ],
+            ];
+        }
+
+        // Subtotal mode (SubtotalDomain atau SubtotalNonDomain)
+        $meta = $promo->getDiscountMeta($prices, $calculatedDiscount);
+        $discLabel = '-'.$this->rupiah($calculatedDiscount);
+        if ($meta['is_percentage'] && ! empty($meta['percentage'])) {
+            $discLabel .= ' ('.$meta['percentage'].'%)';
+        }
+
+        $packageDiscount = min($packageSubtotal, $calculatedDiscount);
+        $packagePromoPrice = max(0, $packageSubtotal - $packageDiscount);
+        $remainingDiscount = max(0, $calculatedDiscount - $packageDiscount);
+        $domainNet = max(0, $domainPrice - $remainingDiscount);
+        $total = $packagePromoPrice + $domainNet;
+
+        return [
+            'mode' => 'subtotal',
+            'package_subtotal' => $packageSubtotal,
+            'package_discount' => $calculatedDiscount,
+            'package_discount_label' => $discLabel,
+            'package_promo_price' => $packagePromoPrice,
+            'domain_price' => $domainPrice,
+            'domain_discount' => $remainingDiscount,
+            'domain_net' => $domainNet,
+            'total' => $total,
+            'formatted_package_subtotal' => $this->rupiah($packageSubtotal),
+            'formatted_package_promo_price' => $this->rupiah($packagePromoPrice),
+            'formatted_domain_price' => $this->rupiah($domainPrice),
+            'formatted_total' => $this->rupiah($total),
+            'components' => [
+                'template' => ['name' => 'Lisensi Template Website', 'price' => $templatePrice, 'formatted_price' => $this->rupiah($templatePrice), 'discount' => 0, 'discount_label' => null, 'net' => $templatePrice, 'formatted_net' => $this->rupiah($templatePrice), 'has_discount' => false],
+                'server'   => ['name' => 'Cloud Server Hosting', 'price' => $serverPrice, 'formatted_price' => $this->rupiah($serverPrice), 'discount' => 0, 'discount_label' => null, 'net' => $serverPrice, 'formatted_net' => $this->rupiah($serverPrice), 'has_discount' => false],
+                'service'  => ['name' => 'Setup Deployment & Layanan Teknis', 'price' => $servicePrice, 'formatted_price' => $this->rupiah($servicePrice), 'discount' => 0, 'discount_label' => null, 'net' => $servicePrice, 'formatted_net' => $this->rupiah($servicePrice), 'has_discount' => false],
+                'domain'   => ['name' => 'Registrasi Domain Resmi', 'price' => $domainPrice, 'formatted_price' => $this->rupiah($domainPrice), 'discount' => $remainingDiscount, 'discount_label' => null, 'net' => $domainNet, 'formatted_net' => $this->rupiah($domainNet), 'has_discount' => $remainingDiscount > 0],
+            ],
+        ];
+    }
+
+    private function componentDiscountMeta(Coupon $promo, string $component, int $price, int $discount): array
+    {
+        if ($discount <= 0) {
+            return ['has_discount' => false, 'label' => null];
+        }
+
+        $type = $promo->{"{$component}_discount_type"};
+        $amount = (int) ($promo->{"{$component}_discount_amount"} ?? 0);
+        $label = '-'.$this->rupiah($discount);
+
+        if ($type === \App\Enums\DiscountType::Percentage && $amount > 0) {
+            $label .= " ({$amount}%)";
+        }
+
+        return [
+            'has_discount' => true,
+            'label' => $label,
+            'amount' => $amount,
+            'type' => $type,
+        ];
     }
 
     private function rupiah(int $amount): string

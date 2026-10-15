@@ -53,16 +53,39 @@ export default function LocaleRedirect({ locale, detectBrowserLocale = false }: 
       // 3. Jika pengguna belum pernah memilih bahasa manual dan auto-detection diaktifkan (hanya pada root /)
       if (!detectBrowserLocale || storedLocale === "id") return;
 
-      // Deteksi Instan (Timezone Sistem & Preferensi Bahasa Browser)
-      const detectedLocale = detectVisitorLocale();
-      if (detectedLocale !== "id") {
-        window.localStorage.setItem(LANGUAGE_PREFERENCE_KEY, detectedLocale);
-        document.cookie = `${LANGUAGE_PREFERENCE_KEY}=${detectedLocale}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
-        window.location.assign(getLocalizedPath(detectedLocale, pathname));
+      // Cek apakah Timezone perangkat adalah Indonesia
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      const isIndonesianTz =
+        tz === "Asia/Jakarta" ||
+        tz === "Asia/Pontianak" ||
+        tz === "Asia/Makassar" ||
+        tz === "Asia/Jayapura" ||
+        tz.includes("Jakarta") ||
+        tz.includes("Makassar") ||
+        tz.includes("Jayapura");
+
+      // Jika timezone pengguna adalah Indonesia, kunci ke 'id' dan jangan redirect
+      if (isIndonesianTz) {
+        window.localStorage.setItem(LANGUAGE_PREFERENCE_KEY, "id");
+        document.cookie = `${LANGUAGE_PREFERENCE_KEY}=id; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
         return;
       }
 
-      // 4. Fallback Geo-IP Asynchronous (jika turis SG/MY dengan device non-lokal)
+      // Deteksi instan untuk turis SG atau MY via timezone
+      if (tz === "Asia/Singapore") {
+        window.localStorage.setItem(LANGUAGE_PREFERENCE_KEY, "en-sg");
+        document.cookie = `${LANGUAGE_PREFERENCE_KEY}=en-sg; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
+        window.location.assign(getLocalizedPath("en-sg", pathname));
+        return;
+      }
+      if (tz === "Asia/Kuala_Lumpur" || tz === "Asia/Kuching") {
+        window.localStorage.setItem(LANGUAGE_PREFERENCE_KEY, "ms");
+        document.cookie = `${LANGUAGE_PREFERENCE_KEY}=ms; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
+        window.location.assign(getLocalizedPath("ms", pathname));
+        return;
+      }
+
+      // 4. Verifikasi Geo-IP (Prioritas utama IP orang Indonesia agar langsung Bahasa Indonesia)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 2000);
 
@@ -73,9 +96,20 @@ export default function LocaleRedirect({ locale, detectBrowserLocale = false }: 
           if (!data || !data.country) return;
           const country = String(data.country).toUpperCase();
 
+          // Jika IP terdeteksi berasal dari Indonesia (ID): Tetap di Bahasa Indonesia
+          if (country === "ID") {
+            window.localStorage.setItem(LANGUAGE_PREFERENCE_KEY, "id");
+            document.cookie = `${LANGUAGE_PREFERENCE_KEY}=id; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
+            return;
+          }
+
           let geoLocale: Locale | null = null;
           if (country === "SG") geoLocale = "en-sg";
           else if (country === "MY") geoLocale = "ms";
+          else {
+            const detected = detectVisitorLocale();
+            if (detected !== "id") geoLocale = detected;
+          }
 
           if (geoLocale) {
             window.localStorage.setItem(LANGUAGE_PREFERENCE_KEY, geoLocale);
@@ -84,7 +118,7 @@ export default function LocaleRedirect({ locale, detectBrowserLocale = false }: 
           }
         })
         .catch(() => {
-          // Gagal atau timeout; abaikan dengan aman
+          // Jika Geo-IP offline/timeout, default tetap Bahasa Indonesia
         });
 
       return () => clearTimeout(timeoutId);

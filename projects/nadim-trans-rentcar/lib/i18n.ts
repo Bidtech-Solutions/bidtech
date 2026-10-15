@@ -1171,7 +1171,7 @@ export function detectVisitorLocale(): Locale {
 
   // 1. Cek Timezone sistem perangkat pengguna (instant 0ms)
   try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
     if (tz) {
       if (tz === "Asia/Singapore") return "en-sg";
       if (tz === "Asia/Kuala_Lumpur" || tz === "Asia/Kuching") return "ms";
@@ -1179,13 +1179,27 @@ export function detectVisitorLocale(): Locale {
         tz === "Asia/Jakarta" ||
         tz === "Asia/Pontianak" ||
         tz === "Asia/Makassar" ||
-        tz === "Asia/Jayapura"
+        tz === "Asia/Jayapura" ||
+        tz.includes("Jakarta") ||
+        tz.includes("Makassar") ||
+        tz.includes("Jayapura") ||
+        tz.includes("Pontianak")
       ) {
         return "id";
       }
     }
   } catch {
     // Lewati jika timezone tidak didukung
+  }
+
+  // Cek offset zona waktu Indonesia (UTC+7 WIB: -420, UTC+8 WITA: -480, UTC+9 WIT: -540)
+  try {
+    const offset = new Date().getTimezoneOffset();
+    if (offset === -420 || offset === -480 || offset === -540) {
+      return "id";
+    }
+  } catch {
+    // Lewati jika offset gagal
   }
 
   // 2. Cek semua preferensi bahasa di browser

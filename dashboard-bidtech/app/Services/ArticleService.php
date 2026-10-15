@@ -10,6 +10,7 @@ use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +45,87 @@ class ArticleService
             'articles' => $query->orderByDesc('id')->paginate(15)->withQueryString(),
             'creators' => User::where('role', Role::Media)->orderBy('name')->get(['id', 'name']),
             'filters' => ['created_by' => $createdBy, 'status' => $status, 'search' => $search],
+        ];
+    }
+
+    public function publicList(?string $search = null, int $perPage = 9): array
+    {
+        $query = Article::query()
+            ->where('status', ArticleStatus::Terbit)
+            ->with(['creator']);
+
+        if ($search !== null && trim($search) !== '') {
+            $query->where('title', 'like', '%'.trim($search).'%');
+        }
+
+        $paginator = $query->orderByDesc('published_at')->orderByDesc('id')->paginate($perPage);
+
+        return [
+            'data' => collect($paginator->items())->map(fn (Article $a) => $this->articleSummaryData($a))->values()->all(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'per_page'     => $paginator->perPage(),
+                'total'        => $paginator->total(),
+            ],
+        ];
+    }
+
+    public function publicFind(string $slug): ?array
+    {
+        $article = Article::query()
+            ->where('status', ArticleStatus::Terbit)
+            ->where('slug', $slug)
+            ->with(['creator'])
+            ->first();
+
+        if ($article) {
+            return [
+                'status' => 200,
+                'data' => $this->articleData($article),
+            ];
+        }
+
+        $inactiveOrTrashed = Article::withTrashed()->where('slug', $slug)->first();
+        if ($inactiveOrTrashed) {
+            if ($inactiveOrTrashed->trashed()) {
+                return [
+                    'status' => 410,
+                    'message' => 'Artikel telah dihapus.',
+                ];
+            }
+
+            return [
+                'status' => 404,
+                'message' => 'Artikel tidak tersedia atau belum dipublikasikan.',
+            ];
+        }
+
+        return [
+            'status' => 404,
+            'message' => 'Artikel tidak ditemukan.',
+        ];
+    }
+
+    public function articleSummaryData(Article $article): array
+    {
+        $article->loadMissing('creator');
+        $derived = $this->deriveContentMetadata($article->content ?? []);
+
+        return [
+            'id' => $article->id,
+            'title' => $article->title ?? '',
+            'slug' => $article->slug,
+            'excerpt' => $article->excerpt ?: $derived['meta_description'],
+            'cover_image_url' => $article->cover_image_url,
+            'cover_display_url' => $article->cover_image_url ?: config('articles.cover_placeholder_url'),
+            'cover_alt_text' => $article->cover_image_url ? ($article->title ?? '') : '',
+            'author' => [
+                'name' => $article->creator?->displayAuthorName() ?? 'Bidtech Media',
+                'photo_url' => $article->creator?->photo_url,
+            ],
+            'published_at' => $article->published_at?->toIso8601String(),
+            'reading_minutes' => $derived['reading_minutes'],
         ];
     }
 
@@ -230,16 +312,59 @@ class ArticleService
             throw ValidationException::withMessages(['image' => 'Isi file bukan gambar yang valid.']);
         }
 
-        $disk = Storage::disk('s3');
         $filename = Str::uuid().'.'.self::MIME_EXTENSIONS[$mime];
-        try {
-            $path = $disk->putFileAs($config['final_prefix'], $file, $filename);
-        } catch (Throwable $exception) {
-            report($exception);
-            throw ValidationException::withMessages(['image' => 'Gagal menyimpan gambar. Silakan coba kembali.']);
+        $storedPath = null;
+
+        $isFake = Storage::disk('s3') instanceof \Illuminate\Support\Testing\Fakes\StorageFake;
+        $hasCredentials = !empty(config('filesystems.disks.s3.key')) && !empty(config('filesystems.disks.s3.secret'));
+        $endpoint = config('filesystems.disks.s3.endpoint');
+
+        $tryS3 = $isFake || $hasCredentials;
+        if ($tryS3 && ! $isFake && $endpoint) {
+            $parsed = parse_url($endpoint);
+            $host = $parsed['host'] ?? '127.0.0.1';
+            $port = $parsed['port'] ?? (($parsed['scheme'] ?? 'http') === 'https' ? 443 : 80);
+            $fp = @fsockopen($host, $port, $errno, $errstr, 0.5);
+            if (! $fp) {
+                $tryS3 = false;
+            } else {
+                fclose($fp);
+            }
         }
 
-        if ($path === false) {
+        // Coba upload ke S3 terlebih dahulu
+        if ($tryS3) {
+            try {
+                $disk = Storage::disk('s3');
+                $path = $disk->putFileAs($config['final_prefix'], $file, $filename);
+                if ($path) {
+                    $storedPath = $path;
+                }
+            } catch (Throwable $exception) {
+                report($exception);
+                $storedPath = null;
+            }
+        }
+
+        // Fallback: Jika S3/RustFS tidak aktif atau kredensial kosong, simpan ke storage public lokal
+        if (! $storedPath) {
+            try {
+                $publicPath = Storage::disk('public')->putFileAs('articles', $file, $filename);
+                if ($publicPath) {
+                    $storedPath = '/storage/' . $publicPath;
+                }
+            } catch (Throwable $exception) {
+                report($exception);
+                throw ValidationException::withMessages(['image' => 'Gagal menyimpan gambar. Silakan coba kembali.']);
+            }
+        }
+
+        if (! $storedPath) {
+            Log::error('Gagal menyimpan gambar artikel ke storage.', [
+                'bucket' => config('filesystems.disks.s3.bucket'),
+                'endpoint' => config('filesystems.disks.s3.endpoint'),
+                'path' => $config['final_prefix'].'/'.$filename,
+            ]);
             throw ValidationException::withMessages(['image' => 'Gagal menyimpan gambar. Silakan coba kembali.']);
         }
 
@@ -247,7 +372,7 @@ class ArticleService
             return ArticleImage::create([
                 'uploaded_by' => $user->id,
                 'tmp_path' => null,
-                'disk_path' => $path,
+                'disk_path' => $storedPath,
                 'original_filename' => $file->getClientOriginalName(),
                 'mime_type' => $mime,
                 'size' => $size,
@@ -256,7 +381,12 @@ class ArticleService
                 'status' => ArticleImageStatus::Ready,
             ]);
         } catch (Throwable $exception) {
-            $disk->delete($path);
+            if (str_starts_with($storedPath, '/storage/') || str_starts_with($storedPath, 'storage/')) {
+                $rel = preg_replace('#^/?storage/#', '', $storedPath);
+                Storage::disk('public')->delete($rel);
+            } else {
+                Storage::disk('s3')->delete($storedPath);
+            }
             throw $exception;
         }
     }

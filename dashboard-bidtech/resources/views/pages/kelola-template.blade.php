@@ -1,4 +1,4 @@
-﻿@extends('layouts.dashboard')
+@extends('layouts.dashboard')
 
 @section('title', $mode === 'create' ? 'Tambah Template - Admin CMS Bidtech' : ($mode === 'edit' ? 'Edit Template - Admin CMS Bidtech' : 'Katalog Template - Admin CMS Bidtech'))
 
@@ -231,7 +231,7 @@
             </div>
             <div class="flex items-center gap-2 bg-purple-50 text-purple-700 px-3.5 py-1.5 rounded-xl text-xs font-bold">
                 <i data-lucide="eye" class="w-4 h-4"></i>
-                <span>{{ number_format($template->views, 0, ',', '.') }} Penayangan</span>
+                <span class="template-view-badge" data-template-id="{{ $template->id }}" data-suffix=" Penayangan">{{ number_format($template->views, 0, ',', '.') }} Penayangan</span>
             </div>
         </div>
     </div>
@@ -499,7 +499,7 @@
             </div>
             <div>
                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Penayangan</p>
-                <p class="text-2xl font-bold text-slate-900 mt-0.5">{{ number_format($stats['total_views'], 0, ',', '.') }}</p>
+                <p class="text-2xl font-bold text-slate-900 mt-0.5" id="kelola-total-views">{{ number_format($stats['total_views'], 0, ',', '.') }}</p>
             </div>
         </div>
 
@@ -538,8 +538,8 @@
                 <select name="sort" onchange="this.form.submit()"
                         class="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50/50 text-slate-700 font-medium">
                     <option value="newest" {{ request('sort', 'newest') === 'newest' ? 'selected' : '' }}>Urut: Terbaru</option>
-                    <option value="sales" {{ request('sort') === 'sales' ? 'selected' : '' }}>ðŸ”¥ Urut: Paling Laku (Terlaris)</option>
-                    <option value="views" {{ request('sort') === 'views' ? 'selected' : '' }}>ðŸ‘ï¸ Urut: Paling Banyak Dilihat</option>
+                    <option value="sales" {{ request('sort') === 'sales' ? 'selected' : '' }}>Urut: Paling Laku (Terlaris)</option>
+                    <option value="views" {{ request('sort') === 'views' ? 'selected' : '' }}>Urut: Paling Banyak Dilihat</option>
                     <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>Urut: Harga Tertinggi</option>
                     <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>Urut: Harga Terendah</option>
                 </select>
@@ -588,7 +588,7 @@
                                         <div class="flex items-center gap-1.5">
                                             <p class="font-bold text-slate-900 text-sm leading-snug">{{ $template->name }}</p>
                                             @if($template->sales_count >= 10)
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black bg-rose-100 text-rose-700 uppercase tracking-wider shrink-0" title="Top Seller">ðŸ”¥ Best</span>
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black bg-rose-100 text-rose-700 uppercase tracking-wider shrink-0" title="Top Seller">Best Seller</span>
                                             @endif
                                         </div>
                                         <p class="text-xs text-slate-500 truncate mt-0.5">{{ $template->description ?? $template->template_desc }}</p>
@@ -631,7 +631,7 @@
                             <td class="py-4 px-4 text-center">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700">
                                     <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                    <span>{{ number_format($template->views, 0, ',', '.') }}</span>
+                                    <span class="template-view-badge" data-template-id="{{ $template->id }}">{{ number_format($template->views, 0, ',', '.') }}</span>
                                 </span>
                             </td>
 

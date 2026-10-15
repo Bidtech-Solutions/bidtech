@@ -87,15 +87,16 @@ export function SiteHeader() {
     { label: t.nav.findDesign ?? "Cari Design", href: "/template-website" },
     { label: t.nav.tutorial ?? "Tutorial", href: "/tutorial" },
     { label: t.nav.custom ?? "Custom", href: "#services" },
-    { label: t.nav.portfolio ?? "Portofolio", href: "#portfolio" },
+    { label: t.nav.portfolio ?? "Portofolio", href: "/portofolio" },
+    { label: t.nav.contact ?? "Hubungi Kami", href: "/hubungi-kami" },
   ];
 
   const companyItems = [
-    { label: t.nav.about ?? "Tentang", href: "/hubungi-kami" },
+    { label: t.nav.about ?? "Tentang", href: "/tentang" },
     { label: t.nav.blog ?? "Blog", href: "/blog" },
   ];
 
-  const isCompanyActive = pathname === "/hubungi-kami" || pathname === "/blog" || pathname === "/tentang";
+  const isCompanyActive = pathname === "/blog" || pathname === "/tentang";
   const isCompanyHighlighted = isCompanyActive || companyOpen;
 
   const handleCompanyMouseEnter = () => {
@@ -126,7 +127,7 @@ export function SiteHeader() {
           />
         </SmartNavLink>
 
-        <nav className="hidden items-center gap-7 lg:gap-8 text-sm md:flex">
+        <nav className="hidden items-center gap-4.5 lg:gap-7 xl:gap-8 text-sm md:flex">
           {navItems.map((item) => {
             const active = isNavItemActive(item.href, pathname, activeSection);
             return (

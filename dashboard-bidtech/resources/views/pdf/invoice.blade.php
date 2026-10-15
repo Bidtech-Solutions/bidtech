@@ -1,12 +1,25 @@
 @php
     $template = $order->template ?? $template;
+    $duration = (int) ($order->domain_duration ?: 1);
     $domainPrice = (int) ($order->domain_price ?? 0);
-    $templatePrice = (int) ($order->template_price ?? $template->template_price ?? 1000000);
-    $serverPrice = (int) ($order->server_price ?? $template->server_price ?? 500000);
-    $servicePrice = (int) ($order->service_price ?? $template->service_price ?? 500000);
+    $templatePrice = (int) ($order->template_price ?? (($template->template_price ?? 1000000) * $duration));
+    $serverPrice = (int) ($order->server_price ?? (($template->server_price ?? 500000) * $duration));
+    $servicePrice = (int) ($order->service_price ?? (($template->service_price ?? 500000) * $duration));
     $discountAmount = (int) ($order->discount_amount ?? 0);
     $subtotal = $templatePrice + $serverPrice + $servicePrice + $domainPrice;
     $totalPrice = max(0, $subtotal - $discountAmount);
+
+    if (!isset($pricingStructure)) {
+        $paymentService = app(\App\Services\PaymentService::class);
+        $pricingStructure = $paymentService->buildPricingStructure(
+            $order->priceBreakdown(),
+            $order->coupon,
+            $discountAmount,
+            $duration,
+            (bool) $order->is_own_domain
+        );
+    }
+    $struct = $pricingStructure;
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -505,62 +518,263 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="col-no">1</td>
-                    <td>
-                        <strong>Lisensi Template Website: {{ $template->name }}</strong>
-                        <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $order->template_desc ?? $template->template_desc ?? 'Lisensi Desain UI/UX Eksklusif & Source Code Clean' }}</div>
-                    </td>
-                    <td class="col-durasi">Selamanya</td>
-                    <td class="col-subtotal">Rp{{ number_format($templatePrice, 0, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <td class="col-no">2</td>
-                    <td>
-                        <strong>Cloud Server Hosting (1 Tahun)</strong>
-                        <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $order->server_desc ?? $template->server_desc ?? 'High Speed NVMe, Dedicated Cloud Resources & Free SSL HTTPS' }}</div>
-                    </td>
-                    <td class="col-durasi">1 Tahun</td>
-                    <td class="col-subtotal">Rp{{ number_format($serverPrice, 0, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <td class="col-no">3</td>
-                    <td>
-                        <strong>Setup Deployment & Layanan Teknis</strong>
-                        <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $order->service_desc ?? $template->service_desc ?? 'Instalasi, Konfigurasi DNS Domain & Garansi Sistem' }}</div>
-                    </td>
-                    <td class="col-durasi">Instan</td>
-                    <td class="col-subtotal">Rp{{ number_format($servicePrice, 0, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <td class="col-no">4</td>
-                    <td>
-                        <strong>Registrasi Domain: {{ $order->domain_name }}</strong>
-                        <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">Registrasi Domain Resmi &bull; Termasuk PPN 11%</div>
-                    </td>
-                    <td class="col-durasi">{{ $order->domain_duration ?: 1 }} Tahun</td>
-                    <td class="col-subtotal">Rp{{ number_format($domainPrice, 0, ',', '.') }}</td>
-                </tr>
-                @if($discountAmount > 0)
-                <tr style="background-color: #f2fbf5;">
-                    <td class="col-no" style="color: #166534; font-weight: bold;">🏷️</td>
-                    <td>
-                        <strong style="color: #166534;">Potongan Diskon Promo ({{ $order->promo_code }})</strong>
-                        @if($order->is_partner_order)
-                            <div style="font-size: 8pt; color: #15803d; margin-top: 2px; font-weight: bold;">🤝 Program Kemitraan: {{ $order->partner_name }}</div>
+                @php
+                    $templateDesc = $order->template_desc ?? $template->template_desc ?? 'Lisensi Desain UI/UX Eksklusif & Source Code Clean';
+                    $serverDesc = $order->server_desc ?? $template->server_desc ?? ('Cloud Server Hosting ' . $duration . ' Tahun, NVMe High Speed & Free SSL');
+                    $serviceDesc = $order->service_desc ?? $template->service_desc ?? 'Setup Domain, Deployment Instan & Garansi Pemeliharaan';
+                @endphp
+
+                @if(($struct['mode'] ?? 'umum') === 'per_component')
+                    {{-- MODE 3: DISKON PER KOMPONEN --}}
+                    @php
+                        $comps = $struct['components'] ?? [];
+                        $discountComps = [];
+                        foreach(['template', 'server', 'service'] as $cKey) {
+                            if (!empty($comps[$cKey]['has_discount'])) {
+                                $discountComps[$cKey] = $comps[$cKey];
+                            }
+                        }
+                    @endphp
+
+                    {{-- 3 Komponen Website --}}
+                    <tr>
+                        <td class="col-no">1</td>
+                        <td>
+                            <strong>Lisensi Template Website</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $templateDesc }}</div>
+                        </td>
+                        <td class="col-durasi">-</td>
+                        <td class="col-subtotal">Rp{{ number_format($comps['template']['price'] ?? $templatePrice, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="col-no">2</td>
+                        <td>
+                            <strong>Cloud Server Hosting ({{ $duration }} Tahun)</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $serverDesc }}</div>
+                        </td>
+                        <td class="col-durasi">{{ $duration }} Tahun</td>
+                        <td class="col-subtotal">Rp{{ number_format($comps['server']['price'] ?? $serverPrice, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="col-no">3</td>
+                        <td>
+                            <strong>Setup Deployment & Layanan Teknis</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $serviceDesc }}</div>
+                        </td>
+                        <td class="col-durasi">-</td>
+                        <td class="col-subtotal">Rp{{ number_format($comps['service']['price'] ?? $servicePrice, 0, ',', '.') }}</td>
+                    </tr>
+
+                    {{-- Subtotal 3 Item --}}
+                    <tr style="border-top: 1px solid #e5e7eb; background-color: #fafbfc;">
+                        <td></td>
+                        <td style="font-weight: 700; color: #4b5563;">
+                            Subtotal 3 Item
+                            <div style="font-size: 8pt; color: #9ca3af; margin-top: 1px;">Akumulasi 3 komponen website sebelum diskon</div>
+                        </td>
+                        <td class="col-durasi" style="color: #6b7280; font-weight: 600;">3 Item</td>
+                        <td class="col-subtotal" style="color: #374151; font-weight: 700;">Rp{{ number_format($struct['package_subtotal'], 0, ',', '.') }}</td>
+                    </tr>
+
+                    {{-- Komponen Dengan Diskon --}}
+                    @foreach($discountComps as $cKey => $comp)
+                        <tr style="background-color: #f2fbf5;">
+                            <td class="col-no" style="color: #166534; font-weight: bold; text-align: center;">🟢</td>
+                            <td>
+                                <strong style="color: #166534;">Potongan Diskon Promo (Diskon {{ $comp['name'] }})</strong>
+                                <div style="font-size: 8pt; color: #15803d; margin-top: 2px;">Potongan harga khusus promo komponen {{ strtolower($comp['name']) }}</div>
+                            </td>
+                            <td class="col-durasi" style="color: #166534; font-weight: bold;">Hemat</td>
+                            <td class="col-subtotal" style="color: #166534; font-weight: 800;">{{ $comp['discount_label'] }}</td>
+                        </tr>
+                    @endforeach
+
+                    {{-- Total 3 Item Setelah Diskon --}}
+                    <tr style="border-top: 1.5px solid #d1f2de; background-color: #eaf7ee;">
+                        <td></td>
+                        <td style="font-weight: 800; color: #065f46;">
+                            Total 3 Item Setelah Diskon
+                            <div style="font-size: 8pt; color: #047857; margin-top: 1px;">Paket Website (Template + Server + Service) setelah diskon</div>
+                        </td>
+                        <td class="col-durasi" style="color: #065f46; font-weight: 700;">3 Item</td>
+                        <td class="col-subtotal" style="color: #065f46; font-weight: 900; font-size: 10.5pt;">Rp{{ number_format($struct['package_promo_price'], 0, ',', '.') }}</td>
+                    </tr>
+
+                    {{-- Item 4: Domain --}}
+                    <tr>
+                        <td class="col-no">4</td>
+                        @if($order->is_own_domain)
+                            <td>
+                                <strong>Setup Domain Milik Sendiri: {{ $order->domain_name }}</strong>
+                                <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">Domain Klien Pribadi &bull; Konfigurasi DNS Server (Gratis)</div>
+                            </td>
+                            <td class="col-durasi">-</td>
+                            <td class="col-subtotal text-gratis">Rp0</td>
                         @else
-                            <div style="font-size: 8pt; color: #15803d; margin-top: 2px;">Diskon promo voucher resmi Bidtech</div>
+                            <td>
+                                <strong>Registrasi Domain ({{ $duration }} Tahun): {{ $order->domain_name }}</strong>
+                                <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">Registrasi Domain Resmi &bull; Termasuk PPN 11%</div>
+                            </td>
+                            <td class="col-durasi">{{ $duration }} Tahun</td>
+                            <td class="col-subtotal">Rp{{ number_format($domainPrice, 0, ',', '.') }}</td>
                         @endif
-                    </td>
-                    <td class="col-durasi" style="color: #166534; font-weight: bold;">Hemat</td>
-                    <td class="col-subtotal" style="color: #166534; font-weight: 800;">-Rp{{ number_format($discountAmount, 0, ',', '.') }}</td>
-                </tr>
+                    </tr>
+
+                @elseif(($struct['mode'] ?? 'umum') === 'subtotal')
+                    {{-- MODE 2: DISKON SUBTOTAL --}}
+                    <tr>
+                        <td class="col-no">1</td>
+                        <td>
+                            <strong>Lisensi Template Website</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $templateDesc }}</div>
+                        </td>
+                        <td class="col-durasi">-</td>
+                        <td class="col-subtotal">Rp{{ number_format($templatePrice, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="col-no">2</td>
+                        <td>
+                            <strong>Cloud Server Hosting ({{ $duration }} Tahun)</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $serverDesc }}</div>
+                        </td>
+                        <td class="col-durasi">{{ $duration }} Tahun</td>
+                        <td class="col-subtotal">Rp{{ number_format($serverPrice, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="col-no">3</td>
+                        <td>
+                            <strong>Setup Deployment & Layanan Teknis</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $serviceDesc }}</div>
+                        </td>
+                        <td class="col-durasi">-</td>
+                        <td class="col-subtotal">Rp{{ number_format($servicePrice, 0, ',', '.') }}</td>
+                    </tr>
+
+                    {{-- Garis Pembatas + Subtotal 3 Item --}}
+                    <tr style="border-top: 1px solid #e5e7eb; background-color: #fafbfc;">
+                        <td></td>
+                        <td style="font-weight: 700; color: #4b5563;">
+                            Subtotal 3 Item
+                            <div style="font-size: 8pt; color: #9ca3af; margin-top: 1px;">Akumulasi 3 komponen website sebelum diskon</div>
+                        </td>
+                        <td class="col-durasi" style="color: #6b7280; font-weight: 600;">3 Item</td>
+                        <td class="col-subtotal" style="color: #374151; font-weight: 700;">Rp{{ number_format($struct['package_subtotal'], 0, ',', '.') }}</td>
+                    </tr>
+
+                    {{-- Diskon Promo --}}
+                    <tr style="background-color: #f2fbf5;">
+                        <td class="col-no" style="color: #166534; font-weight: bold; text-align: center;">🟢</td>
+                        <td>
+                            <strong style="color: #166534;">Potongan Diskon Promo ({{ $order->promo_code ?? $order->coupon_code }})</strong>
+                            @if($order->is_partner_order)
+                                <div style="font-size: 8pt; color: #15803d; margin-top: 2px; font-weight: bold;">🤝 Program Kemitraan: {{ $order->partner_name }}</div>
+                            @else
+                                <div style="font-size: 8pt; color: #15803d; margin-top: 2px;">Diskon promo voucher resmi Bidtech</div>
+                            @endif
+                        </td>
+                        <td class="col-durasi" style="color: #166534; font-weight: bold;">Hemat</td>
+                        <td class="col-subtotal" style="color: #166534; font-weight: 800;">{{ $struct['package_discount_label'] ?? ('-Rp' . number_format($struct['package_discount'], 0, ',', '.')) }}</td>
+                    </tr>
+
+                    {{-- Total 3 Item Setelah Diskon --}}
+                    <tr style="border-top: 1.5px solid #d1f2de; background-color: #eaf7ee;">
+                        <td></td>
+                        <td style="font-weight: 800; color: #065f46;">
+                            Total 3 Item Setelah Diskon
+                            <div style="font-size: 8pt; color: #047857; margin-top: 1px;">Paket Website (Template + Server + Service) setelah diskon</div>
+                        </td>
+                        <td class="col-durasi" style="color: #065f46; font-weight: 700;">3 Item</td>
+                        <td class="col-subtotal" style="color: #065f46; font-weight: 900; font-size: 10.5pt;">Rp{{ number_format($struct['package_promo_price'], 0, ',', '.') }}</td>
+                    </tr>
+
+                    {{-- Item 4: Domain --}}
+                    <tr>
+                        <td class="col-no">4</td>
+                        @if($order->is_own_domain)
+                            <td>
+                                <strong>Setup Domain Milik Sendiri: {{ $order->domain_name }}</strong>
+                                <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">Domain Klien Pribadi &bull; Konfigurasi DNS Server (Gratis)</div>
+                            </td>
+                            <td class="col-durasi">-</td>
+                            <td class="col-subtotal text-gratis">Rp0</td>
+                        @else
+                            <td>
+                                <strong>Registrasi Domain ({{ $duration }} Tahun): {{ $order->domain_name }}</strong>
+                                <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">Registrasi Domain Resmi &bull; Termasuk PPN 11%</div>
+                            </td>
+                            <td class="col-durasi">{{ $duration }} Tahun</td>
+                            <td class="col-subtotal">Rp{{ number_format($domainPrice, 0, ',', '.') }}</td>
+                        @endif
+                    </tr>
+
+                @else
+                    {{-- MODE 1: UMUM (TANPA PROMO) --}}
+                    <tr>
+                        <td class="col-no">1</td>
+                        <td>
+                            <strong>Lisensi Template Website</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $templateDesc }}</div>
+                        </td>
+                        <td class="col-durasi">-</td>
+                        <td class="col-subtotal">Rp{{ number_format($templatePrice, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="col-no">2</td>
+                        <td>
+                            <strong>Cloud Server Hosting ({{ $duration }} Tahun)</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $serverDesc }}</div>
+                        </td>
+                        <td class="col-durasi">{{ $duration }} Tahun</td>
+                        <td class="col-subtotal">Rp{{ number_format($serverPrice, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="col-no">3</td>
+                        <td>
+                            <strong>Setup Deployment & Layanan Teknis</strong>
+                            <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">{{ $serviceDesc }}</div>
+                        </td>
+                        <td class="col-durasi">-</td>
+                        <td class="col-subtotal">Rp{{ number_format($servicePrice, 0, ',', '.') }}</td>
+                    </tr>
+
+                    {{-- Garis Pembatas + Subtotal 3 Item --}}
+                    <tr style="border-top: 1px solid #e5e7eb; background-color: #fafbfc;">
+                        <td></td>
+                        <td style="font-weight: 700; color: #4b5563;">
+                            Subtotal 3 Item
+                            <div style="font-size: 8pt; color: #9ca3af; margin-top: 1px;">Akumulasi 3 komponen website</div>
+                        </td>
+                        <td class="col-durasi" style="color: #6b7280; font-weight: 600;">3 Item</td>
+                        <td class="col-subtotal" style="color: #374151; font-weight: 700;">Rp{{ number_format($templatePrice + $serverPrice + $servicePrice, 0, ',', '.') }}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-no">4</td>
+                        @if($order->is_own_domain)
+                            <td>
+                                <strong>Setup Domain Milik Sendiri: {{ $order->domain_name }}</strong>
+                                <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">Domain Klien Pribadi &bull; Konfigurasi DNS Server (Gratis)</div>
+                            </td>
+                            <td class="col-durasi">-</td>
+                            <td class="col-subtotal text-gratis">Rp0</td>
+                        @else
+                            <td>
+                                <strong>Registrasi Domain ({{ $duration }} Tahun): {{ $order->domain_name }}</strong>
+                                <div style="font-size: 8pt; color: #6b7280; margin-top: 2px;">Registrasi Domain Resmi &bull; Termasuk PPN 11%</div>
+                            </td>
+                            <td class="col-durasi">{{ $duration }} Tahun</td>
+                            <td class="col-subtotal">Rp{{ number_format($domainPrice, 0, ',', '.') }}</td>
+                        @endif
+                    </tr>
                 @endif
             </tbody>
             <tfoot>
                 <tr class="total-row">
-                    <td colspan="3" class="total-label">Total</td>
-                    <td class="total-amount">Rp{{ number_format($totalPrice, 0, ',', '.') }}</td>
+                    <td colspan="3" class="total-label">
+                        <div style="font-size: 11pt; font-weight: 800; color: #111827;">Total Biaya Pembayaran</div>
+                        <div style="font-size: 8pt; font-weight: normal; color: #6b7280; margin-top: 2px;">Sudah termasuk PPN 11% & garansi pengerjaan</div>
+                    </td>
+                    <td class="total-amount" style="color: #046a38;">Rp{{ number_format($totalPrice, 0, ',', '.') }}</td>
                 </tr>
             </tfoot>
         </table>

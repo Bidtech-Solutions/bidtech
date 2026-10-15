@@ -14,7 +14,7 @@ Dokumentasi resmi arsitektur sistem, struktur data armada, panduan tema warna, d
 | **Domisili / Wilayah Operasional** | Batam, Kepulauan Riau |
 | **Alamat Kantor Fisik** | Perum KDA Cluster Nuri Kepodang, Jl. Kepodang 3 No. 2, Belian, Kec. Batam Kota, Kota Batam, Kepulauan Riau 29464 |
 | **Google Maps** | https://maps.app.goo.gl/uVKJECyfgTPvikvn9 |
-| **Nomor Kontak / WhatsApp** | `+62 813-3141-2062` (Admin 1) / `+62 812-7600-3870` (Admin 2) |
+| **Nomor Kontak / WhatsApp** | `+62 812-7600-3870` (Admin 1) / `+62 813-3141-2062` (Admin 2) |
 | **Email Resmi** | `nadimtransindobatam@yahoo.com` |
 | **Instagram** | @nadimtransrentcar.batam |
 | **TikTok** | @nadim.trans.batam |

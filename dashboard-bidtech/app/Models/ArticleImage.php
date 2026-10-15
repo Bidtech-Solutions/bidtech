@@ -36,6 +36,29 @@ class ArticleImage extends Model
     /** URL publik gambar artikel pada object storage S3-compatible. */
     public function publicUrl(): ?string
     {
-        return $this->disk_path ? Storage::disk('s3')->url($this->disk_path) : null;
+        if (! $this->disk_path) {
+            return null;
+        }
+
+        if (str_starts_with($this->disk_path, 'http://') || str_starts_with($this->disk_path, 'https://')) {
+            return $this->disk_path;
+        }
+
+        if (str_starts_with($this->disk_path, '/storage/') || str_starts_with($this->disk_path, 'storage/')) {
+            return asset($this->disk_path);
+        }
+
+        try {
+            $bucket = config('filesystems.disks.s3.bucket');
+            $url = config('filesystems.disks.s3.url');
+
+            if (empty($bucket) && empty($url)) {
+                return 'https://media.bidtech.co.id/bidtech/' . ltrim($this->disk_path, '/');
+            }
+
+            return Storage::disk('s3')->url($this->disk_path);
+        } catch (\Throwable) {
+            return 'https://media.bidtech.co.id/bidtech/' . ltrim($this->disk_path, '/');
+        }
     }
 }

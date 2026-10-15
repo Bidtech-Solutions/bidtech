@@ -51,4 +51,8 @@ return [
         'token' => env('FONNTE_TOKEN'),
     ],
 
+    'whatsapp' => [
+        'admin_phone' => env('WHATSAPP_ADMIN_PHONE', env('ADMIN_WHATSAPP_PHONE')),
+    ],
+
 ];

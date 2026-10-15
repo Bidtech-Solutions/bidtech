@@ -268,7 +268,7 @@ export function DomainResultsSection({
                       </div>
                     </div>
 
-                    {item.available && (
+                    {item.available ? (
                       <button
                         type="button"
                         disabled={isNavigatingDomain !== null}
@@ -287,6 +287,15 @@ export function DomainResultsSection({
                           </>
                         )}
                       </button>
+                    ) : (
+                      <a
+                        href={`${LARAVEL_CHECKOUT_URL}/checkout/pilih-template?domain=${encodeURIComponent(item.domain)}&own=1&price=0`}
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:border-brand-primary hover:text-brand-primary px-3 py-1.5 text-xs font-semibold text-slate-600 transition-all shadow-xs hover:shadow-sm"
+                        title="Gunakan domain milik Anda sendiri"
+                      >
+                        <span>Milik Anda? Pakai Domain Ini</span>
+                        <ArrowRight className="size-3.5" />
+                      </a>
                     )}
                   </div>
                 ))}
@@ -296,9 +305,17 @@ export function DomainResultsSection({
 
           {/* Footer */}
           {!isSearching && (results.length > 0 || errorMessage) && (
-            <div className="px-4 sm:px-5 py-3.5 border-t border-slate-100 bg-slate-50/80 flex items-center gap-1.5 text-[11px] text-slate-500">
-              <Sparkles className="size-3.5 text-brand-primary shrink-0" />
-              <span>Domain langsung aktif otomatis bersama paket template pilihan Anda.</span>
+            <div className="px-4 sm:px-5 py-3.5 border-t border-slate-100 bg-slate-50/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-brand-primary shrink-0" />
+                <span>Domain langsung aktif otomatis bersama paket template pilihan Anda.</span>
+              </div>
+              <div>
+                <span>Sudah punya domain sendiri? </span>
+                <a href="/template-website" className="font-semibold text-brand-primary hover:underline">
+                  Langsung pilih template &rarr;
+                </a>
+              </div>
             </div>
           )}
         </div>

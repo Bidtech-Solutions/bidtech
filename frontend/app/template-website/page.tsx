@@ -13,6 +13,7 @@ import {
 } from "@/lib/data/template";
 import { useLanguage } from "@/lib/i18n";
 import { fetchTemplates, type ExtendedTemplateItem } from "@/lib/api/template-api";
+import { useTemplateViews } from "@/lib/hooks/use-template-views";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -23,6 +24,8 @@ export default function TemplateWebsitePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [templates, setTemplates] = useState<ExtendedTemplateItem[]>(TEMPLATES);
   const [categories, setCategories] = useState(TEMPLATE_CATEGORIES);
+
+  const { getViewCount, isHighlighted } = useTemplateViews({ initialTemplates: templates });
 
   useEffect(() => {
     let isMounted = true;
@@ -172,7 +175,12 @@ export default function TemplateWebsitePage() {
         ) : (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {paginatedTemplates.map((template) => (
-              <TemplateCard key={template.id} template={template} />
+              <TemplateCard
+                key={template.id}
+                template={template}
+                viewsCount={getViewCount(template.id, template.views)}
+                isHighlighted={isHighlighted(template.id)}
+              />
             ))}
           </div>
         )}

@@ -102,6 +102,18 @@ export function middleware(request: NextRequest) {
       ""
     ).toUpperCase();
 
+    // Jika terdeteksi IP Indonesia (ID), langsung tetapkan Bahasa Indonesia dan jangan redirect
+    if (country === "ID") {
+      const response = NextResponse.next();
+      response.cookies.set(LANGUAGE_PREFERENCE_KEY, "id", {
+        maxAge: 60 * 60 * 24 * 365,
+        path: "/",
+        sameSite: "lax",
+        secure: isHttps,
+      });
+      return response;
+    }
+
     if (country === "SG") {
       const response = NextResponse.redirect(new URL("/en-sg", origin));
       response.cookies.set(LANGUAGE_PREFERENCE_KEY, "en-sg", {
@@ -127,6 +139,19 @@ export function middleware(request: NextRequest) {
     // Cek Header Accept-Language browser (hanya jika negara bukan ID)
     if (country !== "ID") {
       const acceptLang = (request.headers.get("accept-language") || "").toLowerCase();
+
+      // Jika browser memiliki preferensi Bahasa Indonesia
+      if (acceptLang.includes("id") || acceptLang.startsWith("id-")) {
+        const response = NextResponse.next();
+        response.cookies.set(LANGUAGE_PREFERENCE_KEY, "id", {
+          maxAge: 60 * 60 * 24 * 365,
+          path: "/",
+          sameSite: "lax",
+          secure: isHttps,
+        });
+        return response;
+      }
+
       if (acceptLang.includes("en-sg") || (acceptLang.includes("sg") && !acceptLang.includes("id"))) {
         const response = NextResponse.redirect(new URL("/en-sg", origin));
         response.cookies.set(LANGUAGE_PREFERENCE_KEY, "en-sg", {

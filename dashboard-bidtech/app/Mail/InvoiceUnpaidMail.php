@@ -43,16 +43,26 @@ class InvoiceUnpaidMail extends Mailable
      */
     public function content(): Content
     {
+        $paymentService = app(\App\Services\PaymentService::class);
+        $pricingStructure = $paymentService->buildPricingStructure(
+            $this->order->priceBreakdown(),
+            $this->order->coupon,
+            (int) ($this->order->discount_amount ?? 0),
+            (int) ($this->order->domain_duration ?: 1),
+            (bool) $this->order->is_own_domain
+        );
+
         return new Content(
             view: 'emails.unpaid-invoice',
             with: [
-                'order'        => $this->order,
-                'template'     => $this->order->template,
-                'bayarUrl'     => route('checkout.bayar', [
+                'order'            => $this->order,
+                'template'         => $this->order->template,
+                'pricingStructure' => $pricingStructure,
+                'bayarUrl'         => route('checkout.bayar', [
                     'template' => $this->order->template_id,
                     'order'    => $this->order->order_number,
                 ]),
-                'pdfUrl'       => route('checkout.invoice.download', $this->order),
+                'pdfUrl'           => route('checkout.invoice.download', $this->order),
             ],
         );
     }

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Checkout;
 
 use App\Enums\CommissionType;
+use App\Enums\DiscountMode;
 use App\Enums\DiscountType;
 use App\Enums\Role;
 use App\Models\Coupon;
@@ -140,13 +141,49 @@ class PromoCalculationTest extends TestCase
         $this->assertSame(5000, session('checkout.promo.partner_commission_amount'));
     }
 
-    public function test_partner_percentage_commission_is_based_on_subtotal(): void
+    public function test_partner_percentage_commission_is_based_on_discounted_package_price_excluding_domain(): void
     {
         $partner = $this->partner(CommissionType::Percentage, 10);
         $this->coupon(['partner_id' => $partner->id]);
 
         $this->apply()->assertOk();
-        $this->assertSame(218500, session('checkout.promo.partner_commission_amount'));
+        // Paket = 2.000.000, diskon = 100.000 -> package_promo_price = 1.900.000.
+        // Komisi mitra 10% x 1.900.000 = 190.000 (tidak termasuk domain 185.000).
+        $this->assertSame(190000, session('checkout.promo.partner_commission_amount'));
+    }
+
+    public function test_partner_percentage_commission_exact_user_scenario(): void
+    {
+        // Kasus user: Template 1.750.000, diskon 10% (175.000), domain 200.000 (total dibayar klien 1.775.000).
+        // Komisi mitra 40% dari 1.575.000 (omset kotor paket website setelah diskon klien) = 630.000.
+        $template = Template::create([
+            'slug' => 'template-1750k',
+            'name' => 'Template Kasus User',
+            'category' => 'Bisnis',
+            'price' => 1750000,
+            'template_price' => 1000000,
+            'server_price' => 500000,
+            'service_price' => 250000,
+        ]);
+
+        $partner = $this->partner(CommissionType::Percentage, 40, 'Mitra Bidtech');
+        Coupon::create([
+            'code' => 'MITRA40',
+            'name' => 'Kupon Mitra 40%',
+            'discount_mode' => DiscountMode::SubtotalNonDomain,
+            'subtotal_discount_type' => DiscountType::Percentage,
+            'subtotal_discount_amount' => 10,
+            'is_active' => true,
+            'partner_id' => $partner->id,
+        ]);
+
+        $response = $this->withSession(['checkout' => ['domain_price' => 200000]])
+            ->postJson(route('checkout.promo.apply', $template), ['code' => 'MITRA40']);
+
+        $response->assertOk();
+        $this->assertSame(175000, $response->json('discount_amount'));
+        $this->assertSame(1775000, $response->json('new_total'));
+        $this->assertSame(630000, session('checkout.promo.partner_commission_amount'));
     }
 
     public function test_percentage_discount_on_subtotal_with_and_without_cap(): void
@@ -160,21 +197,21 @@ class PromoCalculationTest extends TestCase
 
     public function test_nominal_discount_is_capped_at_the_component_price_instead_of_being_rejected(): void
     {
-        $this->coupon(['template_discount_type' => DiscountType::Nominal, 'template_discount_amount' => 5000000, 'subtotal_discount_type' => null, 'subtotal_discount_amount' => null]);
+        $this->coupon(['discount_mode' => DiscountMode::PerComponent, 'template_discount_type' => DiscountType::Nominal, 'template_discount_amount' => 5000000, 'subtotal_discount_type' => null, 'subtotal_discount_amount' => null]);
 
         $this->assertDiscount(1000000, $this->apply());
     }
 
     public function test_fixed_discount_sets_the_component_price(): void
     {
-        $this->coupon(['server_discount_type' => DiscountType::Fixed, 'server_discount_amount' => 100000, 'subtotal_discount_type' => null, 'subtotal_discount_amount' => null]);
+        $this->coupon(['discount_mode' => DiscountMode::PerComponent, 'server_discount_type' => DiscountType::Fixed, 'server_discount_amount' => 100000, 'subtotal_discount_type' => null, 'subtotal_discount_amount' => null]);
 
         $this->assertDiscount(400000, $this->apply());
     }
 
     public function test_component_scoped_percentage_uses_only_that_component_price(): void
     {
-        $this->coupon(['template_discount_type' => DiscountType::Percentage, 'template_discount_amount' => 50, 'subtotal_discount_type' => null, 'subtotal_discount_amount' => null]);
+        $this->coupon(['discount_mode' => DiscountMode::PerComponent, 'template_discount_type' => DiscountType::Percentage, 'template_discount_amount' => 50, 'subtotal_discount_type' => null, 'subtotal_discount_amount' => null]);
 
         $this->assertDiscount(500000, $this->apply());
     }
@@ -182,6 +219,7 @@ class PromoCalculationTest extends TestCase
     public function test_discounts_across_components_are_summed(): void
     {
         $this->coupon([
+            'discount_mode' => DiscountMode::PerComponent,
             'subtotal_discount_type' => null, 'subtotal_discount_amount' => null,
             'server_discount_type' => DiscountType::Nominal, 'server_discount_amount' => 100000,
             'domain_discount_type' => DiscountType::Nominal, 'domain_discount_amount' => 50000,

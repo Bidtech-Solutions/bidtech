@@ -134,7 +134,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <StructuredData />
       </head>
-      <body className="bg-white font-[family-name:var(--font-inter)] text-white antialiased">
+      <body className="bg-white font-[family-name:var(--font-inter)] text-slate-900 antialiased">
         <LanguageProvider>
           <div className="min-h-screen bg-white">
             <AnnouncementBar />

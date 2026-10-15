@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import RentalDateSelector from "@/components/ui/RentalDateSelector";
 import type { DeliveryLocationData } from "@/components/booking/DeliveryMapPicker";
 import { formatRupiah, type Locale } from "@/lib/i18n";
-import type { Car } from "@/lib/data";
+import { COMPANY_INFO, type Car } from "@/lib/data";
 import { KeyRound, UserRoundCheck, Clock, Sparkles } from "lucide-react";
 
 const DeliveryMapPicker = dynamic(
@@ -212,7 +212,7 @@ export default function VehicleBookingWidget({
     ];
 
     const encodedText = encodeURIComponent(messageLines.join("\n"));
-    window.open(`https://wa.me/6281331412062?text=${encodedText}`, "_blank");
+    window.open(`https://wa.me/${COMPANY_INFO.whatsapp}?text=${encodedText}`, "_blank");
   };
 
   return (

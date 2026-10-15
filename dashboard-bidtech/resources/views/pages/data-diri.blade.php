@@ -43,13 +43,26 @@
                             <span class="text-sm sm:text-base font-bold text-[#0B1B17]">
                                 {{ $checkout['domain_name'] ?? '-' }}
                             </span>
-                            <span class="inline-flex items-center rounded-full bg-[#E7F4EE] px-2.5 py-0.5 text-xs font-semibold text-[#1E7A53]">
-                                Domain Terpilih
-                            </span>
+                            @if(!empty($checkout['is_own_domain']))
+                                <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                                    Domain Milik Sendiri
+                                </span>
+                            @else
+                                <span class="inline-flex items-center rounded-full bg-[#E7F4EE] px-2.5 py-0.5 text-xs font-semibold text-[#1E7A53]">
+                                    Domain Terpilih
+                                </span>
+                            @endif
                         </div>
                         <div class="text-xs text-[#6B7B75] mt-0.5 flex items-center gap-2">
-                            <span>Rp{{ number_format($checkout['domain_price'] ?? 0, 0, ',', '.') }} /tahun</span>
-                            <span class="text-[#1E7A53] font-medium">• Termasuk PPN 11%</span>
+                            @if(!empty($checkout['is_own_domain']))
+                                <span class="text-[#1E7A53] font-medium">Bebas Biaya Registrasi (Konfigurasi DNS)</span>
+                            @else
+                                @php
+                                    $cDuration = (int) ($checkout['domain_duration'] ?? 1);
+                                @endphp
+                                <span>Rp{{ number_format($checkout['domain_price'] ?? 0, 0, ',', '.') }} ({{ $cDuration }} Tahun)</span>
+                                <span class="text-[#1E7A53] font-medium">• Termasuk PPN 11%</span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -221,39 +234,50 @@
                     </div>
                     <div class="mt-4 space-y-2.5">
                         @php
-                            $tPrice = (int) ($template->template_price ?? 1000000);
-                            $sPrice = (int) ($template->server_price ?? 500000);
-                            $vPrice = (int) ($template->service_price ?? 500000);
+                            $duration = (int) ($checkout['domain_duration'] ?? 1);
+                            $duration = in_array($duration, [1, 2, 3], true) ? $duration : 1;
+                            $tPrice = ((int) ($template->template_price ?? 1000000)) * $duration;
+                            $sPrice = ((int) ($template->server_price ?? 500000)) * $duration;
+                            $vPrice = ((int) ($template->service_price ?? 500000)) * $duration;
                             $dPrice = (int) ($checkout['domain_price'] ?? 0);
                             $promoSession = session('checkout.promo');
                             $discAmount = (int) ($promoSession['discount_amount'] ?? 0);
                             $estTotal = max(0, $tPrice + $sPrice + $vPrice + $dPrice - $discAmount);
                         @endphp
                         <div class="flex items-center justify-between text-xs">
-                            <span class="text-[#6B7B75]">1. Desain Template</span>
+                            <span class="text-[#6B7B75]">1. Desain Template ({{ $duration }} Thn)</span>
                             <span class="font-semibold text-[#0B1B17]">Rp{{ number_format($tPrice, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex items-center justify-between text-xs">
-                            <span class="text-[#6B7B75]">2. Cloud Server (1 Thn)</span>
+                            <span class="text-[#6B7B75]">2. Cloud Server ({{ $duration }} Thn)</span>
                             <span class="font-semibold text-[#0B1B17]">Rp{{ number_format($sPrice, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex items-center justify-between text-xs">
-                            <span class="text-[#6B7B75]">3. Setup & Deployment</span>
+                            <span class="text-[#6B7B75]">3. Setup & Deployment ({{ $duration }} Thn)</span>
                             <span class="font-semibold text-[#0B1B17]">Rp{{ number_format($vPrice, 0, ',', '.') }}</span>
                         </div>
                         <div id="sidebar-domain-box">
                             @if(!empty($checkout['domain_name']))
-                                @php
-                                    $duration = (int) ($checkout['domain_duration'] ?? 1);
-                                    $pricePerYear = (int) ($checkout['domain_price_per_year'] ?? round(($checkout['domain_price'] ?? 185000) / max(1, $duration)));
-                                @endphp
-                                <div class="rounded-xl bg-[#E7F4EE] px-3 py-2 text-xs text-[#1E7A53] font-semibold flex items-center justify-between mt-1">
-                                    <div>
-                                        <span>Domain: <strong>{{ $checkout['domain_name'] }}</strong></span>
-                                        <div class="text-[10px] text-[#2E6806] font-normal">1 Tahun (Rp{{ number_format($pricePerYear, 0, ',', '.') }}/thn)</div>
+                                @if(!empty($checkout['is_own_domain']))
+                                    <div class="rounded-xl bg-[#E7F4EE] px-3 py-2 text-xs text-[#1E7A53] font-semibold flex items-center justify-between mt-1">
+                                        <div>
+                                            <span>Domain: <strong>{{ $checkout['domain_name'] }}</strong></span>
+                                            <div class="text-[10px] text-[#2E6806] font-normal">Milik Sendiri (Konfigurasi DNS)</div>
+                                        </div>
+                                        <span class="font-bold">Rp0</span>
                                     </div>
-                                    <span class="font-bold">Rp{{ number_format($checkout['domain_price'] ?? 0, 0, ',', '.') }}</span>
-                                </div>
+                                @else
+                                    @php
+                                        $pricePerYear = (int) ($checkout['domain_price_per_year'] ?? round(($checkout['domain_price'] ?? 185000) / max(1, $duration)));
+                                    @endphp
+                                    <div class="rounded-xl bg-[#E7F4EE] px-3 py-2 text-xs text-[#1E7A53] font-semibold flex items-center justify-between mt-1">
+                                        <div>
+                                            <span>Domain: <strong>{{ $checkout['domain_name'] }}</strong></span>
+                                            <div class="text-[10px] text-[#2E6806] font-normal">{{ $duration }} Tahun (Rp{{ number_format($pricePerYear, 0, ',', '.') }}/thn)</div>
+                                        </div>
+                                        <span class="font-bold">Rp{{ number_format($checkout['domain_price'] ?? 0, 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
                             @else
                                 <div class="rounded-xl bg-[#F4F6F5] px-3 py-2 text-xs text-[#6B7B75] flex items-center justify-between mt-1">
                                     <span>4. Registrasi Domain</span>

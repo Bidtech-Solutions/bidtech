@@ -6,12 +6,15 @@
 @if($mode === 'create' || $mode === 'edit')
 @php
     $promo = $promo ?? null;
-    $components = [
-        'subtotal' => 'Subtotal (Seluruh Paket + Domain)',
-        'template' => 'Biaya Template',
-        'server' => 'Biaya Server',
-        'service' => 'Biaya Layanan',
-        'domain' => 'Biaya Domain',
+    $selectedMode = old('discount_mode', $promo?->discount_mode?->value ?? \App\Enums\DiscountMode::SubtotalDomain->value);
+    $subtotalType = old('subtotal_discount_type', $promo?->subtotal_discount_type?->value ?? '');
+    $subtotalAmount = old('subtotal_discount_amount', $promo?->subtotal_discount_amount);
+    $subtotalMax = old('subtotal_discount_max', $promo?->subtotal_discount_max);
+    $individualComponents = [
+        'template' => ['label' => 'Biaya Lisensi Template', 'icon' => 'layout', 'desc' => 'Potongan harga lisensi template website'],
+        'server' => ['label' => 'Biaya Cloud Server & Hosting', 'icon' => 'server', 'desc' => 'Potongan paket hosting / server cloud'],
+        'service' => ['label' => 'Biaya Setup & Deployment', 'icon' => 'wrench', 'desc' => 'Potongan biaya jasa instalasi & setup'],
+        'domain' => ['label' => 'Biaya Registrasi Domain', 'icon' => 'globe', 'desc' => 'Potongan biaya sewa domain tahunan'],
     ];
 @endphp
 <div class="max-w-4xl mx-auto space-y-8">
@@ -75,51 +78,174 @@
             @endif
         </div>
 
-        {{-- Konfigurasi Diskon per Komponen --}}
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-4">
-            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                <i data-lucide="percent" class="w-4 h-4 text-amber-500"></i>
-                Konfigurasi Diskon per Komponen Harga
-            </h2>
-            <p class="text-xs text-slate-500">Atur diskon secara independen untuk tiap komponen harga. Komponen yang dibiarkan "Tidak ada diskon" tidak terpengaruh kode promo ini.</p>
+        {{-- Pilihan Mode Diskon --}}
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-5">
+            <div>
+                <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="layers" class="w-4 h-4 text-violet-500"></i>
+                    Mode Konfigurasi Diskon <span class="text-rose-500">*</span>
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">Pilih metode perhitungan diskon yang diterapkan saat checkout pemesanan website.</p>
+            </div>
 
-            @foreach($components as $key => $label)
-                @php
-                    $discountType = old("{$key}_discount_type", $promo?->{"{$key}_discount_type"}?->value ?? '');
-                    $discountAmount = old("{$key}_discount_amount", $promo?->{"{$key}_discount_amount"});
-                    $discountMax = old("{$key}_discount_max", $promo?->{"{$key}_discount_max"});
-                @endphp
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">{{ $label }}</label>
-                        <select name="{{ $key }}_discount_type" data-component="{{ $key }}"
-                                class="discount-type-select w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
-                            <option value="" {{ $discountType === '' ? 'selected' : '' }}>Tidak ada diskon</option>
-                            <option value="PERCENTAGE" {{ $discountType === 'PERCENTAGE' ? 'selected' : '' }}>Persentase (%)</option>
-                            <option value="FIXED" {{ $discountType === 'FIXED' ? 'selected' : '' }}>Harga Tetap (Rp)</option>
-                            <option value="NOMINAL" {{ $discountType === 'NOMINAL' ? 'selected' : '' }}>Potongan Nominal (Rp)</option>
-                        </select>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                {{-- Mode 1: Sub total + Domain --}}
+                <label class="discount-mode-card relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all {{ $selectedMode === 'SUBTOTAL_DOMAIN' ? 'border-violet-600 bg-violet-50/30 shadow-xs' : 'border-slate-200 hover:border-slate-300 bg-white' }}">
+                    <div class="flex items-start justify-between gap-2 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        </div>
+                        <input type="radio" name="discount_mode" value="SUBTOTAL_DOMAIN" class="discount-mode-radio mt-1 w-4 h-4 text-violet-600 border-slate-300 focus:ring-violet-500" {{ $selectedMode === 'SUBTOTAL_DOMAIN' ? 'checked' : '' }}>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Nilai</label>
-                        <input type="text" inputmode="numeric" name="{{ $key }}_discount_amount" value="{{ $discountAmount }}" placeholder="0"
-                               class="coupon-amount-input w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
+                    <span class="font-bold text-sm text-slate-900 leading-snug">Sub total + Domain</span>
+                    <span class="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800 w-fit">Total Belanja</span>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Diskon dihitung dari total seluruh pesanan termasuk biaya registrasi domain.</p>
+                </label>
+
+                {{-- Mode 2: Subtotal Non Domain --}}
+                <label class="discount-mode-card relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all {{ $selectedMode === 'SUBTOTAL_NON_DOMAIN' ? 'border-violet-600 bg-violet-50/30 shadow-xs' : 'border-slate-200 hover:border-slate-300 bg-white' }}">
+                    <div class="flex items-start justify-between gap-2 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        </div>
+                        <input type="radio" name="discount_mode" value="SUBTOTAL_NON_DOMAIN" class="discount-mode-radio mt-1 w-4 h-4 text-violet-600 border-slate-300 focus:ring-violet-500" {{ $selectedMode === 'SUBTOTAL_NON_DOMAIN' ? 'checked' : '' }}>
                     </div>
-                    <div class="coupon-max-wrapper" data-component-max="{{ $key }}" style="{{ $discountType === 'PERCENTAGE' ? '' : 'display:none' }}">
-                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Maks. Diskon (Rp)</label>
-                        <input type="text" inputmode="numeric" name="{{ $key }}_discount_max" value="{{ $discountMax }}" placeholder="Opsional"
-                               class="coupon-amount-input w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
+                    <span class="font-bold text-sm text-slate-900 leading-snug">Subtotal Non Domain</span>
+                    <span class="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-100 text-sky-800 w-fit">Paket Web Saja</span>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Diskon hanya memotong paket website (Template + Hosting + Setup). Domain tetap dibayar penuh.</p>
+                </label>
+
+                {{-- Mode 3: Per Komponen --}}
+                <label class="discount-mode-card relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all {{ $selectedMode === 'PER_COMPONENT' ? 'border-violet-600 bg-violet-50/30 shadow-xs' : 'border-slate-200 hover:border-slate-300 bg-white' }}">
+                    <div class="flex items-start justify-between gap-2 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                            <i data-lucide="sliders" class="w-4 h-4"></i>
+                        </div>
+                        <input type="radio" name="discount_mode" value="PER_COMPONENT" class="discount-mode-radio mt-1 w-4 h-4 text-violet-600 border-slate-300 focus:ring-violet-500" {{ $selectedMode === 'PER_COMPONENT' ? 'checked' : '' }}>
                     </div>
+                    <span class="font-bold text-sm text-slate-900 leading-snug">Per Komponen</span>
+                    <span class="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 w-fit">Modular</span>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Atur diskon spesifik untuk masing-masing item (Template, Server, Setup, atau Domain).</p>
+                </label>
+            </div>
+            @error('discount_mode')<p class="text-rose-500 text-xs mt-1">{{ $message }}</p>@enderror
+        </div>
+
+        {{-- Panel Diskon Mode 1 & Mode 2 (Subtotal) --}}
+        <div id="subtotal-discount-container" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-4 {{ $selectedMode === 'PER_COMPONENT' ? 'hidden' : '' }}">
+            <div>
+                <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="percent" class="w-4 h-4 text-violet-500"></i>
+                    <span id="subtotal-panel-title">{{ $selectedMode === 'SUBTOTAL_NON_DOMAIN' ? 'Konfigurasi Diskon Paket Website (Non Domain)' : 'Konfigurasi Diskon Subtotal (+ Domain)' }}</span>
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">Tentukan tipe dan nilai diskon yang berlaku.</p>
+            </div>
+
+            {{-- Callout Alert Mode --}}
+            <div id="mode-domain-alert" class="p-3.5 rounded-xl text-xs {{ $selectedMode === 'SUBTOTAL_NON_DOMAIN' ? 'bg-sky-50 text-sky-800 border border-sky-200/70' : 'bg-purple-50 text-purple-800 border border-purple-200/70' }}">
+                <div class="flex items-center gap-2 font-semibold">
+                    <i data-lucide="{{ $selectedMode === 'SUBTOTAL_NON_DOMAIN' ? 'shield-check' : 'info' }}" class="w-4 h-4 shrink-0"></i>
+                    <span id="mode-domain-alert-text">
+                        {{ $selectedMode === 'SUBTOTAL_NON_DOMAIN' ? 'Proteksi Domain: Pelanggan tetap membayar biaya registrasi domain (mis. Rp150.000) secara penuh. Diskon hanya mengurangi biaya paket website.' : 'Diskon Global: Potongan dihitung dari total harga belanja keseluruhan (termasuk biaya domain).' }}
+                    </span>
                 </div>
-            @endforeach
+            </div>
 
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl border border-slate-100 bg-slate-50/60">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Tipe Diskon <span class="text-rose-500">*</span></label>
+                    <select name="subtotal_discount_type" id="subtotal_discount_type" data-component="subtotal"
+                            class="discount-type-select w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
+                        <option value="" {{ $subtotalType === '' ? 'selected' : '' }}>Pilih tipe diskon</option>
+                        <option value="PERCENTAGE" {{ $subtotalType === 'PERCENTAGE' ? 'selected' : '' }}>Persentase (%)</option>
+                        <option value="NOMINAL" {{ $subtotalType === 'NOMINAL' ? 'selected' : '' }}>Potongan Nominal (Rp)</option>
+                        <option value="FIXED" {{ $subtotalType === 'FIXED' ? 'selected' : '' }}>Harga Tetap (Rp)</option>
+                    </select>
+                    @error('subtotal_discount_type')<p class="text-rose-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Nilai Diskon <span class="text-rose-500">*</span></label>
+                    <input type="text" inputmode="numeric" name="subtotal_discount_amount" id="subtotal_discount_amount"
+                           value="{{ $subtotalAmount }}" placeholder="Contoh: 20 atau 200.000"
+                           class="coupon-amount-input w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
+                    @error('subtotal_discount_amount')<p class="text-rose-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div class="coupon-max-wrapper" data-component-max="subtotal" style="{{ $subtotalType === 'PERCENTAGE' ? '' : 'display:none' }}">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Maks. Diskon (Rp)</label>
+                    <input type="text" inputmode="numeric" name="subtotal_discount_max" value="{{ $subtotalMax }}" placeholder="Opsional (contoh: 500.000)"
+                           class="coupon-amount-input w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
+                    <p class="text-[10px] text-slate-400 mt-0.5">Batas atas diskon persentase</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Panel Diskon Mode 3 (Per Komponen) --}}
+        <div id="per-component-discount-container" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-4 {{ $selectedMode === 'PER_COMPONENT' ? '' : 'hidden' }}">
+            <div>
+                <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-4 h-4 text-amber-500"></i>
+                    Konfigurasi Diskon per Komponen Harga
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">Atur diskon secara independen untuk tiap komponen. Komponen dengan "Tidak ada diskon" akan dikenakan harga standar.</p>
+            </div>
+
+            <div class="space-y-3">
+                @foreach($individualComponents as $key => $compInfo)
+                    @php
+                        $discountType = old("{$key}_discount_type", $promo?->{"{$key}_discount_type"}?->value ?? '');
+                        $discountAmount = old("{$key}_discount_amount", $promo?->{"{$key}_discount_amount"});
+                        $discountMax = old("{$key}_discount_max", $promo?->{"{$key}_discount_max"});
+                    @endphp
+                    <div class="p-4 rounded-xl border border-slate-100 bg-slate-50/60 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                                <i data-lucide="{{ $compInfo['icon'] }}" class="w-3.5 h-3.5"></i>
+                            </span>
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-800">{{ $compInfo['label'] }}</h3>
+                                <p class="text-[11px] text-slate-400">{{ $compInfo['desc'] }}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tipe Diskon</label>
+                                <select name="{{ $key }}_discount_type" data-component="{{ $key }}"
+                                        class="discount-type-select w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
+                                    <option value="" {{ $discountType === '' ? 'selected' : '' }}>Tidak ada diskon</option>
+                                    <option value="PERCENTAGE" {{ $discountType === 'PERCENTAGE' ? 'selected' : '' }}>Persentase (%)</option>
+                                    <option value="NOMINAL" {{ $discountType === 'NOMINAL' ? 'selected' : '' }}>Potongan Nominal (Rp)</option>
+                                    <option value="FIXED" {{ $discountType === 'FIXED' ? 'selected' : '' }}>Harga Tetap (Rp)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nilai</label>
+                                <input type="text" inputmode="numeric" name="{{ $key }}_discount_amount" value="{{ $discountAmount }}" placeholder="0"
+                                       class="coupon-amount-input w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
+                            </div>
+                            <div class="coupon-max-wrapper" data-component-max="{{ $key }}" style="{{ $discountType === 'PERCENTAGE' ? '' : 'display:none' }}">
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Maks. Diskon (Rp)</label>
+                                <input type="text" inputmode="numeric" name="{{ $key }}_discount_max" value="{{ $discountMax }}" placeholder="Opsional"
+                                       class="coupon-amount-input w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Syarat Min. Subtotal Belanja --}}
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-3">
+            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                <i data-lucide="tag" class="w-4 h-4 text-emerald-500"></i>
+                Syarat Minimal Pembelian
+            </h2>
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">Min. Subtotal Belanja (Rp)</label>
                 <input type="text" inputmode="numeric" name="min_order_amount" id="min_order_amount"
                        value="{{ old('min_order_amount', $promo->min_order_amount ?? '') }}"
                        placeholder="Opsional (contoh: 1.000.000)"
                        class="coupon-amount-input w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500">
-                <p class="text-[11px] text-slate-400 mt-1">Syarat total keranjang belanja sebelum diskon</p>
+                <p class="text-[11px] text-slate-400 mt-1">Syarat total keranjang belanja sebelum diskon agar kode promo dapat digunakan.</p>
             </div>
         </div>
 
@@ -169,7 +295,7 @@
                     <option value="">Kupon umum (tanpa mitra)</option>
                     @foreach($partners as $partner)
                         <option value="{{ $partner->id }}" {{ (string) old('partner_id', $promo->partner_id ?? '') === (string) $partner->id ? 'selected' : '' }}>
-                            {{ $partner->user->name }} ({{ $partner->user->email }}) &bull; komisi {{ $partner->type_commission->value }} {{ $partner->amount_commission }}
+                            {{ $partner->user->name }} ({{ $partner->user->email }}){{ !($partner->is_active ?? true) ? ' [NONAKTIF]' : '' }} &bull; komisi {{ $partner->type_commission->value === 'PERCENTAGE' ? $partner->amount_commission.'%' : 'Rp'.number_format($partner->amount_commission, 0, ',', '.') }}
                         </option>
                     @endforeach
                 </select>
@@ -201,6 +327,52 @@ function formatRupiahInput(input) {
     input.setSelectionRange(newCursor, newCursor);
 }
 
+function updateDiscountModeUI(mode) {
+    const subtotalContainer = document.getElementById('subtotal-discount-container');
+    const perComponentContainer = document.getElementById('per-component-discount-container');
+    const panelTitle = document.getElementById('subtotal-panel-title');
+    const domainAlert = document.getElementById('mode-domain-alert');
+    const domainAlertText = document.getElementById('mode-domain-alert-text');
+
+    document.querySelectorAll('.discount-mode-card').forEach(function(card) {
+        const radio = card.querySelector('.discount-mode-radio');
+        if (radio && radio.value === mode) {
+            card.classList.add('border-violet-600', 'bg-violet-50/30', 'shadow-xs');
+            card.classList.remove('border-slate-200');
+            radio.checked = true;
+        } else {
+            card.classList.remove('border-violet-600', 'bg-violet-50/30', 'shadow-xs');
+            card.classList.add('border-slate-200');
+        }
+    });
+
+    if (mode === 'PER_COMPONENT') {
+        if (subtotalContainer) subtotalContainer.classList.add('hidden');
+        if (perComponentContainer) perComponentContainer.classList.remove('hidden');
+    } else {
+        if (subtotalContainer) subtotalContainer.classList.remove('hidden');
+        if (perComponentContainer) perComponentContainer.classList.add('hidden');
+
+        if (mode === 'SUBTOTAL_NON_DOMAIN') {
+            if (panelTitle) panelTitle.textContent = 'Konfigurasi Diskon Paket Website (Non Domain)';
+            if (domainAlert) {
+                domainAlert.className = 'p-3.5 rounded-xl text-xs bg-sky-50 text-sky-800 border border-sky-200/70';
+            }
+            if (domainAlertText) {
+                domainAlertText.textContent = 'Proteksi Domain: Pelanggan tetap membayar biaya registrasi domain (mis. Rp150.000) secara penuh. Diskon hanya mengurangi biaya paket website.';
+            }
+        } else {
+            if (panelTitle) panelTitle.textContent = 'Konfigurasi Diskon Subtotal (+ Domain)';
+            if (domainAlert) {
+                domainAlert.className = 'p-3.5 rounded-xl text-xs bg-purple-50 text-purple-800 border border-purple-200/70';
+            }
+            if (domainAlertText) {
+                domainAlertText.textContent = 'Diskon Global: Potongan dihitung dari total harga belanja keseluruhan (termasuk biaya domain).';
+            }
+        }
+    }
+}
+
 document.querySelectorAll('.discount-type-select').forEach(function (select) {
     select.addEventListener('change', function () {
         const key = this.dataset.component;
@@ -209,7 +381,18 @@ document.querySelectorAll('.discount-type-select').forEach(function (select) {
     });
 });
 
+document.querySelectorAll('.discount-mode-radio').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+        updateDiscountModeUI(this.value);
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function () {
+    const checkedRadio = document.querySelector('.discount-mode-radio:checked');
+    if (checkedRadio) {
+        updateDiscountModeUI(checkedRadio.value);
+    }
+
     document.querySelectorAll('.coupon-amount-input').forEach(function (input) {
         if (input.value) formatRupiahInput(input);
         input.addEventListener('input', function () { formatRupiahInput(this); });
@@ -235,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <p class="text-sm text-slate-500 mt-1">Kelola semua kode voucher, diskon per komponen, dan promo kemitraan dalam satu panel.</p>
         </div>
         <div class="flex items-center gap-2.5">
-            <a href="{{ route('dashboard.promos.partners') }}"
+            <a href="{{ route('dashboard.partners.index') }}"
                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm shadow-xs transition">
                 <i data-lucide="users" class="w-4 h-4 text-blue-600"></i>
                 <span>Mitra & Komisi</span>
@@ -302,6 +485,13 @@ document.addEventListener('DOMContentLoaded', function () {
                        placeholder="Cari kode, nama, atau nama mitra..."
                        class="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 bg-slate-50/50">
             </div>
+            <select name="discount_mode" onchange="this.form.submit()"
+                    class="px-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 bg-slate-50/50 text-slate-700">
+                <option value="all">Semua Mode</option>
+                <option value="SUBTOTAL_DOMAIN" {{ request('discount_mode') === 'SUBTOTAL_DOMAIN' ? 'selected' : '' }}>Sub total + Domain</option>
+                <option value="SUBTOTAL_NON_DOMAIN" {{ request('discount_mode') === 'SUBTOTAL_NON_DOMAIN' ? 'selected' : '' }}>Subtotal Non Domain</option>
+                <option value="PER_COMPONENT" {{ request('discount_mode') === 'PER_COMPONENT' ? 'selected' : '' }}>Per Komponen</option>
+            </select>
             <select name="is_partner" onchange="this.form.submit()"
                     class="px-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 bg-slate-50/50 text-slate-700">
                 <option value="all">Semua Kategori</option>
@@ -315,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Nonaktif</option>
             </select>
             <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-semibold transition">Filter</button>
-            @if(request('search') || request('is_partner') || request('is_active'))
+            @if(request('search') || request('discount_mode') || request('is_partner') || request('is_active'))
                 <a href="{{ route('dashboard.promos.index') }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-medium transition text-center">Reset</a>
             @endif
         </form>
@@ -329,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <tr>
                         <th class="py-3.5 px-4 w-12 text-center">ID</th>
                         <th class="py-3.5 px-4">Kode & Nama</th>
-                        <th class="py-3.5 px-4">Diskon Aktif</th>
+                        <th class="py-3.5 px-4">Mode & Diskon</th>
                         <th class="py-3.5 px-4 text-center">Digunakan</th>
                         <th class="py-3.5 px-4">Masa Berlaku</th>
                         <th class="py-3.5 px-4 text-center">Status</th>
@@ -350,26 +540,66 @@ document.addEventListener('DOMContentLoaded', function () {
                                 @endif
                             </td>
                             <td class="py-4 px-4">
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach(['subtotal' => 'Subtotal', 'template' => 'Template', 'server' => 'Server', 'service' => 'Layanan', 'domain' => 'Domain'] as $key => $label)
-                                        @php $componentType = $promo->{"{$key}_discount_type"}; @endphp
-                                        @if($componentType)
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/50">
-                                                {{ $label }}:
-                                                @if($componentType->value === 'PERCENTAGE')
-                                                    -{{ $promo->{"{$key}_discount_amount"} }}%
-                                                @elseif($componentType->value === 'FIXED')
-                                                    jadi Rp{{ number_format($promo->{"{$key}_discount_amount"}, 0, ',', '.') }}
+                                @php
+                                    $modeEnum = $promo->discount_mode ?? \App\Enums\DiscountMode::SubtotalDomain;
+                                @endphp
+                                <div class="space-y-1.5">
+                                    <div>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $modeEnum->badgeClasses() }}">
+                                            {{ $modeEnum->label() }}
+                                        </span>
+                                    </div>
+
+                                    @if($modeEnum === \App\Enums\DiscountMode::SubtotalDomain || $modeEnum === \App\Enums\DiscountMode::SubtotalNonDomain)
+                                        @php $subType = $promo->subtotal_discount_type; @endphp
+                                        @if($subType)
+                                            <div class="text-xs font-semibold text-slate-800 flex items-center gap-1">
+                                                @if($subType->value === 'PERCENTAGE')
+                                                    <span class="text-emerald-600 font-bold">-{{ $promo->subtotal_discount_amount }}%</span>
+                                                    @if($promo->subtotal_discount_max)
+                                                        <span class="text-[11px] text-slate-400 font-normal">(maks. Rp{{ number_format($promo->subtotal_discount_max, 0, ',', '.') }})</span>
+                                                    @endif
+                                                @elseif($subType->value === 'FIXED')
+                                                    <span>Jadi Rp{{ number_format($promo->subtotal_discount_amount, 0, ',', '.') }}</span>
                                                 @else
-                                                    -Rp{{ number_format($promo->{"{$key}_discount_amount"}, 0, ',', '.') }}
+                                                    <span class="text-emerald-600 font-bold">-Rp{{ number_format($promo->subtotal_discount_amount, 0, ',', '.') }}</span>
                                                 @endif
-                                            </span>
+                                            </div>
+                                            @if($modeEnum === \App\Enums\DiscountMode::SubtotalNonDomain)
+                                                <p class="text-[10px] text-sky-600 font-medium">Domain tidak dipotong diskon</p>
+                                            @endif
+                                        @else
+                                            <span class="text-xs text-slate-400 italic">Diskon belum diset</span>
                                         @endif
-                                    @endforeach
+                                    @else
+                                        <div class="flex flex-wrap gap-1">
+                                            @php $hasComp = false; @endphp
+                                            @foreach(['template' => 'Template', 'server' => 'Server', 'service' => 'Layanan', 'domain' => 'Domain'] as $key => $label)
+                                                @php $componentType = $promo->{"{$key}_discount_type"}; @endphp
+                                                @if($componentType)
+                                                    @php $hasComp = true; @endphp
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/50">
+                                                        {{ $label }}:
+                                                        @if($componentType->value === 'PERCENTAGE')
+                                                            -{{ $promo->{"{$key}_discount_amount"} }}%
+                                                        @elseif($componentType->value === 'FIXED')
+                                                            Rp{{ number_format($promo->{"{$key}_discount_amount"}, 0, ',', '.') }}
+                                                        @else
+                                                            -Rp{{ number_format($promo->{"{$key}_discount_amount"}, 0, ',', '.') }}
+                                                        @endif
+                                                    </span>
+                                                @endif
+                                            @endforeach
+                                            @if(! $hasComp)
+                                                <span class="text-xs text-slate-400 italic">Tidak ada komponen aktif</span>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    @if($promo->min_order_amount)
+                                        <p class="text-[11px] text-slate-400">Min. order Rp{{ number_format($promo->min_order_amount, 0, ',', '.') }}</p>
+                                    @endif
                                 </div>
-                                @if($promo->min_order_amount)
-                                    <p class="text-[11px] text-slate-400 mt-1">Min. order Rp{{ number_format($promo->min_order_amount, 0, ',', '.') }}</p>
-                                @endif
                             </td>
                             <td class="py-4 px-4 text-center">
                                 <a href="{{ route('dashboard.promos.usages', $promo) }}"

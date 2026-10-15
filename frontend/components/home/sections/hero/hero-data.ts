@@ -77,7 +77,7 @@ export const heroSlides: HeroSlide[] = [
     id: "hero-1",
     title: "",
     subtitle: "",
-    modelSrc: "/images/hero/model-4.webp",
+    modelSrc: "/images/hero/model-6.webp",
     modelAlt: "",
     decoratives: [
       {
@@ -121,7 +121,7 @@ export const heroSlides: HeroSlide[] = [
     id: "hero-2",
     title: "",
     subtitle: "",
-    modelSrc: "/images/hero/model-2.webp",
+    modelSrc: "/images/hero/model-7.webp",
     modelAlt: "",
     decoratives: [
       {

@@ -13,6 +13,7 @@ import {
   Users,
   House,
   GraduationCap,
+  Eye,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,6 +24,7 @@ import {
   recordTemplateView,
   type ExtendedTemplateItem,
 } from "@/lib/api/template-api";
+import { useTemplateViews } from "@/lib/hooks/use-template-views";
 import { useLanguage } from "@/lib/i18n";
 
 // Category display mapping matching the design
@@ -56,6 +58,8 @@ export function TemplatePreviewSection() {
   const { t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState("all");
   const [templates, setTemplates] = useState<ExtendedTemplateItem[]>(TEMPLATES);
+
+  const { getViewCount, isHighlighted } = useTemplateViews({ initialTemplates: templates });
 
   useEffect(() => {
     let isMounted = true;
@@ -109,7 +113,7 @@ export function TemplatePreviewSection() {
         </Reveal>
 
         {/* Category Filter Pills */}
-        <div className="mt-7 sm:mt-8 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5">
+        <div className="mt-7 sm:mt-9 md:mt-10 mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 md:gap-3.5 px-2 sm:px-4">
           {CATEGORY_TABS.map((tab) => {
             const isActive = activeCategory === tab.id;
             const count =
@@ -121,16 +125,16 @@ export function TemplatePreviewSection() {
               <button
                 key={tab.id}
                 onClick={() => setActiveCategory(tab.id)}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 xs:gap-2 sm:gap-2.5 rounded-full px-3.5 xs:px-4.5 sm:px-5 md:px-6 py-2 xs:py-2.5 sm:py-3 text-xs xs:text-sm sm:text-[15px] font-semibold transition-all duration-200 cursor-pointer shadow-xs hover:shadow-sm hover:scale-[1.02] active:scale-[0.98] ${
                   isActive
-                    ? "bg-[#45a02e] text-white shadow-sm shadow-[#45a02e]/20"
-                    : "bg-white border border-slate-200 text-slate-700 hover:border-[#45a02e] hover:text-[#45a02e]"
+                    ? "bg-[#45a02e] text-white shadow-md shadow-[#45a02e]/25 border border-transparent"
+                    : "bg-white border border-slate-200/90 text-slate-700 hover:border-[#45a02e] hover:text-[#45a02e]"
                 }`}
                 type="button"
               >
                 <span>{tab.name}</span>
                 <span
-                  className={`text-xs ${
+                  className={`text-xs sm:text-sm font-semibold transition-colors ${
                     isActive ? "text-white/90" : "text-slate-400"
                   }`}
                 >
@@ -146,7 +150,6 @@ export function TemplatePreviewSection() {
           {filteredTemplates.map((template, index) => {
             const Icon =
               categoryIcons[template.category] ?? template.icon ?? CarFront;
-            const views = template.views ?? 80;
             const displayCategory =
               template.category === "UMKM"
                 ? "Kuliner"
@@ -156,6 +159,8 @@ export function TemplatePreviewSection() {
             const checkoutUrl =
               template.checkout_url ||
               `${DASHBOARD_URL}/checkout/${template.id}/domain`;
+            const views = getViewCount(template.id, template.views);
+            const highlighted = isHighlighted(template.id);
 
             return (
               <Reveal
@@ -167,7 +172,14 @@ export function TemplatePreviewSection() {
                 <div className="group relative flex w-full flex-col justify-between rounded-[22px] sm:rounded-[24px] bg-white border border-slate-200/90 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:border-[#45a02e] hover:shadow-[0_16px_40px_rgba(69,160,46,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden">
                   <div>
                     {/* Visual Image */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 border-b border-slate-100">
+                    <Link
+                      href={template.previewHref}
+                      onClick={() => recordTemplateView(template.id)}
+                      rel="noreferrer"
+                      target="_blank"
+                      className="block relative aspect-[16/10] w-full overflow-hidden bg-slate-100 border-b border-slate-100 cursor-pointer"
+                      title={`Buka live demo ${template.name}`}
+                    >
                       <Image
                         alt={template.name}
                         className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
@@ -175,20 +187,32 @@ export function TemplatePreviewSection() {
                         sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
                         src={template.image}
                       />
-                    </div>
+                    </Link>
 
                     {/* Card Content Body */}
                     <div className="p-4 sm:p-5">
-                      {/* Top Category & View Count Row */}
+                      {/* Top Category & Real-time View Counter Row */}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
                           <Icon className="size-4 text-[#45a02e]" />
                           <span>{displayCategory}</span>
                         </div>
-                        <span className="text-xs text-slate-400 font-medium">
-                          {t.templatePreview.viewCountPrefix} {views}{" "}
-                          {t.templatePreview.viewCountSuffix}
-                        </span>
+
+                        {/* Real-time View Badge */}
+                        <div
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs transition-all duration-300 select-none ${
+                            highlighted
+                              ? "bg-emerald-500 text-white scale-105 shadow-md shadow-emerald-500/25 ring-2 ring-emerald-300 font-bold"
+                              : "bg-slate-100/90 text-slate-600 hover:bg-slate-200/80 font-medium"
+                          }`}
+                          title={`${views.toLocaleString("id-ID")} kali dilihat`}
+                        >
+                          <Eye className={`size-3.5 shrink-0 ${highlighted ? "text-white animate-pulse" : "text-[#45a02e]"}`} />
+                          <span className="font-semibold tabular-nums">{views.toLocaleString("id-ID")}</span>
+                          <span className="text-[10px] text-slate-400 font-normal">
+                            {t.templatePreview.viewCountSuffix || "Kali"}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Template Title */}

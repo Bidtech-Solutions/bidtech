@@ -2,14 +2,39 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
+import { useLanguage } from "@/lib/i18n";
 
 interface UniversalCtaProps {
   className?: string;
+  secondaryText?: string;
+  secondaryHref?: string;
 }
 
-export function UniversalCta({ className = "" }: UniversalCtaProps) {
+export function UniversalCta({
+  className = "",
+  secondaryText,
+  secondaryHref,
+}: UniversalCtaProps) {
+  const { lang } = useLanguage();
+  const pathname = usePathname();
+  const isEn = lang === "en";
+
+  const isPortfolioPage = pathname === "/portofolio";
+  const defaultSecondaryHref = isPortfolioPage ? "/template-website" : "/portofolio";
+  const defaultSecondaryText = isPortfolioPage
+    ? isEn
+      ? "Browse Templates"
+      : "Lihat Template"
+    : isEn
+      ? "View Portfolio"
+      : "Lihat Portofolio";
+
+  const resolvedSecondaryHref = secondaryHref || defaultSecondaryHref;
+  const resolvedSecondaryText = secondaryText || defaultSecondaryText;
+
   return (
     <section
       aria-labelledby="universal-cta-title"
@@ -25,13 +50,25 @@ export function UniversalCta({ className = "" }: UniversalCtaProps) {
                 className="font-[family-name:var(--font-sora)] text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight text-slate-950 leading-[1.18]"
                 id="universal-cta-title"
               >
-                Wujudkan Website &amp; <br />
-                Aplikasi Impian Bersama <br />
-                <span className="text-[#45a02e]">BidTech</span>
+                {isEn ? (
+                  <>
+                    Create Your Dream Website &amp; <br />
+                    Application Together with <br />
+                    <span className="text-[#45a02e]">BidTech</span>
+                  </>
+                ) : (
+                  <>
+                    Wujudkan Website &amp; <br />
+                    Aplikasi Impian Bersama <br />
+                    <span className="text-[#45a02e]">BidTech</span>
+                  </>
+                )}
               </h2>
 
               <p className="max-w-xl text-xs sm:text-sm sm:text-base leading-relaxed text-slate-600">
-                Konsultasikan kebutuhan digital bisnis Anda secara gratis. Dari pilihan template siap pakai hingga kustomisasi penuh, kami siap membantu bisnis Anda naik level.
+                {isEn
+                  ? "Consult your digital business needs for free. From ready-to-use template selections to full customization, we are ready to help your business level up."
+                  : "Konsultasikan kebutuhan digital bisnis Anda secara gratis. Dari pilihan template siap pakai hingga kustomisasi penuh, kami siap membantu bisnis Anda naik level."}
               </p>
 
               {/* Action Buttons */}
@@ -46,16 +83,16 @@ export function UniversalCta({ className = "" }: UniversalCtaProps) {
                   <svg className="size-4 fill-white shrink-0" viewBox="0 0 24 24">
                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.394-10.416c-5.523 0-10 4.477-10 10 0 1.766.458 3.424 1.258 4.872l-1.336 4.887 5.011-1.314c1.401.764 3.003 1.198 4.707 1.198 5.523 0 10-4.477 10-10 0-5.523-4.477-10-10-10z" />
                   </svg>
-                  <span>Konsultasi via WhatsApp</span>
+                  <span>{isEn ? "Consult via WhatsApp" : "Konsultasi via WhatsApp"}</span>
                   <ArrowRight className="size-4" />
                 </a>
 
-                {/* Secondary Button: Portofolio */}
+                {/* Secondary Button */}
                 <Link
-                  href="/template-website"
+                  href={resolvedSecondaryHref}
                   className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 px-6 sm:px-7 py-3.5 sm:py-4 text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer text-center"
                 >
-                  <span>Lihat Portofolio</span>
+                  <span>{resolvedSecondaryText}</span>
                   <ArrowRight className="size-4" />
                 </Link>
               </div>
@@ -64,15 +101,19 @@ export function UniversalCta({ className = "" }: UniversalCtaProps) {
               <div className="pt-6 border-t border-slate-200/90 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-xs font-medium text-slate-600">
                 <div className="flex items-center gap-2">
                   <span className="text-[#45a02e] font-bold text-sm">✓</span>
-                  <span>Respon Cepat &lt; 15 Menit</span>
+                  <span>{isEn ? "Fast Response < 15 Minutes" : "Respon Cepat < 15 Menit"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[#45a02e] font-bold text-sm">✓</span>
-                  <span>Konsultasi 100% Gratis &amp; Tanpa Komitmen</span>
+                  <span>
+                    {isEn
+                      ? "100% Free Consultation & No Commitment"
+                      : "Konsultasi 100% Gratis & Tanpa Komitmen"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 sm:col-span-2">
                   <span className="text-[#45a02e] font-bold text-sm">✓</span>
-                  <span>Garansi Maintenance</span>
+                  <span>{isEn ? "Maintenance Guarantee" : "Garansi Maintenance"}</span>
                 </div>
               </div>
             </div>
@@ -83,7 +124,7 @@ export function UniversalCta({ className = "" }: UniversalCtaProps) {
                 {/* Main CTA Visual */}
                 <div className="relative h-full w-full origin-bottom filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.14)] max-sm:translate-y-6 max-sm:scale-[1.12]">
                   <Image
-                    src="/images/cta/model.png"
+                    src="/images/cta/model-8.webp"
                     alt="Konsultan BidTech menunjukkan website di ponsel"
                     fill
                     sizes="(min-width: 1024px) 500px, (min-width: 640px) 480px, 90vw"

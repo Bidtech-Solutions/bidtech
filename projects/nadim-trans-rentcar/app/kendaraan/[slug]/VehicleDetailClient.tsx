@@ -31,6 +31,30 @@ import {
   Heart,
 } from "lucide-react";
 
+const RENTAL_RULES_ID = [
+  "Kendaraan mobil/motor yang disewakan tidak dapat dipindah tangankan",
+  "Kendaraan tidak dapat dijadikan jaminan/digadaikan",
+  "Pelanggaran No. 1 & 2 akan diproses melalui jalur hukum/pidana. Pemilik kendaraan berhak mengambil kembali kendaraannya.",
+  "Pengembalian kendaraan harus dalam keadaan seperti pada saat serah terima kendaraan di awal. Jika terjadi lecet/tabrakan, 100% adalah tanggung jawab pihak penyewa dan akan dikenakan denda. Jika kerusakan cukup parah, Penyewa wajib membayar sewa kendaraan selama kendaraan berada di bengkel.",
+  "Jika terjadi keterlambatan pengembalian kendaraan, akan dikenakan biaya over time mulai dari 50.000 per jam sampai 10% dari harga sewa, dengan batas overtime 3 jam. Jika lebih dari 3 jam, waktu keterlambatan terhitung sebagai 1 hari sewa.",
+  "Tidak diperbolehkan MEROKOK di dalam mobil. Jika saat pengembalian mobil berbau asap rokok, penyewa akan dikenakan denda sebesar 150K.",
+  "Penyewa wajib menggunakan SAFETY BELT saat berkendara dan dilarang bermain ponsel. Jika terkena tilang elektronik, seluruh denda (100%) akan dibebankan kepada penyewa kendaraan.",
+  "Bensin (BBM) yang terpakai wajib di kembalikan, apabila pengembalian kurang dari jarum/balok/range jarak tempuh, penyewa wajib bersedia membayar kekurangan bensin yang telah di gunakan.",
+  "Mohon untuk tetap menjaga kebersihan kendaraan.",
+];
+
+const RENTAL_RULES_EN = [
+  "Rented vehicles (cars/motorcycles) cannot be transferred or handed over to other parties.",
+  "Vehicles cannot be used as collateral or pawned.",
+  "Violations of No. 1 & 2 will be processed through legal/criminal procedures. The vehicle owner reserves the right to repossess the vehicle.",
+  "The vehicle must be returned in the same condition as at initial handover. In the event of scratches/collisions, 100% is the renter's responsibility and fines apply. If damage is severe, the renter must pay the rental fee while the vehicle is in the workshop.",
+  "In case of late return, overtime fees apply starting from 50,000 per hour up to 10% of rental price, with a 3-hour limit. If exceeding 3 hours, late time counts as 1 day's rental.",
+  "NO SMOKING inside the car. If the car smells of cigarette smoke upon return, the renter will be fined 150K.",
+  "Renters must wear a SAFETY BELT while driving and are prohibited from using mobile phones. If caught by electronic traffic tickets, all fines (100%) will be charged to the renter.",
+  "Consumed fuel (BBM) must be returned; if return level is below the initial needle/bar/mileage range, the renter must pay for the missing fuel used.",
+  "Please maintain the cleanliness of the vehicle.",
+];
+
 export default function VehicleDetailClient({ slug }: { slug: string }) {
   const locale = useLocale() as Locale;
   const t = useTranslations();
@@ -360,6 +384,34 @@ export default function VehicleDetailClient({ slug }: { slug: string }) {
                         ))}
                       </div>
                     </div>
+
+                    {/* Peraturan Rental Mobil (Dari Flyer Resmi Nadim Trans) */}
+                    <div className="pt-4 border-t border-gray-100 space-y-3">
+                      <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-300/80 flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-extrabold text-gray-900 text-xs sm:text-sm tracking-wide uppercase">
+                            {locale === "id" ? "PERATURAN RENTAL MOBIL" : "CAR RENTAL REGULATIONS"}
+                          </h4>
+                          <p className="text-[11px] sm:text-xs font-bold text-amber-800 uppercase mt-0.5">
+                            {locale === "id"
+                              ? "PENTING DIKETAHUI KETENTUAN-KETENTUAN DI BAWAH INI!"
+                              : "IMPORTANT TERMS AND CONDITIONS TO KNOW BELOW!"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2.5 pt-1">
+                        {(locale === "id" ? RENTAL_RULES_ID : RENTAL_RULES_EN).map((rule, idx) => (
+                          <div key={idx} className="flex items-start gap-3 text-xs sm:text-[13px] text-gray-800 leading-relaxed">
+                            <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-900 font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
+                              {idx + 1}
+                            </span>
+                            <span>{rule}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -385,7 +437,7 @@ export default function VehicleDetailClient({ slug }: { slug: string }) {
 
                 {/* Tab 3: Terms */}
                 {activeTab === "terms" && (
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3">
                       <ShieldCheck className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                       <div className="text-xs text-amber-950 space-y-1">
@@ -403,6 +455,34 @@ export default function VehicleDetailClient({ slug }: { slug: string }) {
                           <span>{term}</span>
                         </div>
                       ))}
+                    </div>
+
+                    {/* Peraturan Rental Mobil (Dari Flyer Resmi Nadim Trans) */}
+                    <div className="pt-4 border-t border-gray-100 space-y-3">
+                      <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-300/80 flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-extrabold text-gray-900 text-xs sm:text-sm tracking-wide uppercase">
+                            {locale === "id" ? "PERATURAN RENTAL MOBIL" : "CAR RENTAL REGULATIONS"}
+                          </h4>
+                          <p className="text-[11px] sm:text-xs font-bold text-amber-800 uppercase mt-0.5">
+                            {locale === "id"
+                              ? "PENTING DIKETAHUI KETENTUAN-KETENTUAN DI BAWAH INI!"
+                              : "IMPORTANT TERMS AND CONDITIONS TO KNOW BELOW!"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2.5 pt-1">
+                        {(locale === "id" ? RENTAL_RULES_ID : RENTAL_RULES_EN).map((rule, idx) => (
+                          <div key={idx} className="flex items-start gap-3 text-xs sm:text-[13px] text-gray-800 leading-relaxed">
+                            <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-900 font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
+                              {idx + 1}
+                            </span>
+                            <span>{rule}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}

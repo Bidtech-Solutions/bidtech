@@ -1,10 +1,20 @@
 "use client";
 
-import { useEffect, ReactNode } from "react";
+import { useEffect, useRef, ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import type Lenis from "lenis";
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const lenisRef = useRef<Lenis | null>(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    lenisRef.current?.scrollTo(0, { immediate: true });
+  }, [pathname]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -27,6 +37,8 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
         touchMultiplier: 1.5,
         infinite: false,
       });
+
+      lenisRef.current = lenis;
 
       // Make lenis accessible globally on window for programmatic scrolling
       (window as any).lenis = lenis;

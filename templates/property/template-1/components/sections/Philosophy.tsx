@@ -248,7 +248,7 @@ export default function Philosophy({ lang = "en" }: PhilosophyProps) {
                 Deny kiw
               </span>
               <span className="text-xs text-neutral-400 font-medium">
-                Founder, BuildingBlocks
+                Founder, Denn House
               </span>
             </div>
           </div>

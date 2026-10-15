@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141414"/>
+      <stop offset="100%" stop-color="#070707"/>
+    </linearGradient>
+    <linearGradient id="shieldRust" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e87538"/>
+      <stop offset="100%" stop-color="#a84315"/>
+    </linearGradient>
+    <linearGradient id="shieldSteel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5f5f5"/>
+      <stop offset="100%" stop-color="#707070"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="600" height="600" rx="36" fill="url(#bg2)"/>
+  
+  <!-- Shield Badge Outline -->
+  <path d="M300,70 L460,140 L440,320 L300,410 L160,320 L140,140 Z" fill="none" stroke="#222222" stroke-width="4"/>
+  
+  <!-- Geometric Core -->
+  <g transform="translate(0, 5)">
+    <!-- Left Wing of Chevron -->
+    <path d="M300,120 L210,180 L230,290 L300,345 L300,285 L260,250 L250,195 L300,160 Z" fill="url(#shieldSteel)"/>
+    
+    <!-- Right Wing of Chevron (Rust Orange Accent) -->
+    <path d="M300,120 L390,180 L370,290 L300,345 L300,285 L340,250 L350,195 L300,160 Z" fill="url(#shieldRust)"/>
+    
+    <!-- Inner Force Core (Barbell Weight Ingot) -->
+    <polygon points="300,185 325,235 300,275 275,235" fill="#ffffff"/>
+  </g>
+  
+  <!-- Typography -->
+  <text x="300" y="475" text-anchor="middle" font-family="'Space Grotesk', -apple-system, sans-serif" font-weight="900" font-size="44" letter-spacing="8" fill="#ffffff">IRONFORCE</text>
+  <text x="300" y="515" text-anchor="middle" font-family="'Manrope', sans-serif" font-weight="700" font-size="13" letter-spacing="10" fill="#c45b25">PERFORMANCE CLUB</text>
+</svg>

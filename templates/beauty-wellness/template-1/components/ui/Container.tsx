@@ -9,7 +9,7 @@ export function Container({
 }: ContainerProps) {
   return (
     <div
-      className={cn("site-container", className)}
+      className={cn("mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 min-w-0", className)}
       {...props}
     >
       {children}

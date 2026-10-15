@@ -1,82 +1,68 @@
-import { Quote, Star } from "lucide-react";
+"use client";
 
-import { testimonials } from "@/data/home";
+import { Quote, Star } from "lucide-react";
+import Link from "next/link";
 
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/motion/Reveal";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function Testimonials() {
+  const { t, locale } = useLanguage();
+  const test = t.home.testimonials;
+  const items = test.items;
+
   return (
-    <section
-      id="testimoni"
-      className="section-space bg-white"
-    >
+    <section id="testimoni" className="section-space scroll-mt-20 bg-[#f4f2ee]">
       <Container>
-        <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
-          <Reveal>
-            <div className="lg:sticky lg:top-32 lg:self-start">
-              <SectionHeading
-                eyebrow="Testimoni Member"
-                title="Pengalaman nyata dari member."
-                description="Cerita dari mereka yang telah menjadikan latihan sebagai bagian dari gaya hidup."
-              />
+        <Reveal>
+          <SectionHeading
+            eyebrow={test.eyebrow}
+            title={test.title}
+            description={test.description}
+          />
+        </Reveal>
 
-              <Quote
-                size={80}
-                strokeWidth={1}
-                className="mt-10 hidden text-[var(--color-primary)] opacity-20 lg:block"
-              />
-            </div>
-          </Reveal>
-
-          <div className="border-t border-black/[0.08]">
-            {testimonials.map((testimonial, index) => (
-              <Reveal
-                key={testimonial.name}
-                delay={index * 0.08}
-              >
-                <article className="border-b border-black/[0.08] py-10 md:py-14">
-                  <div className="flex gap-1">
-                    {Array.from({ length: 5 }).map(
-                      (_, starIndex) => (
-                        <Star
-                          key={starIndex}
-                          size={15}
-                          fill="currentColor"
-                          strokeWidth={1}
-                          className="text-[var(--color-primary)]"
-                        />
-                      )
-                    )}
+        <div className="mt-14 grid gap-8 md:grid-cols-2">
+          {items.map((testimonial, index) => (
+            <Reveal key={testimonial.name} delay={index * 0.1}>
+              <div className="flex h-full flex-col justify-between rounded-[2rem] border border-black/10 bg-white p-8 shadow-xs sm:p-10">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-1 text-[var(--color-primary)]">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={16} fill="currentColor" />
+                      ))}
+                    </div>
+                    <Quote size={28} className="text-black/15" />
                   </div>
 
-                  <blockquote className="mt-7 max-w-4xl font-heading text-[clamp(1.8rem,3vw,3.5rem)] font-medium leading-[1.05] tracking-[-0.045em]">
-                    “{testimonial.quote}”
-                  </blockquote>
+                  <p className="mt-6 text-base font-normal leading-relaxed text-black/80 sm:text-lg">
+                    &ldquo;{testimonial.quote}&rdquo;
+                  </p>
+                </div>
 
-                  <div className="mt-8 flex items-center gap-4">
-                    <div className="flex size-11 items-center justify-center rounded-full bg-[#0b0b0b] font-heading text-sm font-bold text-white">
-                      {testimonial.name
-                        .split(" ")
-                        .map((word) => word[0])
-                        .join("")}
-                    </div>
+                <div className="mt-8 border-t border-black/10 pt-6">
+                  <p className="font-heading text-lg font-bold uppercase tracking-tight text-[#0b0b0b]">
+                    {testimonial.name}
+                  </p>
+                  <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-primary)]">
+                    {testimonial.membership}
+                  </p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
 
-                    <div>
-                      <p className="text-sm font-bold uppercase tracking-[0.06em]">
-                        {testimonial.name}
-                      </p>
-
-                      <p className="mt-1 text-xs text-black/45">
-                        {testimonial.membership}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </Reveal>
-            ))}
-          </div>
+        <div className="mt-12 text-center">
+          <Link
+            href="/testimoni"
+            className="inline-flex items-center gap-3 rounded-full bg-[#0b0b0b] px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-white transition-all hover:bg-[var(--color-primary)]"
+          >
+            {locale === "en" ? "View Member Stories" : "Lihat Cerita Member"}
+          </Link>
         </div>
       </Container>
     </section>

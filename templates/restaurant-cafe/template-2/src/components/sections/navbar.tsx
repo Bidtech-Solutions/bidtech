@@ -1,31 +1,23 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { DynamicNavbar } from "@/components/ui/dynamic-navbar";
+import { useLanguage } from "@/components/providers/language-provider";
 
 export function Navbar() {
-  const handleOrderClick = () => {
-    const el = document.getElementById("menu") || document.getElementById("dishes");
-    if (!el) return;
-    const lenis = (window as unknown as { __lenis?: { scrollTo: (target: Element | string, opts?: { offset?: number; duration?: number }) => void } }).__lenis;
-    if (lenis) {
-      lenis.scrollTo(el, { offset: -80, duration: 1.2 });
-    } else {
-      const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
-  };
+  const router = useRouter();
+  const { t } = useLanguage();
 
   return (
     <DynamicNavbar
       brand="Deny Restaurant"
       items={[
-        { label: "Categories", href: "#categories" },
-        { label: "Dishes", href: "#dishes" },
-        { label: "Menu", href: "#menu" },
-        { label: "Story", href: "#story" },
+        { label: t("Menu", "Menu"), href: "/menu" },
+        { label: t("Staf & Koki", "Staff & Chefs"), href: "/staff" },
+        { label: t("Cerita Kami", "Our Story"), href: "/story" },
       ]}
-      ctaLabel="Order Now"
-      onCtaClick={handleOrderClick}
+      ctaLabel={t("Pesan Sekarang", "Order Now")}
+      onCtaClick={() => router.push("/menu")}
     />
   );
 }

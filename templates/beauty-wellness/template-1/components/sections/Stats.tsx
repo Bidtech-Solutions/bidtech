@@ -1,68 +1,46 @@
 "use client";
 
-import {
-  motion,
-  useReducedMotion,
-} from "motion/react";
+import { motion } from "motion/react";
 
 import { siteConfig } from "@/data/site";
+import { useLanguage } from "@/context/LanguageContext";
+import { cn } from "@/lib/utils";
 
-export function Stats() {
-  const shouldReduceMotion = useReducedMotion();
+interface StatsProps {
+  isMobileFlow?: boolean;
+}
+
+export function Stats({ isMobileFlow }: StatsProps) {
+  const { t } = useLanguage();
+  const labelsMap = t.home.stats.labels;
 
   return (
-    <motion.div
-      initial={
-        shouldReduceMotion
-          ? false
-          : {
-              opacity: 0,
-              y: 30,
-            }
-      }
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        duration: shouldReduceMotion ? 0 : 0.8,
-        delay: shouldReduceMotion ? 0 : 0.8,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      className={[
-        "grid grid-cols-2",
-        "overflow-hidden rounded-2xl",
-        "border border-black/5",
-        "bg-[#f7f5f1]/95",
-        "text-[#0b0b0b]",
-        "shadow-[0_24px_80px_rgba(0,0,0,0.18)]",
-        "backdrop-blur-xl",
-        "md:grid-cols-4",
-      ].join(" ")}
-    >
-      {siteConfig.stats.map((stat, index) => (
-        <div
-          key={stat.label}
-          className={[
-            "relative flex min-h-[110px]",
-            "flex-col items-center justify-center",
-            "px-4 py-5 text-center",
-            "md:min-h-[125px]",
-          ].join(" ")}
-        >
-          {index !== 0 && (
-            <div className="absolute left-0 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-black/10 md:block" />
-          )}
+    <div className={cn("relative z-20 w-full", isMobileFlow ? "px-0" : "px-0")}>
+      <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-2xl border border-black/10 bg-white p-5 shadow-xl sm:rounded-[2rem] sm:p-8 lg:p-10">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 sm:gap-6 md:gap-8">
+          {siteConfig.stats.map((stat, index) => {
+            const localizedLabel = labelsMap[stat.label as keyof typeof labelsMap] || stat.label;
 
-          <strong className="font-heading text-3xl font-bold tracking-[-0.06em] sm:text-4xl lg:text-5xl">
-            {stat.value}
-          </strong>
-
-          <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-black/55 sm:text-xs">
-            {stat.label}
-          </span>
+            return (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
+                className="text-center"
+              >
+                <div className="font-heading text-2xl font-extrabold tracking-tight text-[var(--color-primary)] sm:text-3xl lg:text-5xl">
+                  {stat.value}
+                </div>
+                <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-black/60 sm:text-xs lg:text-sm">
+                  {localizedLabel}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
-      ))}
-    </motion.div>
+      </div>
+    </div>
   );
 }

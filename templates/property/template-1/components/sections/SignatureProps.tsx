@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
-import { type PropertyItem } from "@/lib/data";
+import { PROPERTIES_DATA, type PropertyItem } from "@/lib/data";
 import gsap from "gsap";
 
 interface SignaturePropsProps {
@@ -12,116 +12,7 @@ interface SignaturePropsProps {
   onOpenPropertyModal: (prop: PropertyItem) => void;
 }
 
-const SIGNATURE_PROPERTIES: PropertyItem[] = [
-  {
-    id: "prop-1",
-    name: "SANDER HOUSE",
-    location: "Dubai Hills",
-    type: "Contemporary Residence",
-    price: "$64,000,000",
-    specs: "6 Beds • 8 Baths • 1,450 m²",
-    image: "/images/prop-1.webp",
-  },
-  {
-    id: "prop-2",
-    name: "AZURE VILLA",
-    location: "Palm Jumeirah",
-    type: "Luxury Villa",
-    price: "$85,000,000",
-    specs: "7 Beds • 9 Baths • 1,650 m²",
-    image: "/images/prop-2.webp",
-  },
-  {
-    id: "prop-3",
-    name: "THE OASIS",
-    location: "Emirates Hills",
-    type: "Modern Mansion",
-    price: "$94,000,000",
-    specs: "8 Beds • 10 Baths • 2,100 m²",
-    image: "/images/prop-3.webp",
-  },
-  {
-    id: "prop-4",
-    name: "LUMA RESIDENCE",
-    location: "Downtown Dubai",
-    type: "Luxury Apartment",
-    price: "$52,000,000",
-    specs: "5 Beds • 6 Baths • 980 m²",
-    image: "/images/prop-4.webp",
-  },
-  {
-    id: "prop-5",
-    name: "KAIROS PAVILION",
-    location: "Jumeirah Bay",
-    type: "Waterfront Sanctuary",
-    price: "$78,000,000",
-    specs: "6 Beds • 7 Baths • 1,320 m²",
-    image: "/images/prop-5.webp",
-  },
-  {
-    id: "prop-6",
-    name: "SERAPHINA VILLA",
-    location: "Zurichberg Hills",
-    type: "Alpine Modernist",
-    price: "$68,000,000",
-    specs: "5 Beds • 6 Baths • 1,150 m²",
-    image: "/images/prop-6.webp",
-  },
-  {
-    id: "prop-7",
-    name: "NEXUS MONOLITH",
-    location: "Bahnhofstrasse Enclave",
-    type: "Brutalist Penthouse",
-    price: "$59,000,000",
-    specs: "4 Beds • 5 Baths • 890 m²",
-    image: "/images/prop-7.webp",
-  },
-  {
-    id: "prop-8",
-    name: "SOLARIA ESTATE",
-    location: "Sentosa Cove",
-    type: "Tropical Waterfront",
-    price: "$92,000,000",
-    specs: "7 Beds • 8 Baths • 1,780 m²",
-    image: "/images/prop-8.webp",
-  },
-  {
-    id: "prop-9",
-    name: "ORCHARD SKY SUITE",
-    location: "Orchard Boulevard",
-    type: "Glass High-Rise",
-    price: "$46,000,000",
-    specs: "4 Beds • 5 Baths • 760 m²",
-    image: "/images/prop-9.webp",
-  },
-  {
-    id: "prop-10",
-    name: "MENTENG SANCTUARY",
-    location: "Menteng Heritage",
-    type: "Contemporary Manor",
-    price: "$38,000,000",
-    specs: "6 Beds • 7 Baths • 1,500 m²",
-    image: "/images/prop-10.webp",
-  },
-  {
-    id: "prop-11",
-    name: "SCBD SKY VILLA",
-    location: "SCBD District",
-    type: "Triplex Penthouse",
-    price: "$44,000,000",
-    specs: "5 Beds • 6 Baths • 920 m²",
-    image: "/images/prop-11.webp",
-  },
-  {
-    id: "prop-12",
-    name: "AVALON COVE",
-    location: "Lake Zurich",
-    type: "Private Shore Estate",
-    price: "$105,000,000",
-    specs: "8 Beds • 10 Baths • 2,400 m²",
-    image: "/images/prop-12.webp",
-  },
-];
+const SIGNATURE_PROPERTIES: PropertyItem[] = PROPERTIES_DATA;
 
 export default function SignatureProps({ lang, onOpenPropertyModal }: SignaturePropsProps) {
   const trackRef = useRef<HTMLDivElement>(null);

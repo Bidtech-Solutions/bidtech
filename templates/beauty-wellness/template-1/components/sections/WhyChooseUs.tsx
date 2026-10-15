@@ -1,44 +1,42 @@
-import { benefits } from "@/data/home";
+"use client";
 
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/motion/Reveal";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function WhyChooseUs() {
+  const { t } = useLanguage();
+  const w = t.home.whyChooseUs;
+  const items = w.items;
+
   return (
-    <section
-      id="keunggulan"
-      className="section-space overflow-hidden bg-[#0b0b0b] text-white"
-    >
+    <section id="keunggulan" className="section-space scroll-mt-20 bg-[#f4f2ee]">
       <Container>
         <Reveal>
           <SectionHeading
-            eyebrow="Why Ironforce"
-            title="Lebih dari sekadar tempat latihan."
-            description="Kami menciptakan lingkungan yang membantu setiap member berlatih dengan lebih nyaman, terarah, dan konsisten."
-            light
+            eyebrow={w.eyebrow}
+            title={w.title}
+            description={w.description}
           />
         </Reveal>
 
-        <div className="mt-16 border-t border-white/10">
-          {benefits.map((benefit, index) => (
-            <Reveal
-              key={benefit.title}
-              delay={index * 0.06}
-            >
-              <article className="group grid gap-5 border-b border-white/10 py-8 transition-colors duration-300 md:grid-cols-[100px_1fr_1fr] md:items-center md:py-10">
-                <span className="font-heading text-xs font-semibold tracking-[0.2em] text-[var(--color-primary)]">
+        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((benefit, index) => (
+            <Reveal key={benefit.title} delay={index * 0.08}>
+              <div className="group h-full rounded-[1.75rem] border border-black/10 bg-white p-8 shadow-xs transition-all duration-300 hover:border-[var(--color-primary)]/40 hover:shadow-lg">
+                <span className="font-heading text-4xl font-bold text-[var(--color-primary)]">
                   {benefit.number}
                 </span>
 
-                <h3 className="font-heading text-2xl font-semibold uppercase tracking-[-0.04em] transition-transform duration-300 group-hover:translate-x-2 md:text-3xl">
+                <h3 className="mt-6 font-heading text-xl font-bold uppercase tracking-tight text-[#0b0b0b]">
                   {benefit.title}
                 </h3>
 
-                <p className="max-w-xl text-sm leading-7 text-white/50 md:justify-self-end">
+                <p className="mt-3 text-sm leading-relaxed text-black/65">
                   {benefit.description}
                 </p>
-              </article>
+              </div>
             </Reveal>
           ))}
         </div>

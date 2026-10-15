@@ -20,7 +20,7 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        "max-w-3xl",
+        "w-full max-w-3xl min-w-0",
         align === "center" && "mx-auto text-center",
         className
       )}
@@ -28,7 +28,7 @@ export function SectionHeading({
       {eyebrow && (
         <div
           className={cn(
-            "mb-5 flex items-center gap-3",
+            "mb-4 sm:mb-5 flex items-center gap-3",
             align === "center" && "justify-center"
           )}
         >
@@ -47,9 +47,9 @@ export function SectionHeading({
 
       <h2
         className={cn(
-          "font-heading text-[clamp(2.7rem,5.5vw,5.5rem)]",
-          "font-bold uppercase leading-[0.9]",
-          "tracking-[-0.055em]",
+          "w-full max-w-full min-w-0 font-heading text-[clamp(1.5rem,5.5vw,4.5rem)] break-words",
+          "font-bold uppercase leading-[1.05] sm:leading-[0.9]",
+          "tracking-tight sm:tracking-[-0.045em]",
           light ? "text-white" : "text-black"
         )}
       >
@@ -59,7 +59,7 @@ export function SectionHeading({
       {description && (
         <p
           className={cn(
-            "mt-6 max-w-2xl text-sm leading-7 md:text-base",
+            "mt-4 sm:mt-6 w-full max-w-2xl min-w-0 text-xs sm:text-sm leading-relaxed sm:leading-7 md:text-base",
             align === "center" && "mx-auto",
             light ? "text-white/60" : "text-black/55"
           )}

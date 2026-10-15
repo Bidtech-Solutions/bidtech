@@ -1,21 +1,21 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   ArrowUp,
   ArrowRight,
-  Sparkles,
   Utensils,
   CheckCircle2,
   Calendar,
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
-import { cn } from "@/lib/utils";
 import { DynamicTextSlider } from "@/components/ui/dynamic-text-slider";
 import { RevealText } from "@/components/ui/reveal-text";
+import { useLanguage } from "@/components/providers/language-provider";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -30,7 +30,9 @@ const culinaryImages = [
 ];
 
 export function Footer() {
+  const { t } = useLanguage();
   const footerRef = useRef<HTMLElement>(null);
+  const router = useRouter();
   const heroCtaRef = useRef<HTMLDivElement>(null);
   const linksGridRef = useRef<HTMLDivElement>(null);
   const megaTextRef = useRef<HTMLHeadingElement>(null);
@@ -128,7 +130,12 @@ export function Footer() {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    if (!href || !href.startsWith("#")) return;
+    if (!href) return;
+
+    if (!href.startsWith("#")) {
+      router.push(href);
+      return;
+    }
 
     const target = document.querySelector(href);
     if (!target) return;
@@ -152,16 +159,15 @@ export function Footer() {
   };
 
   const navLinks = [
-    { label: "Our Specialties", href: "#categories" },
-    { label: "Signature Dishes", href: "#dishes" },
-    { label: "Interactive Menu", href: "#menu" },
-    { label: "Our Story & Quality", href: "#story" },
+    { label: t("Menu Interaktif", "Interactive Menu"), href: "/menu" },
+    { label: t("Staf & Koki Kami", "Our Culinary Staff"), href: "/staff" },
+    { label: t("Kisah & Filosofi Kami", "Our Story & Quality"), href: "/story" },
   ];
 
   return (
     <footer
       ref={footerRef}
-      className="relative w-full bg-white dark:bg-[#0a0a0d] text-foreground dark:text-white pt-8 sm:pt-14 md:pt-24 pb-6 sm:pb-10 overflow-hidden transition-colors duration-300"
+      className="relative w-full bg-white dark:bg-[#0a0a0d] text-foreground dark:text-white pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-10 overflow-hidden transition-colors duration-300 border-t border-border/40"
     >
       {/* Dynamic Ambient Backdrops */}
       <div
@@ -173,15 +179,15 @@ export function Footer() {
         className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none -z-10"
       />
 
-      <div className="container-app relative z-10 flex flex-col gap-8 sm:gap-12 md:gap-16">
+      <div className="container-app relative z-10 flex flex-col gap-6 sm:gap-10 md:gap-12">
         {/* Top Hero Statement & Major Call to Action */}
         <div ref={heroCtaRef} className="max-w-4xl mx-auto text-center">
           <p className="text-eyebrow mb-2 sm:mb-3 tracking-widest text-brand-500">
-            Experience The Obsession
+            {t("Rasakan Kesungguhan Rasa", "Experience The Obsession")}
           </p>
 
           <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-extrabold tracking-tight text-foreground dark:text-white leading-tight text-balance mb-2.5 sm:mb-5">
-            Crafted for people who{" "}
+            {t("Diciptakan untuk penikmat", "Crafted for people who")}{" "}
             <DynamicTextSlider>
               <RevealText
                 text="CARE"
@@ -191,22 +197,24 @@ export function Footer() {
                 className="font-display"
               />
             </DynamicTextSlider>{" "}
-            about great food.
+            {t("makanan berkualitas.", "about great food.")}
           </h2>
 
           <p className="text-xs sm:text-base md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-5 sm:mb-8">
-            From our 900°F wood-fired ovens to silky daily hand-rolled pasta,
-            we invite you to experience dining without compromises.
+            {t(
+              "Dari tungku api 500°C kami hingga pasta telur segar yang digilas tangan setiap hari, kami mengundang Anda merasakan pengalaman bersantap tanpa kompromi.",
+              "From our 900°F wood-fired ovens to silky daily hand-rolled pasta, we invite you to experience dining without compromises."
+            )}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4">
             <a
-              href="#menu"
-              onClick={(e) => handleNavClick(e, "#menu")}
+              href="/menu"
+              onClick={(e) => handleNavClick(e, "/menu")}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs sm:text-base shadow-glow transition-all duration-300 hover:scale-105 cursor-pointer"
             >
               <Utensils className="size-4 sm:size-4.5" />
-              Explore Full Menu
+              {t("Jelajahi Seluruh Menu", "Explore Full Menu")}
               <ArrowRight className="size-4 sm:size-4.5" />
             </a>
 
@@ -215,7 +223,7 @@ export function Footer() {
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-2.5 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-neutral-100 dark:bg-white/10 hover:bg-neutral-200 dark:hover:bg-white/15 text-foreground dark:text-white font-semibold text-xs sm:text-base backdrop-blur-md transition-all duration-300 hover:scale-105 cursor-pointer"
             >
               <Calendar className="size-3.5 sm:size-4 text-brand-500" />
-              Reserve A Table
+              {t("Reservasi Meja", "Reserve A Table")}
             </a>
           </div>
         </div>
@@ -233,22 +241,32 @@ export function Footer() {
                 e.preventDefault();
                 scrollToTop();
               }}
-              className="font-display font-black text-xl sm:text-2xl md:text-3xl tracking-tight text-foreground dark:text-white hover:text-brand-500 transition-colors inline-block mb-2 sm:mb-3"
+              className="flex items-center gap-2.5 font-display font-black text-xl sm:text-2xl md:text-3xl tracking-tight text-foreground dark:text-white hover:text-brand-500 transition-colors mb-2 sm:mb-3 group"
             >
-              Deny Restaurant<span className="text-brand-500">.</span>
+              <div className="size-8 sm:size-9 rounded-xl overflow-hidden bg-neutral-950 border border-white/10 shadow-glow shrink-0 group-hover:scale-105 transition-transform">
+                <img
+                  src="/logo.png"
+                  alt="Deny Restaurant Logo"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <span>Deny Restaurant<span className="text-brand-500">.</span></span>
             </a>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-3 sm:mb-4">
-              Modern artisanal bistro celebrating wood-fired sourdough pizza, smash burgers, and fresh pasta.
+              {t(
+                "Bistro artisan modern yang menyajikan pizza fermentasi kayu bakar, burger smash, dan pasta telur segar.",
+                "Modern artisanal bistro celebrating wood-fired sourdough pizza, smash burgers, and fresh pasta."
+              )}
             </p>
             <div className="text-xs text-muted-foreground">
-              Local Kitchen Time: <span className="text-foreground dark:text-gray-300 font-mono font-semibold">{timeString || "11:55 AM"}</span>
+              {t("Waktu Dapur Lokal:", "Local Kitchen Time:")} <span className="text-foreground dark:text-gray-300 font-mono font-semibold">{timeString || "11:55 AM"}</span>
             </div>
           </div>
 
           {/* Navigation Links */}
           <div>
             <h4 className="font-display font-bold text-xs sm:text-sm uppercase tracking-wider text-foreground dark:text-white mb-2.5 sm:mb-4">
-              Quick Navigation
+              {t("Navigasi Cepat", "Quick Navigation")}
             </h4>
             <ul className="space-y-1.5 sm:space-y-2.5">
               {navLinks.map((link) => (
@@ -269,10 +287,13 @@ export function Footer() {
           {/* Social Ecosystem */}
           <div>
             <h4 className="font-display font-bold text-xs sm:text-sm uppercase tracking-wider text-foreground dark:text-white mb-2.5 sm:mb-4">
-              Social Community
+              {t("Komunitas & Sosial", "Social Community")}
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed mb-3 sm:mb-4">
-              Follow our daily kitchen specials, behind-the-scenes dough fermentation, and secret off-menu drops.
+              {t(
+                "Ikuti sajian harian spesial kami, proses fermentasi adonan di balik layar, dan menu rahasia.",
+                "Follow our daily kitchen specials, behind-the-scenes dough fermentation, and secret off-menu drops."
+              )}
             </p>
             <div className="flex items-center gap-3">
               <a
@@ -308,16 +329,19 @@ export function Footer() {
           {/* Tasting Club Newsletter */}
           <div>
             <h4 className="font-display font-bold text-xs sm:text-sm uppercase tracking-wider text-foreground dark:text-white mb-2.5 sm:mb-4">
-              The Tasting Club
+              {t("Klub Cicip Deny", "The Tasting Club")}
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed mb-3 sm:mb-4">
-              Subscribe to receive weekly chef notes, private tasting invitations, and special perks.
+              {t(
+                "Berlangganan untuk catatan mingguan koki, undangan mencicipi khusus, dan penawaran rahasia.",
+                "Subscribe to receive weekly chef notes, private tasting invitations, and special perks."
+              )}
             </p>
 
             {isSubscribed ? (
               <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
                 <CheckCircle2 className="size-4 shrink-0" />
-                <span>You're enrolled in the Tasting Club!</span>
+                <span>{t("Anda telah terdaftar di Klub Cicip!", "You're enrolled in the Tasting Club!")}</span>
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
@@ -326,14 +350,14 @@ export function Footer() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
+                  placeholder={t("Alamat email Anda", "Your email address")}
                   className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-neutral-100 dark:bg-white/5 text-foreground dark:text-white text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
                 />
                 <button
                   type="submit"
                   className="w-full py-2 sm:py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-glow transition-all duration-200 cursor-pointer"
                 >
-                  Join Tasting Table
+                  {t("Gabung Meja Cicip", "Join Tasting Table")}
                 </button>
               </form>
             )}
@@ -352,18 +376,18 @@ export function Footer() {
 
         {/* Bottom Utility Bar & GSAP Back to Top */}
         <div className="pt-3 sm:pt-6 border-t border-border/40 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Deny Restaurant. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Deny Restaurant. {t("Seluruh hak cipta dilindungi.", "All rights reserved.")}</p>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            <a href="#privacy" className="hover:text-brand-500 transition-colors">Privacy Policy</a>
-            <a href="#terms" className="hover:text-brand-500 transition-colors">Terms of Dining</a>
+            <a href="#privacy" className="hover:text-brand-500 transition-colors">{t("Kebijakan Privasi", "Privacy Policy")}</a>
+            <a href="#terms" className="hover:text-brand-500 transition-colors">{t("Ketentuan Restoran", "Terms of Dining")}</a>
           </div>
 
           <button
             onClick={scrollToTop}
             className="group inline-flex items-center gap-2 sm:gap-2.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-neutral-100 dark:bg-white/5 hover:bg-brand-500 text-foreground dark:text-white hover:text-white font-semibold transition-all duration-300 cursor-pointer shadow-xs text-xs"
           >
-            <span>Back to top</span>
+            <span>{t("Kembali ke atas", "Back to top")}</span>
             <div className="size-5 sm:size-6 rounded-full bg-black/5 dark:bg-white/10 group-hover:bg-white/20 flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-0.5">
               <ArrowUp className="size-3 sm:size-3.5" />
             </div>

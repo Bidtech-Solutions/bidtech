@@ -189,7 +189,7 @@ export default function AboutUs({ lang }: AboutUsProps) {
             >
               <Image
                 src="/images/about.webp"
-                alt="BuildingBlocks Illuminated Modern Promenade"
+                alt="Denn House Illuminated Modern Promenade"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"

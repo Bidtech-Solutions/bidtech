@@ -1,6 +1,7 @@
 "use client";
 
 import { FloatingFoodHero } from '@/components/ui/hero-section'
+import { useLanguage } from '@/components/providers/language-provider'
 
 const heroImages = [
   {
@@ -39,10 +40,15 @@ const heroImages = [
 ]
 
 export function Hero() {
+  const { t } = useLanguage();
+
   return (
     <FloatingFoodHero
-      title="Better food for more people"
-      description="For over a decade, we've enabled our customers to discover new tastes, delivered right to their doorstep."
+      title={t("Makanan Lebih Baik untuk Semua", "Better food for more people")}
+      description={t(
+        "Selama lebih dari satu dekade, kami memudahkan pelanggan menemukan cita rasa baru yang autentik dan dimasak segar dari bahan terbaik.",
+        "For over a decade, we've enabled our customers to discover new tastes, delivered right to their doorstep."
+      )}
       images={heroImages}
     />
   )

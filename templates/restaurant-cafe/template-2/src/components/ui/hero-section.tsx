@@ -14,7 +14,7 @@ export interface FloatingFoodHeroProps {
   className?: string
 }
 
-const Swirls = () => (
+export const Swirls = () => (
   <>
     <svg
       className="absolute top-0 left-0 -translate-x-1/3 -translate-y-1/3 text-pink-100 dark:text-pink-900/20"

@@ -4,6 +4,8 @@ export const siteConfig = {
   brand: {
     name: "IRONFORCE",
     tagline: "Built For Strength",
+    logo: "/images/logo.svg",
+    icon: "/images/logo-icon.svg",
   },
 
   seo: {
@@ -14,31 +16,31 @@ export const siteConfig = {
 
   contact: {
     email: "hello@ironforce.com",
-    phone: "+62 812 3456 7890",
-    whatsapp: "6281234567890",
+    phone: "+62 813-6764-825",
+    whatsapp: "628136764825",
     address: "123 Power Ave, Gymtown",
   },
 
   navigation: [
     {
       label: "Fasilitas",
-      href: "#fasilitas",
+      href: "/fasilitas",
     },
     {
       label: "Trainer",
-      href: "#trainer",
+      href: "/trainer",
     },
     {
       label: "Membership",
-      href: "#membership",
+      href: "/membership",
     },
     {
       label: "Testimoni",
-      href: "#testimoni",
+      href: "/testimoni",
     },
     {
       label: "Lokasi",
-      href: "#lokasi",
+      href: "/lokasi",
     },
   ],
 
@@ -58,8 +60,8 @@ export const siteConfig = {
     },
 
     secondaryCta: {
-      label: "Lihat Membership",
-      href: "#membership",
+      label: "Lihat Fasilitas",
+      href: "#fasilitas",
     },
 
     image: "/images/hero-gym.webp",

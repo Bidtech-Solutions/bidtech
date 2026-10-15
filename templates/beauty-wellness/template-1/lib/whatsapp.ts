@@ -1,13 +1,8 @@
 import { siteConfig } from "@/data/site";
 
-export function createWhatsAppUrl(
-  message?: string
-) {
-  const baseUrl = `https://wa.me/${siteConfig.contact.whatsapp}`;
+export function createWhatsAppUrl(message?: string) {
+  const defaultMessage = `Halo Admin ${siteConfig.brand.name}, saya ingin konsultasi mengenai paket membership dan fasilitas gym di ${siteConfig.brand.name}.`;
+  const text = message && message.trim().length > 0 ? message.trim() : defaultMessage;
 
-  if (!message) {
-    return baseUrl;
-  }
-
-  return `${baseUrl}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${siteConfig.contact.whatsapp}?text=${encodeURIComponent(text)}`;
 }

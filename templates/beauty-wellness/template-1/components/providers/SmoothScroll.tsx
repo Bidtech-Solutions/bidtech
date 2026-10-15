@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
+import type Lenis from "lenis";
 
 type SmoothScrollProps = {
   children: React.ReactNode;
@@ -9,6 +11,14 @@ type SmoothScrollProps = {
 export function SmoothScroll({
   children,
 }: SmoothScrollProps) {
+  const pathname = usePathname();
+  const lenisRef = useRef<Lenis | null>(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    lenisRef.current?.scrollTo(0, { immediate: true });
+  }, [pathname]);
+
   useEffect(() => {
     let cleanup: (() => void) | undefined;
     let cancelled = false;
@@ -30,6 +40,8 @@ export function SmoothScroll({
         wheelMultiplier: 0.9,
         touchMultiplier: 1,
       });
+
+      lenisRef.current = lenis;
 
       let frameId: number;
 
@@ -76,6 +88,7 @@ export function SmoothScroll({
         );
 
         lenis.destroy();
+        lenisRef.current = null;
       };
     });
 

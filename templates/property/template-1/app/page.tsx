@@ -13,10 +13,12 @@ import Footer from "@/components/layout/Footer";
 import BlueprintModal from "@/components/ui/BlueprintModal";
 import Toast from "@/components/ui/Toast";
 import { type PropertyItem } from "@/lib/data";
+import { useLanguage } from "@/context/LanguageContext";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function Home() {
-  const [lang, setLang] = useState<"en" | "id">("en");
-  const [heroTheme, setHeroTheme] = useState<"dark" | "light">("dark");
+  const { lang, toggleLang } = useLanguage();
+  const { theme, toggleTheme, isLight } = useTheme();
   const [blueprintOpen, setBlueprintOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<PropertyItem | null>(null);
   const [toast, setToast] = useState<{
@@ -28,14 +30,6 @@ export default function Home() {
     message: "",
     subMessage: "",
   });
-
-  const toggleLang = () => {
-    setLang((prev) => (prev === "en" ? "id" : "en"));
-  };
-
-  const toggleHeroTheme = () => {
-    setHeroTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
 
   const handleOpenBlueprint = (prop?: PropertyItem) => {
     setSelectedProperty(prop || null);
@@ -70,13 +64,18 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen bg-white text-[#0A0A0A] selection:bg-black selection:text-white">
+    <div
+      className={`relative min-h-screen transition-colors duration-500 ${
+        isLight ? "bg-architect-light text-[#0A0A0A]" : "bg-architect-dark text-white"
+      } selection:bg-amber-400 selection:text-black`}
+    >
       {/* 1. Header & Navigation Bar */}
       <Navbar
         lang={lang}
         onToggleLang={toggleLang}
-        heroTheme={heroTheme}
-        onToggleHeroTheme={toggleHeroTheme}
+        heroTheme={theme}
+        onToggleHeroTheme={toggleTheme}
+        hideNav={blueprintOpen}
       />
 
       <main className="w-full">
@@ -84,8 +83,8 @@ export default function Home() {
         <Hero
           lang={lang}
           onOpenBlueprint={() => handleOpenBlueprint()}
-          heroTheme={heroTheme}
-          onToggleHeroTheme={toggleHeroTheme}
+          heroTheme={theme}
+          onToggleHeroTheme={toggleTheme}
         />
 
         {/* 3. Brand Philosophy & Organic Pebble Collage Section */}

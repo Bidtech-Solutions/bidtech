@@ -15,8 +15,8 @@
   --color-muted: #77736e;
   --color-border: #d9d5ce;
 
-  --section-space: clamp(5rem, 10vw, 9rem);
-  --container-padding: clamp(1.25rem, 4vw, 4rem);
+  --section-space: clamp(3.5rem, 6.5vw, 7.5rem);
+  --container-padding: clamp(1rem, 3.5vw, 3.5rem);
   --container-width: 1440px;
 }
 
@@ -39,18 +39,24 @@
 html {
   background: var(--background);
   scroll-padding-top: 100px;
-  scrollbar-gutter: stable;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
 }
 
 body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   min-height: 100%;
-  overflow-x: clip;
+  overflow-x: hidden !important;
+  position: relative;
 }
 
 ::selection {
@@ -126,6 +132,7 @@ p {
     calc(100% - (var(--container-padding) * 2)),
     var(--container-width)
   );
+  max-width: 100%;
   margin-inline: auto;
 }
 
@@ -172,4 +179,21 @@ p {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+/* ========================================
+   NO-SCROLLBAR UTILITY
+======================================== */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ROOT BOUNDS LOCK */
+main, section, header, footer {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }

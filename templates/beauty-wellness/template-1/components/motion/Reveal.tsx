@@ -50,9 +50,9 @@ export function Reveal({
           : delay,
         ease: [0.22, 1, 0.36, 1],
       }}
-      className={cn(className)}
+      className={cn("w-full max-w-full min-w-0", className)}
     >
       {children}
     </motion.div>
   );
-} 
+}

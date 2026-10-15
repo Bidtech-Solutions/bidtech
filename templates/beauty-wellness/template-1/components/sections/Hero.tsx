@@ -17,11 +17,18 @@ import { siteConfig } from "@/data/site";
 
 import { Container } from "@/components/ui/Container";
 import { Stats } from "@/components/sections/Stats";
+import { useLanguage } from "@/context/LanguageContext";
+import { createWhatsAppUrl } from "@/lib/whatsapp";
 
 export function Hero() {
+  const { t, locale } = useLanguage();
   const shouldReduceMotion = useReducedMotion();
 
-  const whatsappUrl = `https://wa.me/${siteConfig.contact.whatsapp}`;
+  const whatsappUrl = createWhatsAppUrl(
+    locale === "en"
+      ? `Hello Admin ${siteConfig.brand.name}, I am interested in starting a gym membership at ${siteConfig.brand.name}. Could you please share the package details and registration steps?`
+      : `Halo Admin ${siteConfig.brand.name}, saya tertarik untuk mulai membership gym di ${siteConfig.brand.name}. Mohon info pilihan paket dan panduan pendaftarannya.`
+  );
 
   const duration = shouldReduceMotion ? 0 : 0.9;
 
@@ -54,7 +61,7 @@ export function Hero() {
     <section
       ref={heroRef}
       id="top"
-      className="relative min-h-[100svh]"
+      className="relative lg:min-h-[100svh]"
     >
       {/* =====================================
           BACKGROUND
@@ -106,14 +113,14 @@ export function Hero() {
 
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/60 to-transparent" />
 
-        <div className="absolute inset-x-0 bottom-0 h-60 bg-gradient-to-t from-black/70 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0b0b0b] to-transparent sm:h-44 lg:h-60" />
       </div>
 
       {/* =====================================
           HERO CONTENT
       ====================================== */}
 
-      <Container className="relative flex min-h-[100svh] items-center pb-40 pt-32 text-white md:pb-44 lg:pt-36">
+      <Container className="relative flex flex-col items-start pb-8 pt-[6.5rem] text-white sm:pt-28 md:pb-16 lg:min-h-[100svh] lg:flex-row lg:items-center lg:pb-44 lg:pt-36">
         <motion.div
           style={
             shouldReduceMotion
@@ -145,11 +152,11 @@ export function Hero() {
                 : 0.2,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="mb-6 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70 sm:text-xs"
+            className="mb-4 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70 sm:mb-6 sm:text-xs"
           >
             <span className="h-px w-8 bg-[var(--color-primary)]" />
 
-            {siteConfig.hero.eyebrow}
+            {t.home.hero.eyebrow}
           </motion.p>
 
           <div className="max-w-[1100px]">
@@ -172,9 +179,9 @@ export function Hero() {
                     : 0.3,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="font-heading text-[clamp(3.4rem,8vw,8.3rem)] font-bold uppercase leading-[0.82] tracking-[-0.065em]"
+                className="font-heading text-[clamp(2.15rem,6.8vw,7.8rem)] font-bold uppercase leading-[0.88] sm:leading-[0.82] tracking-[-0.035em] sm:tracking-[-0.065em] break-words"
               >
-                {siteConfig.hero.title.first}
+                {t.home.hero.title1}
               </motion.h1>
             </div>
 
@@ -197,9 +204,9 @@ export function Hero() {
                     : 0.42,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="font-heading text-[clamp(3.4rem,8vw,8.3rem)] font-bold uppercase leading-[0.82] tracking-[-0.065em] text-[var(--color-primary)]"
+                className="font-heading text-[clamp(2.15rem,6.8vw,7.8rem)] font-bold uppercase leading-[0.88] sm:leading-[0.82] tracking-[-0.035em] sm:tracking-[-0.065em] break-words text-[var(--color-primary)]"
               >
-                {siteConfig.hero.title.second}
+                {t.home.hero.title2}
               </motion.div>
             </div>
           </div>
@@ -226,13 +233,13 @@ export function Hero() {
                 : 0.58,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="mt-7 max-w-xl md:mt-8"
+            className="mt-5 max-w-xl sm:mt-7 md:mt-8"
           >
             <p className="text-sm leading-7 text-white/70 sm:text-base md:text-lg md:leading-8">
-              {siteConfig.hero.description}
+              {t.home.hero.description}
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-3 sm:mt-8">
               <Link
                 href={whatsappUrl}
                 target="_blank"
@@ -248,7 +255,7 @@ export function Hero() {
                   "sm:min-h-14 sm:px-7",
                 ].join(" ")}
               >
-                {siteConfig.hero.primaryCta.label}
+                {t.home.hero.primaryCta}
 
                 <ArrowUpRight
                   size={17}
@@ -271,7 +278,7 @@ export function Hero() {
                   "sm:min-h-14 sm:px-7",
                 ].join(" ")}
               >
-                {siteConfig.hero.secondaryCta.label}
+                {t.home.hero.secondaryCta}
 
                 <ArrowDown
                   size={16}
@@ -307,13 +314,18 @@ export function Hero() {
           <span className="h-px w-12 bg-white/30" />
         </motion.div>
 
-        {/* Stats floating panel */}
-        <div className="absolute inset-x-0 bottom-0 translate-y-1/2">
-          <Container>
-            <Stats />
-          </Container>
+        {/* Mobile/Tablet in-flow Stats (prevents overlap with CTA buttons) */}
+        <div className="mt-8 w-full sm:mt-10 lg:hidden">
+          <Stats isMobileFlow />
         </div>
       </Container>
+
+      {/* Desktop floating Stats panel */}
+      <div className="absolute inset-x-0 bottom-0 hidden translate-y-1/2 lg:block">
+        <Container>
+          <Stats />
+        </Container>
+      </div>
     </section>
   );
 }

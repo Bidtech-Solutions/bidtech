@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import type Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
+  try {
+    window.history.scrollRestoration = "manual";
+  } catch (e) {}
 }
 
 export interface SmoothScrollProviderProps {
@@ -14,6 +18,9 @@ export interface SmoothScrollProviderProps {
 }
 
 export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
+  const pathname = usePathname();
+  const lenisInstanceRef = useRef<Lenis | null>(null);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -32,8 +39,14 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
         touchMultiplier: 1.5,
       });
 
+      lenisInstanceRef.current = lenis;
+
       // Attach to global window for nav anchors and GSAP synchronization
       (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
+      // When newly mounted, ensure scroll starts from the top
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      lenis.scrollTo(0, { immediate: true, force: true });
 
       // Synchronize Lenis scroll updates with GSAP ScrollTrigger
       lenis.on("scroll", ScrollTrigger.update);
@@ -48,6 +61,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       cleanup = () => {
         gsap.ticker.remove(updateTicker);
         lenis.destroy();
+        lenisInstanceRef.current = null;
         delete (window as unknown as { __lenis?: Lenis }).__lenis;
       };
     });
@@ -57,6 +71,36 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       cleanup?.();
     };
   }, []);
+
+  // Force scroll to top whenever pathname changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const resetToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      if (lenisInstanceRef.current) {
+        lenisInstanceRef.current.scrollTo(0, { immediate: true, force: true });
+      }
+      const globalLenis = (window as unknown as { __lenis?: Lenis }).__lenis;
+      if (globalLenis) {
+        globalLenis.scrollTo(0, { immediate: true, force: true });
+      }
+      ScrollTrigger.refresh();
+    };
+
+    resetToTop();
+
+    // Additional checks on animation frame and short delay to handle Next.js client transition
+    const r1 = requestAnimationFrame(resetToTop);
+    const t1 = setTimeout(resetToTop, 50);
+    const t2 = setTimeout(resetToTop, 180);
+
+    return () => {
+      cancelAnimationFrame(r1);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [pathname]);
 
   return <>{children}</>;
 }

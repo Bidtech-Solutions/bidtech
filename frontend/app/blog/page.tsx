@@ -18,10 +18,7 @@ export const metadata: Metadata = {
     url: "https://bidtech.co.id/blog",
   },
 };
-};
 
-export default async function BlogPage() {
-  const { articles } = await fetchPublicArticles();
 export default async function BlogPage() {
   const { articles } = await fetchPublicArticles();
 

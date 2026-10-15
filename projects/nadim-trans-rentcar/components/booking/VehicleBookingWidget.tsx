@@ -10,6 +10,12 @@ import { formatRupiah, type Locale } from "@/lib/i18n";
 import { COMPANY_INFO, type Car } from "@/lib/data";
 import { KeyRound, UserRoundCheck, Clock, Sparkles } from "lucide-react";
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 const DeliveryMapPicker = dynamic(
   () => import("@/components/booking/DeliveryMapPicker"),
   {
@@ -212,6 +218,12 @@ export default function VehicleBookingWidget({
     ];
 
     const encodedText = encodeURIComponent(messageLines.join("\n"));
+
+    window.gtag?.("event", "conversion", {
+      send_to: "AW-18510637052/cCArCO60tJsdEPzPx_pE",
+      transaction_id: "",
+    });
+
     window.open(`https://wa.me/${COMPANY_INFO.whatsapp}?text=${encodedText}`, "_blank");
   };
 

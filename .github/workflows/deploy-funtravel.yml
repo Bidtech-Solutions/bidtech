@@ -171,6 +171,7 @@ jobs:
   deploy:
     name: Deploy ke VPS
     needs: image
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
@@ -179,54 +180,66 @@ jobs:
     env:
       IMAGE: ${{ needs.image.outputs.image }}
       IMAGE_TAG: ${{ needs.image.outputs.tag }}
+      GA_ID: ''
+      HOST_PORT: '3050'
     steps:
       - uses: actions/checkout@v5
 
-      - name: Nama image (rollback)
-        if: ${{ env.IMAGE == '' }}
-        working-directory: .
-        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/funtravel" >> "$GITHUB_ENV"
+      - name: Kemas paket deploy
+        run: tar -czf deploy.tgz docker-compose.yml .env.example
 
-      - name: Salin docker-compose.yml ke VPS
+      - name: Kirim paket ke VPS
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: projects/funtravel/docker-compose.yml
+          source: projects/funtravel/deploy.tgz
           target: ${{ env.DEPLOY_PATH }}
           strip_components: 2
 
-      - name: Pull & up (docker compose)
+      - name: Ekstrak, buat .env, pull & up
         uses: appleboy/ssh-action@v1.0.3
         env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHCR_USER: ${{ github.actor }}
-          APP_TAG: ${{ github.sha }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          envs: IMAGE,IMAGE_TAG,DEPLOY_PATH,GHCR_PULL_USER,GHCR_PULL_TOKEN
+          envs: DEPLOY_PATH,SITE_URL,IMAGE,IMAGE_TAG,GA_ID,HOST_PORT,GHCR_USER,GHCR_TOKEN
           script_stop: true
           script: |
             set -euo pipefail
+            mkdir -p "$DEPLOY_PATH"
             cd "$DEPLOY_PATH"
-            test -f .env || { echo "✗ $DEPLOY_PATH/.env belum ada (salin dari .env.example)"; exit 1; }
-            # Perbarui IMAGE & IMAGE_TAG di .env tanpa menyentuh variabel lain
-            sed -i '/^IMAGE=/d;/^IMAGE_TAG=/d' .env
-            printf 'IMAGE=%s\nIMAGE_TAG=%s\n' "$IMAGE" "$IMAGE_TAG" >> .env
-            if [ -n "${GHCR_PULL_TOKEN:-}" ]; then
-              echo "$GHCR_PULL_TOKEN" | docker login ghcr.io -u "$GHCR_PULL_USER" --password-stdin >/dev/null
-            fi
+
+            # 1) ekstrak paket (docker-compose.yml + .env.example)
+            tar -xzf deploy.tgz && rm -f deploy.tgz
+
+            # 2) .env baru dari .env.example, nilai diisi dari GitHub (ditimpa tiap deploy)
+            cp .env.example .env
+            setenv() {
+              if grep -q "^$1=" .env; then sed -i "s|^$1=.*|$1=$2|" .env; else printf '%s=%s\n' "$1" "$2" >> .env; fi
+            }
+            setenv IMAGE "$IMAGE"
+            setenv IMAGE_TAG "$IMAGE_TAG"
+            setenv NUXT_PUBLIC_SITE_URL "$SITE_URL"
+            setenv NUXT_PUBLIC_GA_ID "$GA_ID"
+            setenv HOST_PORT "$HOST_PORT"
+            chmod 600 .env
+
+            # 3) login GHCR (token job ini berlaku selama workflow berjalan), pull, up
+            trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin >/dev/null
             docker compose pull
-            docker compose up -d --no-build --wait --wait-timeout 60
-            PORT=$(grep -E '^HOST_PORT=' .env | cut -d= -f2); PORT=${PORT:-3050}
-            curl -fsS "http://127.0.0.1:${PORT}/healthz"
-            test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${PORT}/en)" = "200"
-            # Hanya image funtravel lama yang tidak terpakai (bukan prune global VPS bersama); simpan 3 terakhir
+            docker compose up -d --no-build --wait --wait-timeout 300
+
+            curl -fsS "http://127.0.0.1:${HOST_PORT}/healthz"
+            test "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${HOST_PORT}/en")" = "200"
+
             docker image ls "$IMAGE" --format '{{.Repository}}:{{.Tag}}' \
               | grep -v -e ":${IMAGE_TAG}$" -e ':latest$' | tail -n +4 | xargs -r docker image rm || true
             echo "✓ funtravel ${IMAGE_TAG} berjalan"
@@ -234,7 +247,7 @@ jobs:
       - name: Smoke test publik
         run: |
           set -euo pipefail
-          S="https://fungetgo.com"
+          S="${{ env.SITE_URL }}"
           sleep 5
           for p in /en /ms /zh /id /en/packages /en/vehicles /en/contact /sitemap_index.xml /llms.txt; do
             c=$(curl -s -o /dev/null -w '%{http_code}' "$S$p"); echo "$c $p"; test "$c" = "200"

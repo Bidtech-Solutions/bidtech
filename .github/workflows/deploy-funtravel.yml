@@ -1,0 +1,242 @@
+name: Deploy Fun Travel
+
+on:
+  push:
+    branches: [main]
+    paths: 
+      - 'projects/funtravel/**'
+      - "!projects/funtravel/**/*.md"
+      - "!projects/funtravel/docs/**"
+      - '.github/workflows/deploy-funtravel.yml'
+  pull_request:
+    paths: 
+      - 'projects/funtravel/**'
+      - "!projects/funtravel/**/*.md"
+      - "!projects/funtravel/docs/**"
+      - '.github/workflows/deploy-funtravel.yml'
+  schedule:
+  - cron: '15 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-funtravel
+  cancel-in-progress: false
+
+env:
+  SITE_URL: 'https://fungetgo.com'
+  DEPLOY_PATH: '/opt/funtravel'
+
+defaults:
+  run:
+    working-directory: projects/funtravel
+
+jobs:
+  verify:
+    name: Verify (i18n · kurs · typecheck · generate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: projects/funtravel/package-lock.json
+
+      - run: npm install -g npm@11.21.0
+      - run: npm ci --no-audit --no-fund
+
+      - name: Cek paritas key i18n (4 bahasa)
+        run: |
+          node -e "
+          const fs = require('fs');
+          const flat = (o, p = '') => Object.entries(o).flatMap(([k, v]) => v && typeof v === 'object' ? flat(v, p + k + '.') : [p + k]);
+          const dir = 'app/i18n/locales';
+          const sets = Object.fromEntries(['en', 'my', 'zh', 'id'].map((l) => [l, new Set(flat(JSON.parse(fs.readFileSync(dir + '/' + l + '.json', 'utf8'))))]));
+          let bad = 0;
+          for (const [l, s] of Object.entries(sets)) for (const k of sets.en) if (!s.has(k)) { console.error('✗ ' + l + ' kekurangan key: ' + k); bad++; }
+          for (const [l, s] of Object.entries(sets)) for (const k of s) if (!sets.en.has(k)) { console.error('✗ ' + l + ' kelebihan key: ' + k); bad++; }
+          if (bad) process.exit(1);
+          console.log('✓ ' + sets.en.size + ' key × 4 bahasa');
+          "
+
+      - name: Segarkan snapshot kurs
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 3 'https://api.frankfurter.dev/v1/latest?base=MYR&symbols=SGD,IDR' \
+            | jq '{base: "MYR", date: .date, source: "frankfurter (ECB reference rates)", rates: {MYR: 1, SGD: .rates.SGD, IDR: .rates.IDR}}' > /tmp/rates.json
+          jq -e '.rates.SGD > 0 and .rates.IDR > 0' /tmp/rates.json >/dev/null
+          cp /tmp/rates.json app/assets/data/rates.json
+          jq -c . app/assets/data/rates.json
+
+      - name: Typecheck + generate (prerender failOnError)
+        env:
+          NUXT_PUBLIC_SITE_URL: ${{ env.SITE_URL }}
+        run: npm run verify
+
+  image:
+    name: Image (build · smoke test · push GHCR)
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      image: ${{ steps.vars.outputs.image }}
+      tag: ${{ steps.vars.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: vars
+        working-directory: .
+        run: |
+          echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/funtravel" >> "$GITHUB_OUTPUT"
+          echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image (lokal, untuk smoke test)
+        uses: docker/build-push-action@v6
+        with:
+          context: projects/funtravel
+          load: true
+          tags: funtravel:test
+          build-args: |
+            NUXT_PUBLIC_SITE_URL=${{ env.SITE_URL }}
+            NUXT_PUBLIC_GA_ID=""
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test container
+        run: |
+          set -euo pipefail
+          docker run -d --name ft --read-only --tmpfs /tmp -p 8080:8080 funtravel:test
+          for i in $(seq 1 20); do curl -fs http://127.0.0.1:8080/healthz >/dev/null && break; sleep 1; done
+          B=http://127.0.0.1:8080
+          loc() { curl -s -o /dev/null -D - "$@" | tr -d '\r' | awk 'tolower($1)=="location:"{print $2}'; }
+          code() { curl -s -o /dev/null -w '%{http_code}' "$@"; }
+          eq() { if [ "$1" = "$2" ]; then echo "✓ $3"; else echo "✗ $3 (dapat '$1', harusnya '$2')"; docker logs ft | tail -20; exit 1; fi; }
+
+          eq "$(loc $B/)"                                                                      /en        "/ default → en"
+          eq "$(loc -H 'CF-IPCountry: MY' $B/)"                                                /ms        "/ MY → ms"
+          eq "$(loc -H 'CF-IPCountry: ID' $B/)"                                                /id        "/ ID → id"
+          eq "$(loc -H 'CF-IPCountry: SG' -H 'Accept-Language: zh-CN,zh;q=0.9' $B/)"           /zh        "/ SG + browser zh → zh"
+          eq "$(loc -H 'CF-IPCountry: SG' -H 'Accept-Language: en-US' $B/)"                    /en        "/ SG + browser en → en"
+          eq "$(loc -H 'CF-IPCountry: MY' -H 'Cookie: ft_locale=zh' $B/)"                      /zh        "cookie mengalahkan negara"
+          eq "$(loc -H 'CF-IPCountry: MY' $B/packages)"                                        /ms/packages "/packages → /ms/packages"
+          eq "$(loc $B/en/packages/)"                                                          /en/packages "trailing slash → 301"
+          eq "$(code $B/en/packages)"  200 "/en/packages 200"
+          eq "$(code $B/zh/vehicles)"  200 "/zh/vehicles 200"
+          eq "$(code $B/id/contact)"   200 "/id/contact 200"
+          eq "$(code $B/sitemap_index.xml)" 200 "sitemap_index.xml"
+          eq "$(code $B/robots.txt)"   200 "robots.txt"
+          eq "$(code $B/llms.txt)"     200 "llms.txt"
+          eq "$(code $B/en/tidak-ada)" 404 "404"
+          curl -sI $B/en/packages | grep -qi 'content-security-policy' && echo "✓ CSP terpasang"
+          docker rm -f ft >/dev/null
+
+      - uses: docker/login-action@v3
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.vars.outputs.image }}
+          tags: |
+            type=raw,value=${{ steps.vars.outputs.tag }}
+            type=raw,value=latest
+
+      - name: Push ke GHCR
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: projects/funtravel
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NUXT_PUBLIC_SITE_URL=${{ env.SITE_URL }}
+            NUXT_PUBLIC_GA_ID=""
+          cache-from: type=gha
+
+  deploy:
+    name: Deploy ke VPS
+    needs: image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: fungetgo
+      url: "https://fungetgo.com"
+    env:
+      IMAGE: ${{ needs.image.outputs.image }}
+      IMAGE_TAG: ${{ needs.image.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Nama image (rollback)
+        if: ${{ env.IMAGE == '' }}
+        working-directory: .
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/funtravel" >> "$GITHUB_ENV"
+
+      - name: Salin docker-compose.yml ke VPS
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: projects/funtravel/docker-compose.yml
+          target: ${{ env.DEPLOY_PATH }}
+          strip_components: 2
+
+      - name: Pull & up (docker compose)
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+          APP_TAG: ${{ github.sha }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          envs: IMAGE,IMAGE_TAG,DEPLOY_PATH,GHCR_PULL_USER,GHCR_PULL_TOKEN
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd "$DEPLOY_PATH"
+            test -f .env || { echo "✗ $DEPLOY_PATH/.env belum ada (salin dari .env.example)"; exit 1; }
+            # Perbarui IMAGE & IMAGE_TAG di .env tanpa menyentuh variabel lain
+            sed -i '/^IMAGE=/d;/^IMAGE_TAG=/d' .env
+            printf 'IMAGE=%s\nIMAGE_TAG=%s\n' "$IMAGE" "$IMAGE_TAG" >> .env
+            if [ -n "${GHCR_PULL_TOKEN:-}" ]; then
+              echo "$GHCR_PULL_TOKEN" | docker login ghcr.io -u "$GHCR_PULL_USER" --password-stdin >/dev/null
+            fi
+            docker compose pull
+            docker compose up -d --no-build --wait --wait-timeout 60
+            PORT=$(grep -E '^HOST_PORT=' .env | cut -d= -f2); PORT=${PORT:-3050}
+            curl -fsS "http://127.0.0.1:${PORT}/healthz"
+            test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${PORT}/en)" = "200"
+            # Hanya image funtravel lama yang tidak terpakai (bukan prune global VPS bersama); simpan 3 terakhir
+            docker image ls "$IMAGE" --format '{{.Repository}}:{{.Tag}}' \
+              | grep -v -e ":${IMAGE_TAG}$" -e ':latest$' | tail -n +4 | xargs -r docker image rm || true
+            echo "✓ funtravel ${IMAGE_TAG} berjalan"
+
+      - name: Smoke test publik
+        run: |
+          set -euo pipefail
+          S="https://fungetgo.com"
+          sleep 5
+          for p in /en /ms /zh /id /en/packages /en/vehicles /en/contact /sitemap_index.xml /llms.txt; do
+            c=$(curl -s -o /dev/null -w '%{http_code}' "$S$p"); echo "$c $p"; test "$c" = "200"
+          done
+          curl -sI "$S/" | grep -i '^location'

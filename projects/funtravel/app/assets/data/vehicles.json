@@ -1,0 +1,222 @@
+{
+  "pickupPoints": [
+    {
+      "id": "hang-nadim",
+      "name": {
+        "en": "Hang Nadim Airport",
+        "ms": "Lapangan Terbang Hang Nadim",
+        "zh": "杭纳丁机场",
+        "id": "Bandara Hang Nadim"
+      }
+    },
+    {
+      "id": "batam-centre",
+      "name": {
+        "en": "Batam Centre Ferry Terminal",
+        "ms": "Terminal Feri Batam Centre",
+        "zh": "巴淡中心渡轮码头",
+        "id": "Pelabuhan Batam Centre"
+      }
+    },
+    {
+      "id": "harbour-bay",
+      "name": {
+        "en": "Harbour Bay Ferry Terminal",
+        "ms": "Terminal Feri Harbour Bay",
+        "zh": "海湾渡轮码头 (Harbour Bay)",
+        "id": "Pelabuhan Harbour Bay"
+      }
+    },
+    {
+      "id": "sekupang",
+      "name": {
+        "en": "Sekupang Ferry Terminal",
+        "ms": "Terminal Feri Sekupang",
+        "zh": "世古邦渡轮码头",
+        "id": "Pelabuhan Sekupang"
+      }
+    },
+    {
+      "id": "nongsa-pura",
+      "name": {
+        "en": "Nongsa Pura Ferry Terminal",
+        "ms": "Terminal Feri Nongsa Pura",
+        "zh": "农沙普拉渡轮码头",
+        "id": "Pelabuhan Nongsa Pura"
+      }
+    },
+    {
+      "id": "other",
+      "name": {
+        "en": "Hotel / other address",
+        "ms": "Hotel / alamat lain",
+        "zh": "酒店 / 其他地址",
+        "id": "Hotel / alamat lain"
+      }
+    }
+  ],
+  "vehicles": [
+    {
+      "slug": "toyota-hiace",
+      "type": "car",
+      "category": "van",
+      "brand": "Toyota",
+      "model": "Hiace",
+      "tagline": {
+        "en": "Spacious van for groups",
+        "ms": "Van luas untuk rombongan",
+        "zh": "团体出行宽敞面包车",
+        "id": "Van luas untuk rombongan"
+      },
+      "pricePerDay": 600000,
+      "seats": null,
+      "transmission": null,
+      "featured": true,
+      "images": []
+    },
+    {
+      "slug": "toyota-alphard",
+      "type": "car",
+      "category": "mpv",
+      "brand": "Toyota",
+      "model": "Alphard",
+      "tagline": {
+        "en": "Luxury executive MPV",
+        "ms": "MPV mewah eksekutif",
+        "zh": "豪华商务 MPV",
+        "id": "MPV mewah eksekutif"
+      },
+      "pricePerDay": 600000,
+      "seats": 7,
+      "transmission": "automatic",
+      "featured": true,
+      "images": []
+    },
+    {
+      "slug": "toyota-veloz",
+      "type": "car",
+      "category": "mpv",
+      "brand": "Toyota",
+      "model": "Veloz",
+      "tagline": {
+        "en": "Modern family MPV",
+        "ms": "MPV keluarga moden",
+        "zh": "现代家庭 MPV",
+        "id": "MPV keluarga modern"
+      },
+      "pricePerDay": 600000,
+      "seats": 7,
+      "transmission": null,
+      "featured": true,
+      "images": []
+    },
+    {
+      "slug": "daihatsu-xenia",
+      "type": "car",
+      "category": "mpv",
+      "brand": "Daihatsu",
+      "model": "All New Xenia",
+      "tagline": {
+        "en": "Practical 7-seater",
+        "ms": "MPV 7 tempat duduk praktikal",
+        "zh": "实用七座车",
+        "id": "MPV 7 penumpang yang praktis"
+      },
+      "pricePerDay": 600000,
+      "seats": 7,
+      "transmission": null,
+      "featured": false,
+      "images": []
+    },
+    {
+      "slug": "daihatsu-ayla",
+      "type": "car",
+      "category": "hatchback",
+      "brand": "Daihatsu",
+      "model": "All New Ayla",
+      "tagline": {
+        "en": "Compact city car",
+        "ms": "Kereta bandar kompak",
+        "zh": "紧凑型城市车",
+        "id": "City car kompak"
+      },
+      "pricePerDay": 600000,
+      "seats": 5,
+      "transmission": null,
+      "featured": false,
+      "images": []
+    },
+    {
+      "slug": "daihatsu-rocky",
+      "type": "car",
+      "category": "suv",
+      "brand": "Daihatsu",
+      "model": "Rocky",
+      "tagline": {
+        "en": "Compact SUV",
+        "ms": "SUV kompak",
+        "zh": "紧凑型 SUV",
+        "id": "SUV kompak"
+      },
+      "pricePerDay": 600000,
+      "seats": 5,
+      "transmission": null,
+      "featured": false,
+      "images": []
+    },
+    {
+      "slug": "honda-adv",
+      "type": "motorcycle",
+      "category": "scooter",
+      "brand": "Honda",
+      "model": "ADV",
+      "tagline": {
+        "en": "Adventure scooter",
+        "ms": "Skuter pengembaraan",
+        "zh": "探险型踏板车",
+        "id": "Skuter adventure"
+      },
+      "pricePerDay": 150000,
+      "seats": 2,
+      "transmission": "automatic",
+      "featured": true,
+      "images": []
+    },
+    {
+      "slug": "honda-stylo",
+      "type": "motorcycle",
+      "category": "scooter",
+      "brand": "Honda",
+      "model": "Stylo",
+      "tagline": {
+        "en": "Stylish retro scooter",
+        "ms": "Skuter retro bergaya",
+        "zh": "时尚复古踏板车",
+        "id": "Skuter retro stylish"
+      },
+      "pricePerDay": 150000,
+      "seats": 2,
+      "transmission": "automatic",
+      "featured": false,
+      "images": []
+    },
+    {
+      "slug": "honda-scoopy",
+      "type": "motorcycle",
+      "category": "scooter",
+      "brand": "Honda",
+      "model": "Scoopy",
+      "tagline": {
+        "en": "Easy city scooter",
+        "ms": "Skuter bandar yang mudah",
+        "zh": "轻便城市踏板车",
+        "id": "Skuter santai keliling kota"
+      },
+      "pricePerDay": 150000,
+      "seats": 2,
+      "transmission": "automatic",
+      "featured": true,
+      "images": []
+    }
+  ]
+}

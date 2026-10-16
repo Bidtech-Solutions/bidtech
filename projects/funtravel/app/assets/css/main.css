@@ -1,0 +1,156 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Token desain (docs/DESIGN.md §2–4) + beberapa kelas bersama.
+   Semua styling lain memakai utilitas Tailwind langsung di template.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Font self-hosted (subset latin; Mandarin memakai font sistem) — lisensi OFL */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('../fonts/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Kaushan Script';
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/kaushan-script-latin-400-normal.woff2') format('woff2');
+}
+
+@theme {
+  --color-sun: #ffc81e;
+  --color-sun-deep: #f59e0b;
+  --color-ocean: #1e4fd8;
+  --color-navy: #0b1b4d;
+  --color-sky: #38a8f0;
+  --color-palm: #2e8b3e;
+  --color-coral: #e5484d;
+  --color-orchid: #e2337a;
+  --color-sand: #fff7e6;
+  --color-ink: #1a2233;
+  --color-muted: #5b6478;
+  --color-wa: #25d366;
+  --color-wa-dark: #128c7e;
+
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-script: 'Kaushan Script', cursive;
+
+  --radius-card: 20px;
+  --shadow-card: 0 8px 24px rgb(11 27 77 / 0.1);
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+body {
+  background: #fff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+/* Mandarin: font sistem CJK, tanpa font script (DESIGN.md §3) */
+html[lang^='zh'] body {
+  font-family: 'Plus Jakarta Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+}
+html[lang^='zh'] .font-script {
+  font-family: var(--font-sans);
+  font-style: italic;
+}
+:focus-visible {
+  outline: 3px solid var(--color-ocean);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Kelas bersama (dipakai di banyak halaman) ───────────────────────────── */
+@utility wrap {
+  @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6;
+}
+@utility section {
+  @apply py-12 sm:py-16;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition hover:-translate-y-0.5;
+}
+@utility btn-primary {
+  @apply btn bg-ocean text-white shadow-card hover:bg-navy;
+}
+@utility btn-secondary {
+  @apply btn bg-sun text-navy hover:bg-sun-deep;
+}
+@utility btn-outline {
+  @apply btn border-2 border-navy text-navy hover:bg-navy hover:text-white;
+}
+@utility btn-wa {
+  @apply btn bg-wa-dark text-white hover:bg-[#0e6f63];
+}
+@utility field {
+  @apply mt-1 w-full rounded-xl border border-navy/15 px-3 py-2.5 text-sm text-ink focus:border-ocean;
+}
+
+/* Warna aksen per paket: <article data-accent="orange"> → var(--accent) */
+[data-accent='blue'] { --accent: #1e4fd8; }
+[data-accent='green'] { --accent: #2e8b3e; }
+[data-accent='magenta'] { --accent: #e2337a; }
+[data-accent='orange'] { --accent: #f59e0b; }
+[data-accent='teal'] { --accent: #0d9488; }
+[data-accent='purple'] { --accent: #7c3aed; }
+
+/* Bingkai foto: placeholder berlabel sampai foto asli ada. <div class="ph" data-label="…"><img …></div> */
+.ph {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgb(56 168 240 / 0.3), var(--color-sand), rgb(255 200 30 / 0.4));
+}
+.ph::after {
+  content: attr(data-label);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(11 27 77 / 0.6);
+}
+.ph > img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Carousel scroll-snap (tanpa library) */
+.snap-row {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+.snap-row > * {
+  scroll-snap-align: start;
+}
+
+/* Sapuan kuas di belakang harga/kata kunci */
+.brush {
+  background-image: linear-gradient(100deg, transparent 2%, var(--color-sun) 4%, var(--color-sun) 94%, transparent 97%);
+  background-size: 100% 70%;
+  background-position: 0 70%;
+  background-repeat: no-repeat;
+  padding-inline: 0.15em;
+}

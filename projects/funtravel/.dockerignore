@@ -1,0 +1,13 @@
+.git
+node_modules
+.nuxt
+.output
+.data
+.env
+.env.*
+!.env.example
+docs
+*.md
+Dockerfile
+docker-compose.yml
+.dockerignore

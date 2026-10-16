@@ -1,6 +1,5 @@
 name: Semesta Pro CI/CD
 
-# Lives at <repo root>/.github/workflows/deploy-semestapro.yml; the app lives in projects/semestapro-project.
 on:
   push:
     branches: [main]
@@ -18,8 +17,6 @@ on:
       - ".github/workflows/deploy-semestapro.yml"
   workflow_dispatch:
 
-# Same group as the other projects' workflows: one Docker deploy at a time on the shared VPS.
-# Never cancel a running deploy half-way.
 concurrency:
   group: deploy-semestapro
   cancel-in-progress: false
@@ -329,7 +326,7 @@ jobs:
           APP_TAG: ${{ github.sha }}
         with:
           host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          port: 22
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 2m

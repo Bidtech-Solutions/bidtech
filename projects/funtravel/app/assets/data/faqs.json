@@ -1,0 +1,114 @@
+[
+  {
+    "id": "pkg-whats-included",
+    "home": true,
+    "q": {
+      "en": "What is included in a Fun Travel holiday package?",
+      "ms": "Apakah yang termasuk dalam pakej percutian Fun Travel?",
+      "zh": "Fun Travel 旅游配套包含哪些项目？",
+      "id": "Apa saja yang termasuk dalam paket liburan Fun Travel?"
+    },
+    "a": {
+      "en": "Every package includes a 2-way ferry ticket with seaport tax, a hotel with breakfast, transport with a driver, a tour leader and mineral water. Full Board packages also include meals and attraction tickets, and Batam & Bintan packages include the speedboat between the islands.",
+      "ms": "Setiap pakej termasuk tiket feri 2 hala dengan cukai pelabuhan, hotel dengan sarapan, pengangkutan dengan pemandu, ketua rombongan dan air mineral. Pakej Full Board turut termasuk makan dan tiket lawatan, manakala pakej Batam & Bintan termasuk bot laju antara pulau.",
+      "zh": "所有配套均包含往返渡轮票（含码头税）、含早餐的酒店住宿、专车与司机、领队及矿泉水。全餐配套另含正餐和景点门票；巴淡岛与民丹岛配套另含两岛之间的快艇。",
+      "id": "Setiap paket sudah termasuk tiket ferry PP + seaport tax, hotel dengan sarapan, transportasi + sopir, tour leader, dan air mineral. Paket Full Board juga termasuk makan dan tiket objek wisata, sedangkan paket Batam & Bintan termasuk speedboat antarpulau."
+    }
+  },
+  {
+    "id": "pkg-from-singapore",
+    "home": true,
+    "q": {
+      "en": "Can I depart from Singapore instead of Malaysia?",
+      "ms": "Bolehkah saya bertolak dari Singapura dan bukan dari Malaysia?",
+      "zh": "可以从新加坡出发吗？",
+      "id": "Bisakah berangkat dari Singapura, bukan dari Malaysia?"
+    },
+    "a": {
+      "en": "Yes. Package prices are based on departure from a Malaysian ferry terminal. Departing from a Singapore terminal is possible with an add-on price — ask our admin for the latest amount.",
+      "ms": "Boleh. Harga pakej berdasarkan pelepasan dari terminal feri Malaysia. Pelepasan dari terminal Singapura boleh diatur dengan harga tambahan — tanya admin kami untuk jumlah terkini.",
+      "zh": "可以。配套价格以从马来西亚渡轮码头出发为准；从新加坡码头出发需支付附加费用，具体金额请咨询客服。",
+      "id": "Bisa. Harga paket berlaku untuk keberangkatan dari terminal ferry Malaysia. Keberangkatan dari terminal Singapura dikenakan biaya tambahan (add-on) — tanyakan nominal terbarunya ke admin."
+    }
+  },
+  {
+    "id": "pkg-locals",
+    "home": false,
+    "q": {
+      "en": "Are the holiday packages available for Indonesian residents?",
+      "ms": "Adakah pakej percutian ini untuk penduduk Indonesia?",
+      "zh": "旅游配套适用于印尼本地居民吗？",
+      "id": "Apakah paket liburan berlaku untuk wisatawan lokal (Indonesia)?"
+    },
+    "a": {
+      "en": "Not at the moment. The holiday packages are designed for international travellers, mainly from Malaysia and Singapore. Vehicle rental is available for both international and local customers.",
+      "ms": "Buat masa ini tidak. Pakej percutian direka untuk pelancong antarabangsa, terutamanya dari Malaysia dan Singapura. Sewa kenderaan tersedia untuk pelanggan antarabangsa dan tempatan.",
+      "zh": "目前不适用。旅游配套专为国际游客（主要来自马来西亚和新加坡）设计；车辆租赁则同时面向国际与本地客户。",
+      "id": "Saat ini belum. Paket liburan dikhususkan untuk wisatawan mancanegara, terutama dari Malaysia dan Singapura. Layanan sewa kendaraan tersedia untuk pelanggan mancanegara maupun lokal."
+    }
+  },
+  {
+    "id": "rent-self-drive-car",
+    "home": true,
+    "q": {
+      "en": "Can I rent a car without a driver?",
+      "ms": "Bolehkah saya menyewa kereta tanpa pemandu?",
+      "zh": "可以租车自驾吗？",
+      "id": "Apakah mobil bisa disewa lepas kunci?"
+    },
+    "a": {
+      "en": "No. All our cars are rented with a driver. Scooters (Honda ADV, Stylo and Scoopy) are self-drive.",
+      "ms": "Tidak. Semua kereta kami disewa bersama pemandu. Skuter (Honda ADV, Stylo dan Scoopy) adalah pandu sendiri.",
+      "zh": "不可以。所有汽车均配司机出租；摩托车（Honda ADV、Stylo、Scoopy）为自驾租赁。",
+      "id": "Tidak. Semua mobil disewakan dengan sopir. Motor (Honda ADV, Stylo, Scoopy) disewakan lepas kunci."
+    }
+  },
+  {
+    "id": "rent-documents",
+    "home": false,
+    "q": {
+      "en": "What documents do I need to rent a scooter?",
+      "ms": "Apakah dokumen yang diperlukan untuk menyewa skuter?",
+      "zh": "租摩托车需要哪些证件？",
+      "id": "Dokumen apa yang dibutuhkan untuk sewa motor?"
+    },
+    "a": {
+      "en": "International guests need a passport, an International Driving Permit and their home-country licence. Local guests need an ID card (KTP) and a valid motorcycle licence (SIM C). Car rental comes with a driver, so no driving licence is needed.",
+      "ms": "Tetamu antarabangsa memerlukan pasport, Permit Memandu Antarabangsa dan lesen negara asal. Tetamu tempatan memerlukan KTP dan lesen motosikal (SIM C) yang sah. Sewa kereta disertakan pemandu, jadi lesen memandu tidak diperlukan.",
+      "zh": "国际游客需携带护照、国际驾照及本国驾照；本地客户需携带身份证（KTP）及有效摩托车驾照（SIM C）。汽车租赁配司机，无需驾照。",
+      "id": "Wisatawan mancanegara: paspor, International Driving Permit (IDP), dan SIM negara asal. Pelanggan lokal: KTP dan SIM C aktif. Sewa mobil sudah termasuk sopir sehingga tidak memerlukan SIM."
+    }
+  },
+  {
+    "id": "pay-methods",
+    "home": true,
+    "q": {
+      "en": "How do I pay?",
+      "ms": "Bagaimana cara pembayaran?",
+      "zh": "如何付款？",
+      "id": "Bagaimana cara pembayarannya?"
+    },
+    "a": {
+      "en": "After confirming with our admin on WhatsApp, you can pay via QRIS or bank transfer to our official BCA or Mandiri account. Payments are only valid to the official accounts listed on this website.",
+      "ms": "Selepas pengesahan dengan admin melalui WhatsApp, anda boleh membayar melalui QRIS atau pindahan bank ke akaun rasmi BCA atau Mandiri. Pembayaran hanya sah ke akaun rasmi yang dipaparkan di laman web ini.",
+      "zh": "通过 WhatsApp 与客服确认后，可使用 QRIS 或转账至官方 BCA / Mandiri 账户付款。仅向本网站列出的官方账户付款方为有效。",
+      "id": "Setelah konfirmasi dengan admin via WhatsApp, pembayaran dapat dilakukan melalui QRIS atau transfer ke rekening resmi BCA atau Mandiri. Pembayaran hanya sah ke rekening resmi yang tercantum di website ini."
+    }
+  },
+  {
+    "id": "how-to-book",
+    "home": true,
+    "q": {
+      "en": "How do I book?",
+      "ms": "Bagaimana cara membuat tempahan?",
+      "zh": "如何预订？",
+      "id": "Bagaimana cara memesan?"
+    },
+    "a": {
+      "en": "Choose a package or vehicle, fill in your travel details and tap \"Book via WhatsApp\". A message with your details is prepared automatically for our admin, who will confirm availability and the final price.",
+      "ms": "Pilih pakej atau kenderaan, isi butiran perjalanan dan tekan \"Tempah melalui WhatsApp\". Mesej berserta butiran anda disediakan secara automatik untuk admin kami, yang akan mengesahkan ketersediaan dan harga akhir.",
+      "zh": "选择配套或车辆，填写行程信息后点击\"通过 WhatsApp 预订\"。系统会自动生成包含您信息的消息，客服将确认空位及最终价格。",
+      "id": "Pilih paket atau kendaraan, isi detail perjalanan, lalu tekan \"Pesan via WhatsApp\". Pesan berisi detail Anda otomatis disiapkan untuk admin, yang akan mengonfirmasi ketersediaan dan harga final."
+    }
+  }
+]

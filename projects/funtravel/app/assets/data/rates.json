@@ -1,0 +1,10 @@
+{
+  "base": "MYR",
+  "date": "2026-10-14",
+  "source": "frankfurter (ECB reference rates)",
+  "rates": {
+    "MYR": 1,
+    "SGD": 0.31417,
+    "IDR": 4389.77
+  }
+}

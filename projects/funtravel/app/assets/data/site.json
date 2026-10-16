@@ -1,0 +1,51 @@
+{
+  "brandName": "FUN TRAVEL & TRANSPORT",
+  "shortName": "Fun Travel",
+  "legalName": "PT Fun Batam Holiday",
+  "tagline": "Fun Holiday with Fun Travel",
+  "admins": [
+    {
+      "id": "admin1",
+      "name": "Billy",
+      "label": "Admin 1",
+      "phone": "6285960577702",
+      "display": "+62 859-6057-7702"
+    },
+    {
+      "id": "admin2",
+      "name": null,
+      "label": "Admin 2",
+      "phone": "6285272023809",
+      "display": "+62 852-7202-3809"
+    }
+  ],
+  "socials": {
+    "instagram": "https://instagram.com/funtravel_transportasi",
+    "tiktok": "https://www.tiktok.com/@fun_t.t_batam",
+    "facebook": "https://www.facebook.com/profile.php?id=61591836087671"
+  },
+  "email": null,
+  "address": null,
+  "areaServed": [
+    "Batam",
+    "Bintan"
+  ],
+  "payment": {
+    "qris": {
+      "merchantName": "FUN BATAM HOLIDAY, AGEN PERJALANAN DAN TUR",
+      "nmid": "ID1026559732247"
+    },
+    "banks": [
+      {
+        "bank": "BCA",
+        "accountNo": "5140532071",
+        "holder": "Bill Wilkin's Hasibuan"
+      },
+      {
+        "bank": "Mandiri",
+        "accountNo": "1090019817162",
+        "holder": "Bill Wilkin's Hasibuan"
+      }
+    ]
+  }
+}

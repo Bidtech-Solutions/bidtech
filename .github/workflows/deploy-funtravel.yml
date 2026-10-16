@@ -199,7 +199,7 @@ jobs:
       IMAGE: ${{ needs.image.outputs.image }}
       IMAGE_TAG: ${{ needs.image.outputs.tag }}
       GA_ID: ''
-      HOST_PORT: '3050'
+      HOST_PORT: '3060'
     steps:
       - name: Download deploy config
         uses: actions/download-artifact@v4

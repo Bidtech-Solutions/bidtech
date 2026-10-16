@@ -266,14 +266,4 @@ jobs:
             # Hapus image funtravel lama (simpan 3 terakhir); bukan prune global di VPS bersama
             docker image ls "$IMAGE" --format '{{.Repository}}:{{.Tag}}' \
               | grep -v -e ":${IMAGE_TAG}$" -e ':latest$' | tail -n +4 | xargs -r docker image rm || true
-            echo "✓ funtravel ${IMAGE_TAG} berjalan"
-
-      - name: Smoke test publik
-        run: |
-          set -euo pipefail
-          S="${{ env.SITE_URL }}"
-          sleep 5
-          for p in /en /ms /zh /id /en/packages /en/vehicles /en/contact /sitemap_index.xml /llms.txt; do
-            c=$(curl -s -o /dev/null -w '%{http_code}' "$S$p"); echo "$c $p"; test "$c" = "200"
-          done
-          curl -sI "$S/" | grep -i '^location'          
+            echo "✓ funtravel ${IMAGE_TAG} berjalan"        

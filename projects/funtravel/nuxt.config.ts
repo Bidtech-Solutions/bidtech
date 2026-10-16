@@ -3,7 +3,7 @@ import packagesData from './app/assets/data/packages.json';
 import vehiclesData from './app/assets/data/vehicles.json';
 
 // URL produksi tanpa "/" akhir. Dipakai canonical, hreflang, sitemap, robots, llms.txt.
-const siteUrl = (process.env.NUXT_PUBLIC_SITE_URL || 'https://funtravel.example').replace(/\/$/, '');
+const siteUrl = (process.env.NUXT_PUBLIC_SITE_URL || 'https://fungetgo.com').replace(/\/$/, '');
 
 // Kode URL = ISO 639-1 ("ms" untuk Melayu); nama file terjemahan mengikuti struktur proyek (my.json).
 const locales = [
@@ -37,7 +37,6 @@ export default defineNuxtConfig({
   // 100% statis: `nuxt generate` → .output/public (disajikan Nginx). Tanpa server Node di produksi.
   ssr: true,
   nitro: {
-    preset: 'static',
     prerender: {
       routes: locales.flatMap((l) => paths.map((p) => `/${l.code}${p}`)),
       crawlLinks: true,

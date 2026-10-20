@@ -3,10 +3,10 @@
     {
       "id": "hang-nadim",
       "name": {
-        "en": "Hang Nadim Airport",
-        "ms": "Lapangan Terbang Hang Nadim",
-        "zh": "杭纳丁机场",
-        "id": "Bandara Hang Nadim"
+        "en": "Hang Nadim Airport (BTH)",
+        "ms": "Lapangan Terbang Hang Nadim (BTH)",
+        "zh": "杭纳丁国际机场 (BTH)",
+        "id": "Bandara Hang Nadim (BTH)"
       }
     },
     {
@@ -15,7 +15,7 @@
         "en": "Batam Centre Ferry Terminal",
         "ms": "Terminal Feri Batam Centre",
         "zh": "巴淡中心渡轮码头",
-        "id": "Pelabuhan Batam Centre"
+        "id": "Pelabuhan Ferry Batam Centre"
       }
     },
     {
@@ -24,7 +24,7 @@
         "en": "Harbour Bay Ferry Terminal",
         "ms": "Terminal Feri Harbour Bay",
         "zh": "海湾渡轮码头 (Harbour Bay)",
-        "id": "Pelabuhan Harbour Bay"
+        "id": "Pelabuhan Ferry Harbour Bay"
       }
     },
     {
@@ -33,7 +33,7 @@
         "en": "Sekupang Ferry Terminal",
         "ms": "Terminal Feri Sekupang",
         "zh": "世古邦渡轮码头",
-        "id": "Pelabuhan Sekupang"
+        "id": "Pelabuhan Ferry Sekupang"
       }
     },
     {
@@ -42,181 +42,381 @@
         "en": "Nongsa Pura Ferry Terminal",
         "ms": "Terminal Feri Nongsa Pura",
         "zh": "农沙普拉渡轮码头",
-        "id": "Pelabuhan Nongsa Pura"
+        "id": "Pelabuhan Ferry Nongsa Pura"
       }
     },
     {
       "id": "other",
       "name": {
-        "en": "Hotel / other address",
-        "ms": "Hotel / alamat lain",
-        "zh": "酒店 / 其他地址",
-        "id": "Hotel / alamat lain"
+        "en": "Hotel / Other Destination in Batam",
+        "ms": "Hotel / Alamat Lain di Batam",
+        "zh": "巴淡岛酒店 / 其他地址",
+        "id": "Hotel / Alamat Lain di Batam"
       }
     }
   ],
   "vehicles": [
     {
+      "slug": "toyota-avanza-veloz",
+      "type": "car",
+      "category": "mpv",
+      "brand": "Toyota",
+      "model": "Avanza / Veloz",
+      "tagline": {
+        "en": "Economical & comfortable for small families exploring Nagoya & seafood spots.",
+        "ms": "Pilihan jimat & selesa untuk keluarga kecil pusing bandar Nagoya & makan kelong seafood.",
+        "zh": "经济舒适的家用商务车，适合小家庭畅游名古屋购物与海鲜美食之旅。",
+        "id": "Pilihan hemat & nyaman untuk keluarga kecil keliling kota Nagoya dan kuliner seafood."
+      },
+      "pricePerDay": 615000,
+      "seats": 6,
+      "luggage": 3,
+      "transmission": "automatic",
+      "featured": true,
+      "popularRank": 1,
+      "inclusions": [
+        "Sudah termasuk Supir Lokal + BBM keliling Kota Batam",
+        "Gratis penjemputan di Pelabuhan Ferry Batam Centre / Harbour Bay / Bandara",
+        "Kapasitas ideal 4–6 penumpang dewasa + 3 bagasi kabin",
+        "Bebas atur rute (Nagoya Hill, Grand Batam, Barelang, Kelong)"
+      ],
+      "chips": [
+        "AC Double Blower",
+        "USB Charger",
+        "Free Port Pickup"
+      ],
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/2022_Toyota_Veloz_1.5_Q%2C_West_Surabaya_02.jpg/1280px-2022_Toyota_Veloz_1.5_Q%2C_West_Surabaya_02.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/2022_Toyota_Veloz_1.5_Q%2C_West_Surabaya_01.jpg/1280px-2022_Toyota_Veloz_1.5_Q%2C_West_Surabaya_01.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/2022_Toyota_Veloz_Premium_%28Rear%29.jpg/1280px-2022_Toyota_Veloz_Premium_%28Rear%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/2022_Toyota_Veloz_1.5_Toyota_Safety_Sense_%28Philippines%29_rear_view.jpg/1280px-2022_Toyota_Veloz_1.5_Toyota_Safety_Sense_%28Philippines%29_rear_view.jpg"
+      ]
+    },
+    {
+      "slug": "toyota-innova-reborn",
+      "type": "car",
+      "category": "mpv",
+      "brand": "Toyota",
+      "model": "Innova Reborn",
+      "tagline": {
+        "en": "Super quiet cabin & ultra-soft suspension for Barelang, shopping malls & spas.",
+        "ms": "Kabin senyap & suspensi sangat empuk untuk perjalanan Barelang, shopping mall & spa.",
+        "zh": "静谧车厢与舒适悬挂，全家游览巴里朗大桥、购物商场与水疗 SPA 的明星首选。",
+        "id": "Kabin senyap & suspensi sangat empuk untuk perjalanan Barelang, shopping mall & spa."
+      },
+      "pricePerDay": 790000,
+      "seats": 7,
+      "luggage": 4,
+      "transmission": "automatic",
+      "featured": true,
+      "bestSeller": true,
+      "popularRank": 0,
+      "inclusions": [
+        "Unit Best Seller favorit pelancong Malaysia & Singapura",
+        "Termasuk Supir Ramah Berpengalaman + BBM",
+        "Kapasitas lega 6–7 penumpang + 4 koper besar",
+        "Penjemputan tepat waktu dengan Papan Nama Nama Tamu"
+      ],
+      "chips": [
+        "Extra Legroom Reclining",
+        "Coolbox Mineral",
+        "Papan Nama Penjemputan"
+      ],
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Toyota_Innova_Reborn_2022.jpg/1280px-Toyota_Innova_Reborn_2022.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Kijang_Innova_Reborn_Diesel_G_Matic.jpg/1280px-Kijang_Innova_Reborn_Diesel_G_Matic.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/Toyota_Innova_Reborn_Diesel.jpg/1280px-Toyota_Innova_Reborn_Diesel.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Toyota_Kijang_Innova_Reborn_2022_with_Third-Generation_Alphard_Rims.jpg/1280px-Toyota_Kijang_Innova_Reborn_2022_with_Third-Generation_Alphard_Rims.jpg"
+      ]
+    },
+    {
+      "slug": "toyota-innova-zenix",
+      "type": "car",
+      "category": "mpv",
+      "brand": "Toyota",
+      "model": "Innova Zenix",
+      "tagline": {
+        "en": "Latest TNGA platform generation with spacious, modern, and ultra-smooth ride.",
+        "ms": "Generasi terbaharu platform TNGA yang sangat luas, moden & tunggangan paling selesa.",
+        "zh": "最新丰田 TNGA 平台，空间宽敞通透，静谧高级的现代旗舰乘驾体验。",
+        "id": "Generasi terbaru platform TNGA super lapang, modern, dan berkendara sangat halus."
+      },
+      "pricePerDay": 965000,
+      "seats": 7,
+      "luggage": 4,
+      "transmission": "automatic",
+      "featured": true,
+      "popularRank": 3,
+      "inclusions": [
+        "Armada tahun muda unit bersih & wangi aroma kopi",
+        "Supir profesional berpakaian rapi & komunikatif",
+        "Kabin luas dengan AC digital dingin merata",
+        "BBM & operasional supir di seluruh penjuru Batam"
+      ],
+      "chips": [
+        "Modern TNGA Chassis",
+        "Smart Key & Ambient",
+        "Super Smooth Drive"
+      ],
+      "images": [
+        "https://upload.wikimedia.org/wikipedia/commons/0/0e/Toyota_Innova_Zenix_%28Side%29%2C_Jakarta%2C_Indonesia.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/2022_Toyota_Kijang_Innova_Zenix_V_%28Indonesia%29_front_view.jpg/1280px-2022_Toyota_Kijang_Innova_Zenix_V_%28Indonesia%29_front_view.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Toyota_Kijang_Innova_Zenix_%28Rear%29%2C_Jakarta%2C_Indonesia.jpg/1280px-Toyota_Kijang_Innova_Zenix_%28Rear%29%2C_Jakarta%2C_Indonesia.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/2022_Toyota_Kijang_Innova_Zenix_V_%28rear%29.jpg/1280px-2022_Toyota_Kijang_Innova_Zenix_V_%28rear%29.jpg"
+      ]
+    },
+    {
       "slug": "toyota-hiace",
       "type": "car",
       "category": "van",
       "brand": "Toyota",
-      "model": "Hiace",
+      "model": "HiAce Premio / Commuter",
       "tagline": {
-        "en": "Spacious van for groups",
-        "ms": "Van luas untuk rombongan",
-        "zh": "团体出行宽敞面包车",
-        "id": "Van luas untuk rombongan"
+        "en": "Top choice for corporate groups, golf trips, or extended family holidays.",
+        "ms": "Pilihan utama rombongan pejabat, lawatan golf, atau keluarga besar bercuti.",
+        "zh": "大型商务团体、高尔夫球行与大家庭出游的不二之选，空间奢华充裕。",
+        "id": "Solusi terbaik untuk rombongan kantor, trip golf, atau keluarga besar."
       },
-      "pricePerDay": 600000,
-      "seats": null,
-      "transmission": null,
+      "pricePerDay": 1400000,
+      "seats": 14,
+      "luggage": 8,
+      "transmission": "manual",
       "featured": true,
-      "images": []
+      "popularRank": 2,
+      "inclusions": [
+        "Kapasitas 10–14 penumpang dewasa tanpa berdesakan",
+        "Ruang bagasi belakang lapang muat tas golf & koper",
+        "Sudah termasuk Supir Khusus Minibus & BBM harian",
+        "Antar jemput langsung dermaga ferry pelabuhan"
+      ],
+      "chips": [
+        "14 Kursi Reclining",
+        "High Ceiling Cabin",
+        "Muat Bag Golf & Koper"
+      ],
+      "images": [
+        "https://upload.wikimedia.org/wikipedia/commons/4/4e/Tunas_Rent_Toyota_HiAce_Commuter_%28H200%29_minibus_20210117.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/TOYOTA_HIACE_COMMUTER_%28H200%29_China.jpg/1280px-TOYOTA_HIACE_COMMUTER_%28H200%29_China.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Toyota_Hiace_2.8_Commuter_Deluxe_2023_%28interior%29.jpg/1280px-Toyota_Hiace_2.8_Commuter_Deluxe_2023_%28interior%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/Toyota_Hiace_KDH202L_3.0_Commuter_-_interior_view.jpg/1280px-Toyota_Hiace_KDH202L_3.0_Commuter_-_interior_view.jpg"
+      ]
+    },
+    {
+      "slug": "toyota-fortuner-pajero",
+      "type": "car",
+      "category": "suv",
+      "brand": "Toyota / Mitsubishi",
+      "model": "Fortuner / Pajero Sport",
+      "tagline": {
+        "en": "Tough & prestigious SUV for an exclusive tour of Batam & Barelang.",
+        "ms": "SUV berprestij & tegap untuk lawatan eksklusif Barelang dan Batam.",
+        "zh": "霸气硬朗的高地隙豪华 SUV，舒适跨越巴里朗群岛桥梁与自然风光。",
+        "id": "SUV tangguh & berwibawa untuk perjalanan eksklusif keliling Batam dan Barelang."
+      },
+      "pricePerDay": 1140000,
+      "seats": 7,
+      "luggage": 4,
+      "transmission": "automatic",
+      "featured": false,
+      "popularRank": 4,
+      "inclusions": [
+        "Ground clearance tinggi nyaman di berbagai kondisi jalan",
+        "Interior jok kulit mewah & AC climate control",
+        "Termasuk BBM & supir berpengalaman privat",
+        "Sangat prestisius untuk tamu VIP atau kunjungan dinas"
+      ],
+      "chips": [
+        "Jok Kulit Mewah",
+        "High Ground Clearance",
+        "Gagah & Prestisius"
+      ],
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/14/2021_Toyota_Fortuner_SRZ_2.7_4x2_%28Indonesia%29_front_view_01.jpg/1280px-2021_Toyota_Fortuner_SRZ_2.7_4x2_%28Indonesia%29_front_view_01.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/2021_Toyota_Fortuner_SRZ_2.7_4x2_%28Indonesia%29_front_view_02.jpg/1280px-2021_Toyota_Fortuner_SRZ_2.7_4x2_%28Indonesia%29_front_view_02.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/2021_Toyota_Fortuner_2.4_TRD_Sportivo_%28Indonesia%29_front_view.jpg/1280px-2021_Toyota_Fortuner_2.4_TRD_Sportivo_%28Indonesia%29_front_view.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/2021_Toyota_Fortuner_2.4_VRZ_GR_Sport_4x2_GUN165R_interior_%2820211117%29.jpg/1280px-2021_Toyota_Fortuner_2.4_VRZ_GR_Sport_4x2_GUN165R_interior_%2820211117%29.jpg"
+      ]
     },
     {
       "slug": "toyota-alphard",
       "type": "car",
-      "category": "mpv",
+      "category": "luxury",
       "brand": "Toyota",
-      "model": "Alphard",
+      "model": "Alphard VIP Lounge",
       "tagline": {
-        "en": "Luxury executive MPV",
-        "ms": "MPV mewah eksekutif",
-        "zh": "豪华商务 MPV",
-        "id": "MPV mewah eksekutif"
+        "en": "VIP luxury travel with Ottoman captain seats for dignitaries & business leaders.",
+        "ms": "Layanan VIP mewah dengan tempat duduk kapten Ottoman untuk kenamaan & bisnes.",
+        "zh": "顶级头等舱航空座椅，专为尊贵商务接待、高层考察与奢华假期打造。",
+        "id": "Layanan VIP eksekutif dengan kursi captain seat Ottoman untuk tamu kehormatan."
       },
-      "pricePerDay": 600000,
+      "pricePerDay": 1975000,
       "seats": 7,
+      "luggage": 4,
       "transmission": "automatic",
       "featured": true,
-      "images": []
-    },
-    {
-      "slug": "toyota-veloz",
-      "type": "car",
-      "category": "mpv",
-      "brand": "Toyota",
-      "model": "Veloz",
-      "tagline": {
-        "en": "Modern family MPV",
-        "ms": "MPV keluarga moden",
-        "zh": "现代家庭 MPV",
-        "id": "MPV keluarga modern"
-      },
-      "pricePerDay": 600000,
-      "seats": 7,
-      "transmission": null,
-      "featured": true,
-      "images": []
-    },
-    {
-      "slug": "daihatsu-xenia",
-      "type": "car",
-      "category": "mpv",
-      "brand": "Daihatsu",
-      "model": "All New Xenia",
-      "tagline": {
-        "en": "Practical 7-seater",
-        "ms": "MPV 7 tempat duduk praktikal",
-        "zh": "实用七座车",
-        "id": "MPV 7 penumpang yang praktis"
-      },
-      "pricePerDay": 600000,
-      "seats": 7,
-      "transmission": null,
-      "featured": false,
-      "images": []
-    },
-    {
-      "slug": "daihatsu-ayla",
-      "type": "car",
-      "category": "hatchback",
-      "brand": "Daihatsu",
-      "model": "All New Ayla",
-      "tagline": {
-        "en": "Compact city car",
-        "ms": "Kereta bandar kompak",
-        "zh": "紧凑型城市车",
-        "id": "City car kompak"
-      },
-      "pricePerDay": 600000,
-      "seats": 5,
-      "transmission": null,
-      "featured": false,
-      "images": []
-    },
-    {
-      "slug": "daihatsu-rocky",
-      "type": "car",
-      "category": "suv",
-      "brand": "Daihatsu",
-      "model": "Rocky",
-      "tagline": {
-        "en": "Compact SUV",
-        "ms": "SUV kompak",
-        "zh": "紧凑型 SUV",
-        "id": "SUV kompak"
-      },
-      "pricePerDay": 600000,
-      "seats": 5,
-      "transmission": null,
-      "featured": false,
-      "images": []
-    },
-    {
-      "slug": "honda-adv",
-      "type": "motorcycle",
-      "category": "scooter",
-      "brand": "Honda",
-      "model": "ADV",
-      "tagline": {
-        "en": "Adventure scooter",
-        "ms": "Skuter pengembaraan",
-        "zh": "探险型踏板车",
-        "id": "Skuter adventure"
-      },
-      "pricePerDay": 150000,
-      "seats": 2,
-      "transmission": "automatic",
-      "featured": true,
-      "images": []
-    },
-    {
-      "slug": "honda-stylo",
-      "type": "motorcycle",
-      "category": "scooter",
-      "brand": "Honda",
-      "model": "Stylo",
-      "tagline": {
-        "en": "Stylish retro scooter",
-        "ms": "Skuter retro bergaya",
-        "zh": "时尚复古踏板车",
-        "id": "Skuter retro stylish"
-      },
-      "pricePerDay": 150000,
-      "seats": 2,
-      "transmission": "automatic",
-      "featured": false,
-      "images": []
+      "popularRank": 5,
+      "inclusions": [
+        "Kursi Captain Seat Elektrik dengan Sandaran Kaki Ottoman",
+        "Double Sunroof, Tirai Privasi, & Audio Premium",
+        "Supir VIP berpakaian rapi kemeja batik/formal",
+        "Protokol penjemputan VIP langsung di pintu keluar terminal"
+      ],
+      "chips": [
+        "Ottoman Captain Seat",
+        "Double Sunroof",
+        "Layanan Protokol VIP"
+      ],
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/Toyota_Alphard%2C_Johor_Bahru_%28P1110139%29.jpg/1280px-Toyota_Alphard%2C_Johor_Bahru_%28P1110139%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/2018-2023_Toyota_Alphard_X.jpg/1280px-2018-2023_Toyota_Alphard_X.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/2018-2023_Toyota_Alphard_X_rear.jpg/1280px-2018-2023_Toyota_Alphard_X_rear.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/TOYOTA_ALPHARD_HYBRID_%28AH30%29_China_%2813%29.jpg/1280px-TOYOTA_ALPHARD_HYBRID_%28AH30%29_China_%2813%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/TOYOTA_ALPHARD_HYBRID_%28AH30%29_China_%289%29.jpg/1280px-TOYOTA_ALPHARD_HYBRID_%28AH30%29_China_%289%29.jpg"
+      ]
     },
     {
       "slug": "honda-scoopy",
       "type": "motorcycle",
       "category": "scooter",
       "brand": "Honda",
-      "model": "Scoopy",
+      "model": "Scoopy Stylish",
       "tagline": {
-        "en": "Easy city scooter",
-        "ms": "Skuter bandar yang mudah",
-        "zh": "轻便城市踏板车",
-        "id": "Skuter santai keliling kota"
+        "en": "Cute retro scooter with super efficient fuel economy, favorite of couples & solo explorers.",
+        "ms": "Skuter retro comel & jimat minyak, pilihan kegemaran pelancong solo & pasangan.",
+        "zh": "复古可爱、超低油耗的时尚踏板车，单人探索与情侣约会的热门选择。",
+        "id": "Skuter retro stylish & irit bensin, favorit wisatawan solo dan pasangan santai."
       },
       "pricePerDay": 150000,
       "seats": 2,
+      "luggage": 1,
       "transmission": "automatic",
       "featured": true,
-      "images": []
+      "popularRank": 6,
+      "inclusions": [
+        "2 Buah Helm SNI Bersih & Wangi",
+        "1 Set Jas Hujan Berkualitas",
+        "Kondisi ban tebal & servis rutin berkala",
+        "Gratis antar ke hotel area Batam Centre & Nagoya"
+      ],
+      "chips": [
+        "2 Helm SNI Bersih",
+        "Jas Hujan Siap",
+        "Super Irit Bensin"
+      ],
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/2021_Honda_Scoopy_Prestige_110_%2820220216%29.jpg/1280px-2021_Honda_Scoopy_Prestige_110_%2820220216%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/2022_Honda_Scoopy_110.jpg/1280px-2022_Honda_Scoopy_110.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/2024_Honda_Scoopy_Club_12.jpg/1280px-2024_Honda_Scoopy_Club_12.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Honda_Scoopy_in_different_generations_-_Jambi_City%2C_JA_01.jpg/1280px-Honda_Scoopy_in_different_generations_-_Jambi_City%2C_JA_01.jpg"
+      ]
+    },
+    {
+      "slug": "honda-beat",
+      "type": "motorcycle",
+      "category": "scooter",
+      "brand": "Honda",
+      "model": "Beat eSP",
+      "tagline": {
+        "en": "Most agile and economical scooter to zip through Batam city traffic with zero fuss.",
+        "ms": "Paling lincah & jimat minyak untuk meredah bandar Batam tanpa sebarang masalah.",
+        "zh": "轻巧灵敏、超省油经济小踏板，轻松穿行巴淡岛街巷与市集。",
+        "id": "Paling hemat & lincah menembus jalanan Batam dengan sangat praktis."
+      },
+      "pricePerDay": 130000,
+      "seats": 2,
+      "luggage": 1,
+      "transmission": "automatic",
+      "featured": true,
+      "popularRank": 7,
+      "inclusions": [
+        "2 Buah Helm SNI Standar",
+        "1 Set Jas Hujan",
+        "Bobot motor ringan sangat mudah dikendarai",
+        "Antar jemput unit fleksibel di pelabuhan/hotel"
+      ],
+      "chips": [
+        "Tarikan Enteng",
+        "Sangat Irit",
+        "Bebas Macet"
+      ],
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/2016_Honda_BeAT_eSP%2C_West_Surabaya.jpg/1280px-2016_Honda_BeAT_eSP%2C_West_Surabaya.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/2019_Honda_BeAT_eSP_CBS_110_%2820211007%29.jpg/1280px-2019_Honda_BeAT_eSP_CBS_110_%2820211007%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/2019_Honda_BeAT_eSP_CBS_110_%2820200623%29.jpg/1280px-2019_Honda_BeAT_eSP_CBS_110_%2820200623%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/2016_Honda_BeAT_eSP_CBS-ISS_110_%2820200706%29.jpg/1280px-2016_Honda_BeAT_eSP_CBS-ISS_110_%2820200706%29.jpg"
+      ]
+    },
+    {
+      "slug": "honda-vario-160",
+      "type": "motorcycle",
+      "category": "scooter",
+      "brand": "Honda",
+      "model": "Vario 160 eSP+",
+      "tagline": {
+        "en": "Powerful 160cc engine with large underseat trunk, steady for Barelang rides.",
+        "ms": "Enjin 160cc bertenaga & but luas bawah tempat duduk, mantap untuk laluan Barelang.",
+        "zh": "160cc 充沛动力配合超大座桶储物空间，长途巡航巴里朗大桥格外稳当。",
+        "id": "Tenaga responsif 160cc dengan bagasi luas helm-in, stabil melaju rute Barelang."
+      },
+      "pricePerDay": 190000,
+      "seats": 2,
+      "luggage": 1,
+      "transmission": "automatic",
+      "featured": false,
+      "popularRank": 8,
+      "inclusions": [
+        "Mesin 160cc 4-katup eSP+ bertenaga di tanjakan",
+        "Bagasi bawah jok 18 liter muat helm & belanjaan",
+        "Pengereman cakram depan mantap dengan CBS",
+        "Dilengkapi 2 helm SNI & jas hujan"
+      ],
+      "chips": [
+        "Mesin 160cc Mantap",
+        "Bagasi Helm-In Luas",
+        "Rem CBS Aman"
+      ],
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/2022_Honda_Vario_160_ABS_%2820221105%29.jpg/1280px-2022_Honda_Vario_160_ABS_%2820221105%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/2022_Honda_Vario_160_ABS_%2820221229%29.jpg/1280px-2022_Honda_Vario_160_ABS_%2820221229%29.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/c/c5/2025_Honda_Vario_160_CBS_%2820251019%29.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/The_Vario_160_2023.png/1280px-The_Vario_160_2023.png"
+      ]
+    },
+    {
+      "slug": "yamaha-nmax",
+      "type": "motorcycle",
+      "category": "scooter",
+      "brand": "Yamaha",
+      "model": "NMAX 155 Connected",
+      "tagline": {
+        "en": "Premium maxi scooter with relaxed cruising feet position & dual sub-tank suspension.",
+        "ms": "Skuter maxi premium dengan posisi kaki santai selonjor & suspensi gas berkembar empuk.",
+        "zh": "高端大踏板舒展骑行姿势，带副油壶后减震，尽享海滨公路惬意巡航。",
+        "id": "Maxi scooter premium dengan posisi pijakan kaki selonjor santai dan suspensi empuk."
+      },
+      "pricePerDay": 240000,
+      "seats": 2,
+      "luggage": 2,
+      "transmission": "automatic",
+      "featured": true,
+      "popularRank": 9,
+      "inclusions": [
+        "Posisi berkendara rileks bisa selonjoran kaki",
+        "Suspensi belakang sub-tank empuk meredam guncangan",
+        "Bagasi ekstra besar 24 liter",
+        "Termasuk 2 helm premium & jas hujan tebal"
+      ],
+      "chips": [
+        "Posisi Duduk Selonjor",
+        "Shock Tabung Empuk",
+        "Bagasi 24 Liter"
+      ],
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Yamaha_NMAX_Turbo_155_front_side_view_in_Indonesia.jpg/1280px-Yamaha_NMAX_Turbo_155_front_side_view_in_Indonesia.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/2025_Yamaha_NMAX_155_Standard.jpg/1280px-2025_Yamaha_NMAX_155_Standard.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Yamaha_Nmax_155_front.jpg/1280px-Yamaha_Nmax_155_front.jpg",
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Yamaha_Nmax_155_rear.jpg/1280px-Yamaha_Nmax_155_rear.jpg"
+      ]
     }
   ]
 }

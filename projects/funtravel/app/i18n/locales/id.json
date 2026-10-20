@@ -14,7 +14,8 @@
     "chatWhatsApp": "Chat WhatsApp",
     "language": "Bahasa",
     "currency": "Mata uang",
-    "skip": "Lewati ke konten"
+    "skip": "Lewati ke konten",
+    "theme": "Ganti mode gelap/terang"
   },
   "common": {
     "from": "Mulai dari",
@@ -38,7 +39,8 @@
       "automatic": "Otomatis",
       "manual": "Manual",
       "cvt": "CVT"
-    }
+    },
+    "recommendations": "Rekomendasi Lainnya"
   },
   "price": {
     "estimateNote": "Harga konversi adalah estimasi (kurs referensi {date}). Harga final dikonfirmasi oleh admin.",
@@ -96,7 +98,9 @@
     "ferryText": "Harga berlaku untuk keberangkatan dari terminal ferry Malaysia.",
     "ferryAddOn": "Berangkat dari Singapura? Dikenakan add-on {price}/pax.",
     "ferryAddOnUnknown": "Berangkat dari Singapura? Dikenakan biaya add-on — tanyakan admin.",
-    "otherPackages": "Paket lainnya"
+    "otherPackages": "Paket lainnya",
+    "terms": "Ketentuan Paket",
+    "facilities": "Fasilitas Paket"
   },
   "booking": {
     "titlePackage": "Pesan paket ini",
@@ -127,12 +131,22 @@
     "locationFailed": "Lokasi tidak tersedia. Silakan ketik alamat.",
     "locationShared": "Lokasi dibagikan",
     "notSet": "-",
-    "paymentTitle": "Metode pembayaran resmi"
+    "paymentTitle": "Metode pembayaran resmi",
+    "pickDates": "Pilih tanggal sewa",
+    "selectEnd": "Pilih tanggal selesai (atau langsung pesan untuk 1 hari)",
+    "pickStart": "Ketuk tanggal mulai di kalender",
+    "daysSelected": "{days} hari",
+    "prevMonth": "Bulan sebelumnya",
+    "nextMonth": "Bulan berikutnya",
+    "pickDepart": "Ketuk tanggal berangkat di kalender",
+    "returnDate": "Tanggal pulang",
+    "departDate": "Tanggal berangkat"
   },
   "whatsapp": {
     "generic": "Halo Fun Travel, saya ingin bertanya tentang paket liburan dan sewa kendaraan.",
-    "package": "Halo Fun Travel, saya ingin memesan paket liburan:\n• Paket: {code} – {name}\n• Tanggal berangkat: {date}\n• Peserta: {adults} dewasa, {children} anak\n• Terminal keberangkatan: {terminal}\n• Destinasi: {destinations}\n• Estimasi: mulai {price}/pax (sekitar {total})\n• Catatan: {notes}\nLink: {url}",
-    "vehicle": "Halo Fun Travel, saya ingin sewa kendaraan:\n• Kendaraan: {vehicle} ({service})\n• Tanggal: {start} – {end} ({days} hari)\n• Jam antar: {time} WIB\n• Titik antar/jemput: {pickup}\n• Estimasi total: {total}\n• Catatan: {notes}\nLink: {url}"
+    "package": "Halo Fun Travel, saya ingin memesan paket liburan:\n• Paket: {code} – {name}\n• Tanggal berangkat: {date}\n• Peserta: {adults} dewasa, {children} anak\n• Terminal keberangkatan: {terminal}\n• Destinasi: {destinations}\n• Estimasi: mulai {price}/pax (sekitar {total})\nLink: {url}",
+    "vehicle": "Halo Fun Travel, saya ingin sewa kendaraan:\n• Kendaraan: {vehicle} ({service})\n• Tanggal: {start} – {end} ({days} hari)\n• Estimasi total: {total}\nLink: {url}",
+    "packageQuick": "Halo Fun Travel, saya tertarik dengan paket {name}. Mohon info ketersediaan & detailnya."
   },
   "vehicles": {
     "metaTitle": "Sewa Mobil dengan Sopir & Sewa Motor di Batam",
@@ -169,10 +183,15 @@
       "mpv": "MPV",
       "suv": "SUV",
       "hatchback": "City car",
-      "scooter": "Skuter"
+      "scooter": "Skuter",
+      "luxury": "MPV Mewah"
     },
     "descCar": "Sewa {model} di Batam lengkap dengan sopir lokal — cocok untuk liburan keluarga, antar-jemput bandara & pelabuhan, dan city tour.",
-    "descMotor": "Sewa motor {model} lepas kunci di Batam — praktis untuk keliling kota sesuai jadwal Anda."
+    "descMotor": "Sewa motor {model} lepas kunci di Batam — praktis untuk keliling kota sesuai jadwal Anda.",
+    "fleetTitle": "Armada Kendaraan Kami",
+    "facilities": "Fasilitas",
+    "terms": "Ketentuan Sewa",
+    "perDayShort": "/ hari"
   },
   "payment": {
     "title": "Metode pembayaran resmi",
@@ -202,6 +221,16 @@
     "contact": "Kontak",
     "followUs": "Ikuti kami",
     "payments": "Pembayaran",
-    "rights": "© {year} {legal}. Hak cipta dilindungi."
+    "rights": "© {year} {legal}. Hak cipta dilindungi.",
+    "photoCredits": "Kredit foto (Wikimedia Commons)"
+  },
+  "cta": {
+    "title": "Siap Liburan Seru ke Batam & Bintan?",
+    "text": "Chat langsung dengan tim lokal kami: itinerary khusus, tarif charter rombongan, dan konfirmasi tiket ferry dalam hitungan menit.",
+    "point1": "Balasan cepat setiap hari",
+    "point2": "Harga resmi tanpa perantara",
+    "point3": "Bayar hanya ke rekening resmi",
+    "cardTitle": "Pesan Langsung via WhatsApp",
+    "online": "Online"
   }
 }

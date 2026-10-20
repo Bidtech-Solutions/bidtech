@@ -13,12 +13,12 @@ useHead({ title: '404 — FUN TRAVEL & TRANSPORT', meta: [{ name: 'robots', cont
 </script>
 
 <template>
-  <main class="mx-auto max-w-[520px] px-6 py-[15vh] text-center text-navy">
-    <p class="text-6xl font-black text-ocean">{{ error?.statusCode ?? 404 }}</p>
+  <main class="mx-auto max-w-[520px] px-6 py-[15vh] text-center text-navy dark:text-white">
+    <p class="text-6xl font-black text-ocean dark:text-sky-400">{{ error?.statusCode ?? 404 }}</p>
     <p class="mt-2 text-xl font-extrabold">FUN TRAVEL &amp; TRANSPORT</p>
     <ul class="mt-6 grid gap-2.5">
       <li v-for="l in links" :key="l.code">
-        {{ l.text }} — <a :href="`/${l.code}`" class="font-bold text-ocean underline">{{ l.name }}</a>
+        {{ l.text }} — <a :href="`/${l.code}`" class="font-bold text-ocean underline dark:text-sky-400">{{ l.name }}</a>
       </li>
     </ul>
   </main>

@@ -14,7 +14,8 @@
     "chatWhatsApp": "Chat on WhatsApp",
     "language": "Language",
     "currency": "Currency",
-    "skip": "Skip to content"
+    "skip": "Skip to content",
+    "theme": "Toggle dark mode"
   },
   "common": {
     "from": "From",
@@ -38,7 +39,8 @@
       "automatic": "Automatic",
       "manual": "Manual",
       "cvt": "CVT"
-    }
+    },
+    "recommendations": "Other Recommendations"
   },
   "price": {
     "estimateNote": "Converted prices are estimates (reference rate {date}). The final price is confirmed by our admin.",
@@ -96,7 +98,9 @@
     "ferryText": "Prices are valid for departure from a Malaysian ferry terminal.",
     "ferryAddOn": "Departing from Singapore? An add-on of {price}/pax applies.",
     "ferryAddOnUnknown": "Departing from Singapore? An add-on price applies — ask our admin.",
-    "otherPackages": "Other packages"
+    "otherPackages": "Other packages",
+    "terms": "Package Terms",
+    "facilities": "Package Facilities"
   },
   "booking": {
     "titlePackage": "Book this package",
@@ -127,12 +131,22 @@
     "locationFailed": "Location unavailable. Please type the address.",
     "locationShared": "Location shared",
     "notSet": "-",
-    "paymentTitle": "Official payment methods"
+    "paymentTitle": "Official payment methods",
+    "pickDates": "Choose rental dates",
+    "selectEnd": "Pick the end date (or book now for 1 day)",
+    "pickStart": "Tap a start date on the calendar",
+    "daysSelected": "{days} day(s)",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "pickDepart": "Tap your departure date on the calendar",
+    "returnDate": "Return date",
+    "departDate": "Departure date"
   },
   "whatsapp": {
     "generic": "Hello Fun Travel, I would like to ask about your holiday packages and vehicle rental.",
-    "package": "Hello Fun Travel, I would like to book a holiday package:\n• Package: {code} – {name}\n• Departure date: {date}\n• Travellers: {adults} adult(s), {children} child(ren)\n• Departure terminal: {terminal}\n• Destinations: {destinations}\n• Estimate: from {price}/pax (approx. {total})\n• Notes: {notes}\nLink: {url}",
-    "vehicle": "Hello Fun Travel, I would like to rent a vehicle:\n• Vehicle: {vehicle} ({service})\n• Date: {start} – {end} ({days} day(s))\n• Pickup time: {time} WIB\n• Pickup point: {pickup}\n• Estimated total: {total}\n• Notes: {notes}\nLink: {url}"
+    "package": "Hello Fun Travel, I would like to book a holiday package:\n• Package: {code} – {name}\n• Departure date: {date}\n• Travellers: {adults} adult(s), {children} child(ren)\n• Departure terminal: {terminal}\n• Destinations: {destinations}\n• Estimate: from {price}/pax (approx. {total})\nLink: {url}",
+    "vehicle": "Hello Fun Travel, I would like to rent a vehicle:\n• Vehicle: {vehicle} ({service})\n• Date: {start} – {end} ({days} day(s))\n• Estimated total: {total}\nLink: {url}",
+    "packageQuick": "Hello Fun Travel, I am interested in the {name} package. Please share availability & details."
   },
   "vehicles": {
     "metaTitle": "Car Rental with Driver & Scooter Rental in Batam",
@@ -169,10 +183,15 @@
       "mpv": "MPV",
       "suv": "SUV",
       "hatchback": "City car",
-      "scooter": "Scooter"
+      "scooter": "Scooter",
+      "luxury": "Luxury MPV"
     },
     "descCar": "Rent a {model} in Batam with a local driver — ideal for family trips, airport and ferry transfers, and sightseeing.",
-    "descMotor": "Self-drive {model} scooter rental in Batam — a practical way to explore the city at your own pace."
+    "descMotor": "Self-drive {model} scooter rental in Batam — a practical way to explore the city at your own pace.",
+    "fleetTitle": "Our Fleet",
+    "facilities": "Facilities",
+    "terms": "Rental Terms",
+    "perDayShort": "/ day"
   },
   "payment": {
     "title": "Official payment methods",
@@ -202,6 +221,16 @@
     "contact": "Contact",
     "followUs": "Follow us",
     "payments": "Payments",
-    "rights": "© {year} {legal}. All rights reserved."
+    "rights": "© {year} {legal}. All rights reserved.",
+    "photoCredits": "Photo credits (Wikimedia Commons)"
+  },
+  "cta": {
+    "title": "Ready for an Unforgettable Batam & Bintan Holiday?",
+    "text": "Chat directly with our local team: custom itineraries, group charter rates, and ferry booking confirmation within minutes.",
+    "point1": "Quick replies every day",
+    "point2": "Official prices, no middleman",
+    "point3": "Pay only to official accounts",
+    "cardTitle": "Book Directly on WhatsApp",
+    "online": "Online"
   }
 }

@@ -39,6 +39,12 @@ useHead(() => ({
   meta: [...(i18nHead.value.meta ?? []), { name: 'geo.region', content: 'ID-KR' }, { name: 'geo.placename', content: 'Batam' }],
   titleTemplate: (title?: string) => (title ? `${title} | ${t('meta.titleSuffix')}` : t('meta.siteTitle')),
   script: [
+    // Tema sebelum paint (tanpa kedip): default terang; gelap hanya bila pengunjung memilihnya (ft_theme). Kelas di <html> tidak dirender Vue → hidrasi aman.
+    {
+      key: 'theme',
+      tagPosition: 'head',
+      innerHTML: `try{if(localStorage.getItem('ft_theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`,
+    },
     { key: 'ld-agency', type: 'application/ld+json', innerHTML: JSON.stringify(agency) },
     ...(gaId
       ? [

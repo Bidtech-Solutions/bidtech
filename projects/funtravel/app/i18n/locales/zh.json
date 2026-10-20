@@ -14,7 +14,8 @@
     "chatWhatsApp": "WhatsApp 咨询",
     "language": "语言",
     "currency": "货币",
-    "skip": "跳到主要内容"
+    "skip": "跳到主要内容",
+    "theme": "切换深色模式"
   },
   "common": {
     "from": "起价",
@@ -38,7 +39,8 @@
       "automatic": "自动挡",
       "manual": "手动挡",
       "cvt": "CVT"
-    }
+    },
+    "recommendations": "其他推荐"
   },
   "price": {
     "estimateNote": "换算价格仅供参考（参考汇率日期 {date}），最终价格以客服确认为准。",
@@ -96,7 +98,9 @@
     "ferryText": "价格适用于从马来西亚渡轮码头出发。",
     "ferryAddOn": "从新加坡出发？每人需加收 {price}。",
     "ferryAddOnUnknown": "从新加坡出发？需支付附加费用，请咨询客服。",
-    "otherPackages": "其他配套"
+    "otherPackages": "其他配套",
+    "terms": "配套条款",
+    "facilities": "配套设施"
   },
   "booking": {
     "titlePackage": "预订此配套",
@@ -127,12 +131,22 @@
     "locationFailed": "无法获取位置，请手动输入地址。",
     "locationShared": "已分享位置",
     "notSet": "-",
-    "paymentTitle": "官方付款方式"
+    "paymentTitle": "官方付款方式",
+    "pickDates": "选择租赁日期",
+    "selectEnd": "请选择结束日期（或直接预订1天）",
+    "pickStart": "请在日历上点选开始日期",
+    "daysSelected": "{days} 天",
+    "prevMonth": "上个月",
+    "nextMonth": "下个月",
+    "pickDepart": "请在日历上点选出发日期",
+    "returnDate": "返回日期",
+    "departDate": "出发日期"
   },
   "whatsapp": {
     "generic": "您好 Fun Travel，我想咨询旅游配套和租车服务。",
-    "package": "您好 Fun Travel，我想预订旅游配套：\n• 配套：{code} – {name}\n• 出发日期：{date}\n• 人数：成人 {adults} 位，儿童 {children} 位\n• 出发码头：{terminal}\n• 景点：{destinations}\n• 估价：每人 {price} 起（约 {total}）\n• 备注：{notes}\n链接：{url}",
-    "vehicle": "您好 Fun Travel，我想租车：\n• 车辆：{vehicle}（{service}）\n• 日期：{start} – {end}（{days} 天）\n• 接车时间：{time}（印尼西部时间）\n• 接送地点：{pickup}\n• 预计总价：{total}\n• 备注：{notes}\n链接：{url}"
+    "package": "您好 Fun Travel，我想预订旅游配套：\n• 配套：{code} – {name}\n• 出发日期：{date}\n• 人数：成人 {adults} 位，儿童 {children} 位\n• 出发码头：{terminal}\n• 景点：{destinations}\n• 估价：每人 {price} 起（约 {total}）\n链接：{url}",
+    "vehicle": "您好 Fun Travel，我想租车：\n• 车辆：{vehicle}（{service}）\n• 日期：{start} – {end}（{days} 天）\n• 预计总价：{total}\n链接：{url}",
+    "packageQuick": "您好 Fun Travel，我对{name}配套感兴趣，请告知空位与详情。"
   },
   "vehicles": {
     "metaTitle": "巴淡岛包车（含司机）与摩托车租赁",
@@ -169,10 +183,15 @@
       "mpv": "MPV",
       "suv": "SUV",
       "hatchback": "城市小车",
-      "scooter": "踏板摩托车"
+      "scooter": "踏板摩托车",
+      "luxury": "豪华商务车"
     },
     "descCar": "在巴淡岛包车 {model}，配本地司机——适合家庭出游、机场与码头接送及观光。",
-    "descMotor": "巴淡岛 {model} 踏板摩托车自驾租赁——按自己的节奏轻松游览城市。"
+    "descMotor": "巴淡岛 {model} 踏板摩托车自驾租赁——按自己的节奏轻松游览城市。",
+    "fleetTitle": "我们的车队",
+    "facilities": "设施",
+    "terms": "租赁条款",
+    "perDayShort": "/ 天"
   },
   "payment": {
     "title": "官方付款方式",
@@ -202,6 +221,16 @@
     "contact": "联系方式",
     "followUs": "关注我们",
     "payments": "付款方式",
-    "rights": "© {year} {legal}。版权所有。"
+    "rights": "© {year} {legal}。版权所有。",
+    "photoCredits": "图片来源（Wikimedia Commons）"
+  },
+  "cta": {
+    "title": "准备好畅游巴淡岛与民丹岛了吗？",
+    "text": "直接联系我们的本地团队：定制行程、团体包车价格，几分钟内确认渡轮票。",
+    "point1": "每天快速回复",
+    "point2": "官方价格，无中间商",
+    "point3": "仅向官方账户付款",
+    "cardTitle": "通过 WhatsApp 直接预订",
+    "online": "在线"
   }
 }

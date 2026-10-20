@@ -34,8 +34,8 @@ export function useSite() {
 
   /** Teks 4 bahasa dari data JSON: loc(pkg.name). */
   const loc = (v: Record<string, string>) => v[locale.value] ?? v.en ?? '';
-  /** URL foto dari app/assets/images/<file>; undefined bila belum ada (halaman menampilkan placeholder). */
-  const img = (file?: string | null) => (file ? photos[file] : undefined);
+  /** URL foto dari app/assets/images/<file> atau URL remote (http/https); undefined bila belum ada. */
+  const img = (file?: string | null) => (!file ? undefined : file.startsWith('http') ? file : photos[file]);
   const fmt = (n: number, cur: Cur) => `${SYMBOL[cur]} ${new Intl.NumberFormat(INTL[locale.value]).format(n)}`;
   const fmtDate = (iso: string) =>
     iso ? new Intl.DateTimeFormat(INTL[locale.value], { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`)) : t('booking.notSet');
@@ -76,6 +76,16 @@ export function useSite() {
     }
   }
 
+  /** Mode gelap/terang: kelas `dark` di <html> + simpan pilihan (dibaca skrip head di layout). */
+  function toggleTheme() {
+    const dark = document.documentElement.classList.toggle('dark');
+    try {
+      localStorage.setItem('ft_theme', dark ? 'dark' : 'light');
+    } catch {
+      /* penyimpanan diblokir */
+    }
+  }
+
   /** Dipanggil layout lewat onNuxtReady (setelah hidrasi, agar markup SSR & klien tetap identik). */
   function initClient() {
     let saved: string | null = null;
@@ -97,7 +107,7 @@ export function useSite() {
     });
   }
 
-  return { site, loc, img, fmt, fmtDate, waUrl, currency, setCurrency, pkgPrice, vehPrice, fxNote, facility, ferryAddOn, scheme, initClient };
+  return { site, loc, img, fmt, fmtDate, waUrl, currency, setCurrency, pkgPrice, vehPrice, fxNote, facility, ferryAddOn, scheme, toggleTheme, initClient };
 }
 
 // ── Kurs terbaru (client): snapshot build → kurs referensi harian, cache 12 jam ──────────────

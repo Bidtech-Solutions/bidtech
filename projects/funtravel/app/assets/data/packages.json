@@ -150,50 +150,50 @@
       "id": "barelang-bridge",
       "island": "batam",
       "name": {
-        "en": "Barelang Bridge",
-        "ms": "Jambatan Barelang",
-        "zh": "巴里朗大桥",
-        "id": "Jembatan Barelang"
+        "en": "Barelang Bridge (Jembatan 1–6)",
+        "ms": "Jambatan Barelang (Jambatan 1–6)",
+        "zh": "巴里朗大桥 (1–6桥)",
+        "id": "Jembatan Barelang (Jembatan 1–6)"
       },
       "summary": {
-        "en": "Batam's iconic bridge linking the islands of Batam, Rempang and Galang — a classic photo stop with sea views.",
-        "ms": "Jambatan ikonik Batam yang menghubungkan Pulau Batam, Rempang dan Galang — lokasi bergambar klasik dengan pemandangan laut.",
-        "zh": "连接巴淡岛、伦邦岛与加朗岛的巴淡岛地标大桥，是欣赏海景、拍照打卡的经典景点。",
-        "id": "Jembatan ikonik Batam yang menghubungkan Pulau Batam, Rempang, dan Galang — spot foto klasik dengan pemandangan laut."
+        "en": "Batam's most iconic landmark connecting six scenic islands with coastal photo spots and fresh kelong seafood.",
+        "ms": "Mercu tanda ikonik Batam yang menghubungkan 6 pulau dengan lokasi bergambar laut dan restoran kelong seafood segar.",
+        "zh": "连接六座岛屿的巴淡标志性壮丽大桥，拥有无敌海景打卡点与水上奎笼海鲜美食。",
+        "id": "Ikon legendaris Batam yang menghubungkan 6 pulau eksotis dengan spot foto laut dan restoran kelong seafood segar."
       },
-      "image": null
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Barelang_Bridge_in_Indonesia.jpg/1280px-Barelang_Bridge_in_Indonesia.jpg"
     },
     {
       "id": "welcome-to-batam",
       "island": "batam",
       "name": {
-        "en": "Welcome to Batam",
-        "ms": "Welcome to Batam",
-        "zh": "Welcome to Batam 地标",
+        "en": "Welcome to Batam Landmark",
+        "ms": "Mercu Tanda Welcome to Batam",
+        "zh": "Welcome to Batam 巨型地标",
         "id": "Welcome to Batam"
       },
       "summary": {
-        "en": "The giant \"Welcome to Batam\" landmark sign on a green hill — the must-have photo of every Batam trip.",
-        "ms": "Papan tanda gergasi \"Welcome to Batam\" di atas bukit hijau — gambar wajib setiap percutian ke Batam.",
-        "zh": "绿色山坡上的巨型 \"Welcome to Batam\" 字样地标，是巴淡岛之旅必拍的照片。",
-        "id": "Tulisan raksasa \"Welcome to Batam\" di atas bukit hijau — foto wajib setiap liburan ke Batam."
+        "en": "Iconic hilltop landmark near the ferry terminal, grand mosque, and authentic Indonesian street food stalls.",
+        "ms": "Papan tanda gergasi di atas bukit berhampiran terminal feri, masjid agung, dan medan selera makanan tempatan.",
+        "zh": "坐落在山坡上的巨型城市地标，邻近渡轮码头、大清真寺与本地特色风味小吃街。",
+        "id": "Tulisan raksasa di atas bukit hijau dekat pelabuhan ferry, masjid agung, dan pusat jajanan kuliner lokal."
       },
-      "image": null
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Welcome_to_Batam.jpg/1280px-Welcome_to_Batam.jpg"
     },
     {
       "id": "pink-beach",
       "island": "bintan",
       "name": {
-        "en": "Pink Beach",
-        "ms": "Pantai Pasir Pink",
-        "zh": "粉红沙滩",
-        "id": "Pantai Pasir Pink"
+        "en": "Sand Dunes & Blue Lake Bintan",
+        "ms": "Gurun Pasir Busung & Telaga Biru",
+        "zh": "民丹岛黄金沙丘与蓝湖",
+        "id": "Gurun Pasir & Telaga Biru Bintan"
       },
       "summary": {
-        "en": "A beach in Bintan known for its pinkish sand and clear turquoise water.",
-        "ms": "Pantai di Bintan yang terkenal dengan pasir kemerahan dan air jernih berwarna biru kehijauan.",
-        "zh": "位于民丹岛的海滩，以粉色细沙和清澈碧绿的海水闻名。",
-        "id": "Pantai di Bintan yang terkenal dengan pasir berwarna merah muda dan air laut jernih kebiruan."
+        "en": "Surreal turquoise crater lake surrounded by golden sand dunes in Busung, Bintan.",
+        "ms": "Tasik kawah membiru kristal yang dikelilingi bukit pasir keemasan di Busung, Bintan.",
+        "zh": "民丹岛布松超现实绿松石色蓝湖与金色沙丘，犹如置身热带沙漠绿洲的拍照圣地。",
+        "id": "Danau kawah toska jernih yang dikelilingi perbukitan pasir keemasan ala gurun di Busung, Bintan."
       },
       "image": null
     },
@@ -201,35 +201,35 @@
       "id": "grand-batam",
       "island": "batam",
       "name": {
-        "en": "Grand Batam",
-        "ms": "Grand Batam",
-        "zh": "Grand Batam",
-        "id": "Grand Batam"
+        "en": "Grand Batam & Nagoya Hill Malls",
+        "ms": "Pusat Beli-Belah Grand Batam & Nagoya Hill",
+        "zh": "Grand Batam 与 Nagoya Hill 购物中心",
+        "id": "Grand Batam & Nagoya Hill Mall"
       },
       "summary": {
-        "en": "One of the city destinations offered in Fun Travel programs. Details will be confirmed by our admin.",
-        "ms": "Salah satu destinasi bandar dalam program Fun Travel. Butiran akan disahkan oleh admin kami.",
-        "zh": "Fun Travel 行程中的城市景点之一，详情请向客服确认。",
-        "id": "Salah satu destinasi kota dalam program Fun Travel. Detail akan dikonfirmasi oleh admin kami."
+        "en": "Top shopping malls, traditional reflexology spa parlors, authentic Kue Lapis bakeries, and culinary hotspots.",
+        "ms": "Pusat beli-belah moden terulung, pusat refleksologi urut, kedai kek lapis harum, dan destinasi makan lazat.",
+        "zh": "顶级现代购物中心、正宗印尼千层糕手信店、传统泰式/印尼足疗按摩与美食云集。",
+        "id": "Mall perbelanjaan favorit terlengkap, panti pijat refleksi keluarga, toko kue lapis legit, dan aneka kuliner lezat."
       },
-      "image": null
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Nagoya_Hill_Shopping_Mall.jpg/1280px-Nagoya_Hill_Shopping_Mall.jpg"
     },
     {
       "id": "nongsa-beach",
       "island": "batam",
       "name": {
-        "en": "Nongsa Beach",
-        "ms": "Pantai Nongsa",
-        "zh": "农沙海滩",
-        "id": "Pantai Nongsa"
+        "en": "Nongsa Coast & Beach Resorts",
+        "ms": "Persisiran Nongsa & Resort Pantai",
+        "zh": "农沙海滨与沙滩度假村",
+        "id": "Kawasan Pantai & Resort Nongsa"
       },
       "summary": {
-        "en": "A relaxed beach area in northeast Batam, popular for sea views and sunset.",
-        "ms": "Kawasan pantai santai di timur laut Batam, popular dengan pemandangan laut dan matahari terbenam.",
-        "zh": "位于巴淡岛东北部的休闲海滩区，以海景和日落著称。",
-        "id": "Kawasan pantai santai di timur laut Batam, populer untuk menikmati laut dan matahari terbenam."
+        "en": "A relaxed beach area in northeast Batam with luxury beach clubs, golf courses, and stunning sunset views.",
+        "ms": "Kawasan pantai santai di timur laut Batam dengan kelab pantai mewah, padang golf, dan matahari terbenam indah.",
+        "zh": "巴淡岛东北部的静谧高端度假胜地，拥有高品质沙滩俱乐部、高尔夫球场与壮美日落。",
+        "id": "Kawasan resor pantai tenang di timur laut Batam dengan beach club eksklusif, padang golf, dan panorama sunset memukau."
       },
-      "image": null
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Turi_Beach_Resort_Hotel_at_Nongsa_Batam_-_panoramio.jpg/1280px-Turi_Beach_Resort_Hotel_at_Nongsa_Batam_-_panoramio.jpg"
     }
   ],
   "packages": [
@@ -271,7 +271,9 @@
       "sgAddOn": null,
       "accent": "blue",
       "featured": true,
-      "images": []
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Welcome_to_Batam.jpg/1280px-Welcome_to_Batam.jpg"
+      ]
     },
     {
       "code": "A2",
@@ -311,7 +313,9 @@
       "sgAddOn": null,
       "accent": "green",
       "featured": true,
-      "images": []
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Barelang_Bridge%2C_Batam.jpg/1280px-Barelang_Bridge%2C_Batam.jpg"
+      ]
     },
     {
       "code": "A3",
@@ -353,7 +357,9 @@
       "sgAddOn": null,
       "accent": "magenta",
       "featured": false,
-      "images": []
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Nagoya_Hill_Shopping_Mall.jpg/1280px-Nagoya_Hill_Shopping_Mall.jpg"
+      ]
     },
     {
       "code": "A4",
@@ -395,7 +401,9 @@
       "sgAddOn": null,
       "accent": "orange",
       "featured": true,
-      "images": []
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Barelang_Bridge_in_Indonesia.jpg/1280px-Barelang_Bridge_in_Indonesia.jpg"
+      ]
     },
     {
       "code": "B1",
@@ -437,7 +445,9 @@
       "sgAddOn": null,
       "accent": "teal",
       "featured": true,
-      "images": []
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Trikora_Beach.jpg/1280px-Trikora_Beach.jpg"
+      ]
     },
     {
       "code": "B2",
@@ -481,7 +491,9 @@
       "sgAddOn": null,
       "accent": "purple",
       "featured": true,
-      "images": []
+      "images": [
+        "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Kelong_4.jpg/1280px-Kelong_4.jpg"
+      ]
     }
   ]
 }

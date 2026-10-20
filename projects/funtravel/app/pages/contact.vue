@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Check, Copy, ExternalLink, MessageCircle } from '@lucide/vue';
+import { Check, Copy, ExternalLink } from '@lucide/vue';
 import faqs from '~/assets/data/faqs.json';
 import qris from '~/assets/images/qris.webp'; // QRIS asli (webp lossless) → tetap terbaca scanner
 
@@ -42,21 +42,21 @@ async function copy(value: string) {
 <template>
   <div class="section">
     <div class="wrap">
-      <h1 class="text-3xl font-extrabold text-navy sm:text-5xl">{{ t('contact.title') }}</h1>
-      <p class="mt-2 text-lg text-muted">{{ t('contact.intro') }}</p>
+      <h1 class="text-3xl font-extrabold text-navy sm:text-5xl dark:text-white">{{ t('contact.title') }}</h1>
+      <p class="mt-2 text-lg text-muted dark:text-slate-400">{{ t('contact.intro') }}</p>
 
-      <h2 class="mt-10 text-xl font-extrabold text-navy">{{ t('contact.admins') }}</h2>
+      <h2 class="mt-10 text-xl font-extrabold text-navy dark:text-white">{{ t('contact.admins') }}</h2>
       <ul class="mt-4 grid gap-4 sm:grid-cols-2">
-        <li v-for="(a, i) in site.admins" :key="a.id" class="rounded-card border border-navy/10 p-5">
-          <p class="font-bold text-navy">{{ a.label }}<template v-if="a.name"> — {{ a.name }}</template></p>
-          <p class="mt-1 font-mono text-lg text-ink">{{ a.display }}</p>
+        <li v-for="(a, i) in site.admins" :key="a.id" class="rounded-card border border-navy/10 p-5 dark:border-slate-700">
+          <p class="font-bold text-navy dark:text-white">{{ a.label }}<template v-if="a.name"> — {{ a.name }}</template></p>
+          <p class="mt-1 font-mono text-lg text-ink dark:text-slate-200">{{ a.display }}</p>
           <a :href="waUrl(t('whatsapp.generic'), i)" target="_blank" rel="noopener" data-wa="contact" class="btn-wa mt-4">
-            <MessageCircle aria-hidden="true" class="h-4 w-4" />{{ t('nav.chatWhatsApp') }}
+            <span aria-hidden="true" class="icon-wa h-4 w-4" />{{ t('nav.chatWhatsApp') }}
           </a>
         </li>
       </ul>
 
-      <h2 class="mt-10 text-xl font-extrabold text-navy">{{ t('contact.socials') }}</h2>
+      <h2 class="mt-10 text-xl font-extrabold text-navy dark:text-white">{{ t('contact.socials') }}</h2>
       <ul class="mt-4 flex flex-wrap gap-3">
         <li v-for="s in socials" :key="s.label">
           <a :href="s.href" target="_blank" rel="noopener me" class="btn-outline">{{ s.label }} <ExternalLink aria-hidden="true" class="h-4 w-4" /></a>
@@ -66,29 +66,29 @@ async function copy(value: string) {
 
       <!-- Pembayaran resmi -->
       <section id="payment" class="mt-14 scroll-mt-24">
-        <h2 class="text-2xl font-extrabold text-navy">{{ t('payment.title') }}</h2>
-        <p class="mt-2 text-muted">{{ t('payment.intro') }}</p>
+        <h2 class="text-2xl font-extrabold text-navy dark:text-white">{{ t('payment.title') }}</h2>
+        <p class="mt-2 text-muted dark:text-slate-400">{{ t('payment.intro') }}</p>
         <div class="mt-6 grid gap-4 md:grid-cols-2">
-          <div class="rounded-card border border-navy/10 bg-white p-4">
-            <h3 class="mb-3 font-bold text-navy">{{ t('payment.qris') }}</h3>
+          <div class="rounded-card border border-navy/10 bg-white p-4 dark:bg-slate-900 dark:border-slate-700">
+            <h3 class="mb-3 font-bold text-navy dark:text-white">{{ t('payment.qris') }}</h3>
             <a :href="qris" target="_blank" rel="noopener" class="block">
               <img :src="qris" :alt="t('payment.qrisAlt', { merchant: site.payment.qris.merchantName })" width="414" height="573" loading="lazy" class="mx-auto h-auto w-64">
             </a>
-            <p class="mt-2 text-center text-xs text-muted">{{ site.payment.qris.merchantName }} · NMID {{ site.payment.qris.nmid }}</p>
+            <p class="mt-2 text-center text-xs text-muted dark:text-slate-400">{{ site.payment.qris.merchantName }} · NMID {{ site.payment.qris.nmid }}</p>
           </div>
           <div class="space-y-3">
-            <h3 class="font-bold text-navy">{{ t('payment.bank') }}</h3>
-            <div v-for="b in site.payment.banks" :key="b.bank" class="rounded-card border border-navy/10 bg-white p-4">
-              <p class="text-sm font-bold text-ocean">{{ b.bank }}</p>
+            <h3 class="font-bold text-navy dark:text-white">{{ t('payment.bank') }}</h3>
+            <div v-for="b in site.payment.banks" :key="b.bank" class="rounded-card border border-navy/10 bg-white p-4 dark:bg-slate-900 dark:border-slate-700">
+              <p class="text-sm font-bold text-ocean dark:text-sky-400">{{ b.bank }}</p>
               <div class="mt-1 flex flex-wrap items-center justify-between gap-2">
-                <span class="font-mono text-lg font-bold tracking-wider text-navy">{{ b.accountNo }}</span>
-                <button type="button" class="inline-flex items-center gap-1 rounded-full border border-navy/20 px-3 py-1 text-xs font-semibold text-navy hover:bg-navy hover:text-white" @click="copy(b.accountNo)">
+                <span class="font-mono text-lg font-bold tracking-wider text-navy dark:text-white">{{ b.accountNo }}</span>
+                <button type="button" class="inline-flex items-center gap-1 rounded-full border border-navy/20 px-3 py-1 text-xs font-semibold text-navy hover:bg-navy hover:text-white dark:text-white" @click="copy(b.accountNo)">
                   <Check v-if="copied === b.accountNo" aria-hidden="true" class="h-3.5 w-3.5" />
                   <Copy v-else aria-hidden="true" class="h-3.5 w-3.5" />
                   <span aria-live="polite">{{ copied === b.accountNo ? t('payment.copied') : t('payment.copy') }}</span>
                 </button>
               </div>
-              <p class="mt-1 text-xs text-muted">{{ t('payment.holder') }}: {{ b.holder }}</p>
+              <p class="mt-1 text-xs text-muted dark:text-slate-400">{{ t('payment.holder') }}: {{ b.holder }}</p>
             </div>
             <p class="rounded-xl bg-coral/10 p-3 text-sm font-semibold text-coral">{{ t('payment.warning') }}</p>
           </div>
@@ -97,11 +97,11 @@ async function copy(value: string) {
 
       <!-- FAQ lengkap -->
       <section id="faq" class="mt-14 scroll-mt-24">
-        <h2 class="mb-6 text-2xl font-extrabold text-navy">{{ t('faq.title') }}</h2>
-        <div class="divide-y divide-navy/10 rounded-card border border-navy/10 bg-white">
+        <h2 class="mb-6 text-2xl font-extrabold text-navy dark:text-white">{{ t('faq.title') }}</h2>
+        <div class="divide-y divide-navy/10 rounded-card border border-navy/10 bg-white dark:bg-slate-900 dark:border-slate-700">
           <details v-for="f in faqs" :key="f.id" class="p-5">
-            <summary class="cursor-pointer font-bold text-navy">{{ loc(f.q) }}</summary>
-            <p class="mt-3 leading-relaxed text-muted">{{ loc(f.a) }}</p>
+            <summary class="cursor-pointer font-bold text-navy dark:text-white">{{ loc(f.q) }}</summary>
+            <p class="mt-3 leading-relaxed text-muted dark:text-slate-400">{{ loc(f.a) }}</p>
           </details>
         </div>
       </section>

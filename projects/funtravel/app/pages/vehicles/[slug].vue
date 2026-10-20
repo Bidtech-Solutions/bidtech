@@ -1,20 +1,50 @@
 <script setup lang="ts">
-import { ChevronRight, Cog, FileCheck2, Globe2, Home, LocateFixed, MessageCircle, Sparkles, Users } from '@lucide/vue';
+import {
+  FileText,
+  ListChecks,
+  ScrollText,
+  ArrowRight,
+  Bike,
+  CalendarDays,
+  Car,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Cog,
+  CreditCard,
+  FileCheck2,
+  Fuel,
+  Globe2,
+  Home,
+  IdCard,
+  KeyRound,
+  Luggage,
+  MapPin,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  UserCheck,
+  Users,
+  Wallet,
+} from '@lucide/vue';
 import data from '~/assets/data/vehicles.json';
 
 const route = useRoute();
 const v = data.vehicles.find((x) => x.slug === String(route.params.slug));
 if (!v) throw createError({ statusCode: 404, statusMessage: 'Vehicle not found', fatal: true });
 
-const { t, tm, rt, locale } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const siteUrl = useSiteConfig().url;
-const { loc, img, fmt, fmtDate, waUrl, currency, vehPrice, fxNote, scheme } = useSite();
+const { loc, img, fmt, fmtDate, waUrl, vehPrice, fxNote, scheme } = useSite();
 
 const name = `${v.brand} ${v.model}`;
 const isCar = v.type === 'car';
 const url = computed(() => `${siteUrl}${localePath(`/vehicles/${v.slug}`)}`);
-const others = data.vehicles.filter((x) => x.slug !== v.slug).slice(0, 3);
+// Kendaraan lainnya: tipe yang sama didahulukan
+const others = [...data.vehicles.filter((x) => x.slug !== v.slug && x.type === v.type), ...data.vehicles.filter((x) => x.type !== v.type)].slice(0, 3);
 const description = computed(() => t(isCar ? 'vehicle.descCar' : 'vehicle.descMotor', { model: name }));
 const answer = computed(() => t('vehicle.answer', { name, price: fmt(v.pricePerDay, 'IDR'), scheme: scheme(v.type) })); // SEO: mata uang dasar (IDR)
 
@@ -63,11 +93,33 @@ useHead(() => ({
   ],
 }));
 
+// ── Galeri: foto utama + grid thumbnail (klik → jadi foto utama) ──
+const photos = v.images.filter((f) => img(f));
+const active = ref(0);
+
+// ── Fasilitas ──
 const specs = computed(() => [
-  { icon: Users, label: t('vehicle.capacity'), value: v.seats ? t('common.seats', { count: v.seats }) : t('common.notConfirmed') },
-  { icon: Cog, label: t('vehicle.transmissionLabel'), value: v.transmission ? t(`common.transmission.${v.transmission}`) : t('common.notConfirmed') },
-  { icon: FileCheck2, label: t('vehicle.serviceLabel'), value: scheme(v.type) },
+  { icon: Users, label: t('vehicle.capacity'), value: t('common.seats', { count: v.seats }) },
+  { icon: Luggage, label: 'Bagasi', value: `${v.luggage} koper / tas` },
+  { icon: Cog, label: t('vehicle.transmissionLabel'), value: t(`common.transmission.${v.transmission}`) },
+  { icon: isCar ? UserCheck : KeyRound, label: t('vehicle.serviceLabel'), value: scheme(v.type) },
 ]);
+
+// ── Ketentuan sewa per tipe (teks dari klien via tim Bidtech) + syarat dokumen ──
+const policy = isCar
+  ? [
+      { icon: Shield, title: 'Bebas Capek & Tanpa Resiko Kerusakan', text: 'Anda tidak perlu khawatir klaim baret bodi atau tersesat di jalan sempit. Supir lokal kami yang bertanggung jawab penuh terhadap mobil.' },
+      { icon: Clock, title: 'Durasi Standar 10–12 Jam per Hari', text: 'Fleksibel mulai dari kedatangan ferry atau jam jemput hotel. Overtime sangat transparan hanya Rp 50.000 (RM 15) per jam.' },
+      { icon: Fuel, title: 'Paket Termasuk BBM & Jasa Supir', text: 'Harga paket sudah termasuk bahan bakar dan akomodasi harian supir di pulau Batam. Uang makan supir bersifat sukarela.' },
+      { icon: CreditCard, title: 'Metode Pembayaran Mudah', text: 'Terima Ringgit (MYR), Dollar Singapura (SGD), Transfer BCA/Mandiri, atau QRIS instan saat serah terima.' },
+    ]
+  : [
+      { icon: IdCard, title: 'Dokumen SIM yang Berlaku', text: 'Wajib menunjukkan SIM C (Indonesia) atau Driving License sah (Malaysia Class B2, Singapore 2B, atau SIM Internasional).' },
+      { icon: ShieldCheck, title: 'Jaminan Identitas Asli', text: 'Cukup titip foto paspor/IC/KTP dan satu dokumen identitas fisik asli yang disimpan secara aman selama masa sewa.' },
+      { icon: Wallet, title: 'Deposit Keamanan 100% Refundable', text: 'Deposit jaminan RM 50 / Rp 150.000 per unit, langsung dikembalikan utuh tanpa potongan saat motor dikembalikan.' },
+      { icon: MapPin, title: 'Free Drop & Return Point', text: 'Antar dan jemput unit gratis di Harbour Bay Ferry Terminal, Batam Centre, Mega Mall, serta seluruh hotel di Nagoya.' },
+    ];
+const policyLabel = isCar ? 'Aturan Resmi Charter Mobil — 100% Wajib Didampingi Supir' : 'Syarat Resmi Sewa Motor — Khusus Lepas Kunci (Self-Drive)';
 // Syarat dokumen: tamu mancanegara = paspor (+ IDP untuk motor); lokal = KTP (+ SIM C untuk motor). Locale id menampilkan syarat lokal dulu.
 const requirements = computed(() => {
   const r = [
@@ -76,198 +128,331 @@ const requirements = computed(() => {
   ];
   return locale.value === 'id' ? r.reverse() : r;
 });
-const rules = computed(() => (tm('vehicle.rules') as unknown[]).map((m) => rt(m as Parameters<typeof rt>[0])));
 
-// ── Panel pemesanan → pesan WhatsApp otomatis (skema dikunci per jenis: tidak ada toggle) ──
+// ── Kalender sewa (klien saja: bergantung tanggal hari ini → dirender di <ClientOnly>) ──
+const INTL: Record<string, string> = { en: 'en-SG', ms: 'ms-MY', zh: 'zh-SG', id: 'id-ID' };
+const iso = (y: number, m: number, d: number) => new Date(Date.UTC(y, m, d)).toISOString().slice(0, 10);
+const today = ref('');
+const view = ref({ y: 2026, m: 0 });
+onMounted(() => {
+  const d = new Date();
+  today.value = iso(d.getFullYear(), d.getMonth(), d.getDate());
+  view.value = { y: d.getFullYear(), m: d.getMonth() };
+});
+const monthLabel = computed(() =>
+  new Intl.DateTimeFormat(INTL[locale.value], { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(view.value.y, view.value.m, 1))),
+);
+// Senin–Minggu (1 Jan 2024 = Senin)
+const weekdays = computed(() =>
+  Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(INTL[locale.value], { weekday: 'narrow', timeZone: 'UTC' }).format(new Date(Date.UTC(2024, 0, 1 + i)))),
+);
+const cells = computed(() => {
+  const { y, m } = view.value;
+  const lead = (new Date(Date.UTC(y, m, 1)).getUTCDay() + 6) % 7;
+  const count = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  return [...Array.from({ length: lead }, () => ''), ...Array.from({ length: count }, (_, i) => iso(y, m, i + 1))];
+});
+const canPrev = computed(() => today.value && iso(view.value.y, view.value.m, 1) > today.value.slice(0, 8) + '01');
+const shift = (n: number) => {
+  const d = new Date(Date.UTC(view.value.y, view.value.m + n, 1));
+  view.value = { y: d.getUTCFullYear(), m: d.getUTCMonth() };
+};
 const start = ref('');
-const days = ref(1);
-const time = ref('09:00');
-const pickup = ref(data.pickupPoints[0]?.id ?? '');
-const address = ref('');
-const geo = ref(''); // '', 'loading', 'failed', atau URL Google Maps
-const notes = ref('');
-
-const safeDays = computed(() => Math.min(60, Math.max(1, Number(days.value) || 1)));
-const end = computed(() => {
-  if (!start.value) return '';
-  const d = new Date(`${start.value}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + safeDays.value - 1);
-  return d.toISOString().slice(0, 10);
+const finish = ref('');
+function pick(d: string) {
+  if (!start.value || finish.value || d < start.value) {
+    start.value = d;
+    finish.value = '';
+  } else finish.value = d;
+}
+const days = computed(() => {
+  if (!start.value || !finish.value) return 1;
+  return Math.min(60, Math.round((Date.parse(finish.value) - Date.parse(start.value)) / 86400000) + 1);
 });
-const pickupText = computed(() => {
-  const point = data.pickupPoints.find((p) => p.id === pickup.value);
-  const placeName = point ? loc(point.name) : '';
-  const maps = geo.value.startsWith('https://') ? ` (${geo.value})` : '';
-  const addr = address.value.trim();
-  return pickup.value === 'other' ? `${addr || placeName}${maps}` : `${placeName}${addr ? ` — ${addr}` : ''}${maps}`;
-});
+const end = computed(() => finish.value || start.value);
 const message = computed(() =>
   t('whatsapp.vehicle', {
     vehicle: name,
     service: scheme(v.type),
     start: fmtDate(start.value),
     end: fmtDate(end.value),
-    days: safeDays.value,
-    time: time.value,
-    pickup: pickupText.value,
-    total: vehPrice(v.pricePerDay, safeDays.value),
-    notes: notes.value.trim() || t('booking.notSet'),
+    days: days.value,
+    total: vehPrice(v.pricePerDay, days.value),
     url: url.value,
   }),
 );
-function locate() {
-  if (!navigator.geolocation) return (geo.value = 'failed');
-  geo.value = 'loading';
-  navigator.geolocation.getCurrentPosition(
-    (pos) => (geo.value = `https://maps.google.com/?q=${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`),
-    () => (geo.value = 'failed'),
-    { enableHighAccuracy: true, timeout: 10000 },
-  );
-}
+
+// ── Tab kartu ringkasan ──
+const tab = ref('fasilitas');
+const detailTabs = computed(() => [
+  { id: 'fasilitas', label: t('vehicle.facilities'), icon: ListChecks },
+  { id: 'deskripsi', label: t('vehicle.description'), icon: FileText },
+  { id: 'ketentuan', label: t('vehicle.terms'), icon: ScrollText },
+]);
 </script>
 
 <template>
-  <div>
-    <section class="section">
-      <div class="wrap">
-        <nav aria-label="Breadcrumb" class="mb-6 text-sm text-muted">
-          <ol class="flex flex-wrap items-center gap-1">
-            <li><NuxtLink :to="localePath('/')" class="hover:text-ocean hover:underline">{{ t('nav.home') }}</NuxtLink></li>
-            <li class="flex items-center gap-1"><ChevronRight aria-hidden="true" class="h-3.5 w-3.5" /><NuxtLink :to="localePath('/vehicles')" class="hover:text-ocean hover:underline">{{ t('nav.vehicles') }}</NuxtLink></li>
-            <li class="flex items-center gap-1"><ChevronRight aria-hidden="true" class="h-3.5 w-3.5" /><span aria-current="page" class="font-semibold text-navy">{{ name }}</span></li>
-          </ol>
-        </nav>
+  <div class="bg-[#F8FAFC] dark:bg-slate-950">
+    <section class="wrap pt-6 pb-12 sm:pb-16">
+      <!-- Breadcrumb -->
+      <nav aria-label="Breadcrumb" class="mb-5 text-sm text-slate-500 dark:text-slate-400">
+        <ol class="flex flex-wrap items-center gap-1">
+          <li><NuxtLink :to="localePath('/')" class="hover:text-[#1E40AF] hover:underline dark:hover:text-sky-400">{{ t('nav.home') }}</NuxtLink></li>
+          <li class="flex items-center gap-1"><ChevronRight aria-hidden="true" class="h-3.5 w-3.5" /><NuxtLink :to="localePath('/vehicles')" class="hover:text-[#1E40AF] hover:underline dark:hover:text-sky-400">{{ t('nav.vehicles') }}</NuxtLink></li>
+          <li class="flex items-center gap-1"><ChevronRight aria-hidden="true" class="h-3.5 w-3.5" /><span aria-current="page" class="font-semibold text-slate-900 dark:text-white">{{ name }}</span></li>
+        </ol>
+      </nav>
 
-        <div class="grid gap-10 lg:grid-cols-[1fr_380px]">
-          <div class="min-w-0 space-y-10">
-            <!-- Galeri: foto di app/assets/images/vehicles/<slug>-1.webp, dst. (daftarkan di vehicles.json → images) -->
-            <div id="galeri" class="scroll-mt-24 space-y-3">
-              <div class="ph aspect-[16/10] rounded-card" :data-label="name">
-                <img v-if="img(v.images[0])" :src="img(v.images[0])" :alt="name" fetchpriority="high">
-              </div>
-              <div v-if="v.images.length > 1" class="grid grid-cols-4 gap-3">
-                <template v-for="f in v.images.slice(1, 5)" :key="f">
-                  <div v-if="img(f)" class="ph aspect-[4/3] rounded-xl"><img :src="img(f)" :alt="name" loading="lazy"></div>
-                </template>
-              </div>
+      <div class="grid gap-8 lg:grid-cols-[1fr_380px]">
+        <div class="min-w-0 space-y-8">
+          <!-- 1. Galeri: foto utama + baris thumbnail di bawahnya -->
+          <div id="galeri" class="scroll-mt-24 space-y-3">
+            <div class="relative overflow-hidden rounded-3xl bg-slate-200 aspect-[16/10] shadow-lg dark:bg-slate-800">
+              <img v-if="photos[active]" :src="img(photos[active])" :alt="name" fetchpriority="high" class="h-full w-full object-cover" />
             </div>
-
-            <header class="space-y-4">
-              <div class="flex flex-wrap items-center gap-3">
-                <span class="text-xs font-bold uppercase tracking-wide text-muted">{{ t(`vehicle.category.${v.category}`) }}</span>
-                <span :class="['rounded-full px-3 py-1 text-xs font-bold', isCar ? 'bg-ocean text-white' : 'bg-sun text-navy']">{{ scheme(v.type) }}</span>
-              </div>
-              <h1 class="text-3xl font-extrabold text-navy sm:text-5xl">{{ name }}</h1>
-              <p class="text-lg text-muted">{{ loc(v.tagline) }}</p>
-              <p class="text-muted">
-                {{ t('common.from') }} <span class="brush text-4xl font-extrabold tabular-nums text-navy">{{ vehPrice(v.pricePerDay) }}</span> {{ t('common.perDay') }}
-              </p>
-              <p v-if="fxNote('vehicle')" class="text-xs text-muted">{{ fxNote('vehicle') }}</p>
-              <div class="flex gap-3 rounded-card bg-sand p-5 text-ink">
-                <Sparkles aria-hidden="true" class="mt-0.5 h-5 w-5 shrink-0 text-sun-deep" />
-                <p class="leading-relaxed">{{ answer }}</p>
-              </div>
-            </header>
-
-            <section aria-labelledby="specs">
-              <h2 id="specs" class="mb-4 text-2xl font-extrabold text-navy">{{ t('vehicle.specs') }}</h2>
-              <dl class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                <div v-for="s in specs" :key="s.label" class="rounded-xl bg-sand p-4">
-                  <dt class="flex items-center gap-2 text-xs font-bold uppercase text-muted"><component :is="s.icon" aria-hidden="true" class="h-4 w-4" />{{ s.label }}</dt>
-                  <dd class="mt-1 font-bold text-navy">{{ s.value }}</dd>
-                </div>
-              </dl>
-            </section>
-
-            <section aria-labelledby="desc">
-              <h2 id="desc" class="mb-3 text-2xl font-extrabold text-navy">{{ t('vehicle.description') }}</h2>
-              <p class="leading-relaxed text-ink">{{ description }}</p>
-            </section>
-
-            <section aria-labelledby="req">
-              <h2 id="req" class="mb-4 text-2xl font-extrabold text-navy">{{ t('vehicle.requirementsTitle') }}</h2>
-              <div class="grid gap-4 sm:grid-cols-2">
-                <div v-for="r in requirements" :key="r.key" class="rounded-card border border-navy/10 p-5">
-                  <p class="flex items-center gap-2 font-bold text-navy"><component :is="r.icon" aria-hidden="true" class="h-5 w-5 text-ocean" />{{ r.title }}</p>
-                  <p class="mt-2 flex gap-2 text-sm text-ink"><FileCheck2 aria-hidden="true" class="h-4 w-4 shrink-0 text-palm" />{{ r.text }}</p>
-                </div>
-              </div>
-            </section>
-
-            <section aria-labelledby="rules">
-              <h2 id="rules" class="mb-4 text-2xl font-extrabold text-navy">{{ t('vehicle.rulesTitle') }}</h2>
-              <ol class="list-decimal space-y-2 pl-5 text-ink">
-                <li v-for="r in rules" :key="r">{{ r }}</li>
-              </ol>
-            </section>
+            <div v-if="photos.length > 1" class="grid grid-cols-4 gap-3">
+              <button
+                v-for="(f, i) in photos.slice(0, 4)"
+                :key="f"
+                type="button"
+                :aria-label="`${name} — foto ${i + 1}`"
+                :class="[
+                  'relative overflow-hidden rounded-2xl bg-slate-200 aspect-[4/3] transition dark:bg-slate-800',
+                  i === active ? 'ring-4 ring-[#1E40AF] dark:ring-sky-400' : 'hover:opacity-90',
+                ]"
+                @click="active = i"
+              >
+                <img :src="img(f)" :alt="`${name} ${i + 1}`" loading="lazy" class="h-full w-full object-cover" />
+              </button>
+            </div>
           </div>
 
-          <!-- Panel pemesanan -->
-          <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
-            <div class="rounded-card bg-white p-5 shadow-card">
-              <h2 class="text-lg font-extrabold text-navy">{{ t('booking.titleVehicle') }}</h2>
-              <div class="mt-4 grid gap-4">
-                <div>
-                  <p class="text-sm font-semibold text-navy">{{ t('booking.service') }}</p>
-                  <p class="mt-1 inline-flex rounded-full bg-ocean px-3 py-1 text-sm font-bold text-white">{{ scheme(v.type) }}</p>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                  <label class="text-sm font-semibold text-navy">{{ t('booking.startDate') }}<input v-model="start" type="date" class="field"></label>
-                  <label class="text-sm font-semibold text-navy">{{ t('booking.duration') }}<input v-model.number="days" type="number" inputmode="numeric" min="1" max="60" class="field"></label>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                  <label class="text-sm font-semibold text-navy">{{ t('booking.pickupTime') }}<input v-model="time" type="time" class="field"></label>
-                  <div class="text-sm font-semibold text-navy">
-                    {{ t('booking.endDate') }}
-                    <p class="mt-1 rounded-xl bg-sand px-3 py-2.5 font-normal text-ink">{{ fmtDate(end) }}</p>
-                  </div>
-                </div>
-                <label class="text-sm font-semibold text-navy">
-                  {{ t('booking.pickupPoint') }}
-                  <select v-model="pickup" class="field"><option v-for="p in data.pickupPoints" :key="p.id" :value="p.id">{{ loc(p.name) }}</option></select>
-                </label>
-                <label class="text-sm font-semibold text-navy">{{ t('booking.pickupAddress') }}<input v-model="address" type="text" autocomplete="street-address" class="field"></label>
-                <button type="button" class="inline-flex items-center gap-2 self-start text-sm font-semibold text-ocean hover:underline" @click="locate">
-                  <LocateFixed aria-hidden="true" class="h-4 w-4" />
-                  {{ geo === 'loading' ? t('booking.locating') : geo.startsWith('https://') ? t('booking.locationShared') : t('booking.useLocation') }}
-                </button>
-                <p v-if="geo === 'failed'" class="-mt-2 text-xs text-coral">{{ t('booking.locationFailed') }}</p>
-                <label class="text-sm font-semibold text-navy">{{ t('booking.notes') }}<textarea v-model="notes" rows="2" class="field" /></label>
+          <!-- 2. Judul -->
+          <!-- Kartu judul -->
+          <header class="rounded-3xl border border-[#E2E8F0] bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-3 p-6 sm:p-8">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="rounded-full bg-slate-200/70 px-3 py-1 text-xs font-bold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">{{ t(`vehicle.category.${v.category}`) }}</span>
+              <span v-if="v.bestSeller" class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-extrabold uppercase text-amber-800 dark:bg-amber-950/70 dark:text-amber-300">
+                <Star aria-hidden="true" class="h-3 w-3 fill-current" /> Paling Laris
+              </span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ name }}</h1>
+            <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300">{{ loc(v.tagline) }}</p>
+          </header>
 
-                <dl class="grid grid-cols-2 gap-y-1 rounded-xl bg-sand p-4 text-sm">
-                  <dt class="text-muted">{{ t('booking.summary') }}</dt>
-                  <dd class="text-right font-semibold">{{ name }} · {{ safeDays }}×</dd>
-                  <dt class="text-muted">{{ t('booking.estimateTotal') }}</dt>
-                  <dd class="text-right text-lg font-extrabold text-navy">{{ vehPrice(v.pricePerDay, safeDays) }}</dd>
-                </dl>
+          <!-- Kartu tab: fasilitas, deskripsi, (destinasi), ketentuan -->
+          <article class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <!-- Tab: hanya satu bagian tampil (semua tetap di HTML untuk SEO) -->
+          <div role="tablist" :aria-label="name" class="flex gap-1 overflow-x-auto overflow-y-hidden [scrollbar-width:none] border-b border-slate-100 px-3 sm:px-5 dark:border-slate-800">
+            <button
+              v-for="tb in detailTabs"
+              :id="`tab-${tb.id}`"
+              :key="tb.id"
+              type="button"
+              role="tab"
+              :aria-selected="tab === tb.id"
+              :aria-controls="`panel-${tb.id}`"
+              :class="[
+                '-mb-px inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-3.5 text-sm font-bold transition-colors',
+                tab === tb.id ? 'border-[#1E40AF] text-[#1E40AF] dark:border-sky-400 dark:text-sky-400' : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
+              ]"
+              @click="tab = tb.id"
+            >
+              <component :is="tb.icon" aria-hidden="true" class="h-4 w-4" />{{ tb.label }}
+            </button>
+          </div>
 
-                <a :href="waUrl(message)" target="_blank" rel="noopener" data-wa="vehicle" class="btn-wa w-full !py-4 text-base">
-                  <MessageCircle aria-hidden="true" class="h-5 w-5" />{{ t('common.bookWhatsApp') }}
-                </a>
+          <!-- 3. Fasilitas -->
+          <section id="panel-fasilitas" role="tabpanel" :aria-labelledby="`tab-fasilitas`" v-show="tab === 'fasilitas'" class="p-6 sm:p-8">
+            <h2 id="fasilitas" class="sr-only">{{ t('vehicle.facilities') }}</h2>
+            <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div v-for="s in specs" :key="s.label" class="rounded-2xl bg-blue-50/70 p-4 dark:bg-slate-800">
+                <component :is="s.icon" aria-hidden="true" class="h-5 w-5 text-[#1E40AF] dark:text-sky-400" />
+                <dt class="mt-2 text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ s.label }}</dt>
+                <dd class="font-extrabold text-slate-900 dark:text-white">{{ s.value }}</dd>
+              </div>
+            </dl>
+            <ul class="mt-5 grid gap-2.5 sm:grid-cols-2">
+              <li v-for="inc in v.inclusions" :key="inc" class="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-200">
+                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[#16A34A] dark:bg-emerald-950/60"><Check aria-hidden="true" class="h-3.5 w-3.5 stroke-[3]" /></span>
+                {{ inc }}
+              </li>
+            </ul>
+            <div v-if="v.chips" class="mt-5 flex flex-wrap gap-2">
+              <span v-for="chip in v.chips" :key="chip" class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-[#1E40AF] dark:bg-slate-800 dark:text-sky-400">{{ chip }}</span>
+            </div>
+          </section>
+
+          <!-- 4. Deskripsi -->
+          <section id="panel-deskripsi" role="tabpanel" :aria-labelledby="`tab-deskripsi`" v-show="tab === 'deskripsi'" class="p-6 sm:p-8">
+            <h2 id="deskripsi" class="sr-only">{{ t('vehicle.description') }}</h2>
+            <p class="leading-relaxed text-slate-700 dark:text-slate-200">{{ description }}</p>
+            <div class="mt-4 flex gap-3 rounded-2xl bg-amber-50 p-4 text-sm text-slate-700 dark:bg-amber-950/30 dark:text-slate-200">
+              <Sparkles aria-hidden="true" class="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+              <p class="leading-relaxed">{{ answer }}</p>
+            </div>
+          </section>
+
+          <!-- 5. Ketentuan -->
+          <section id="panel-ketentuan" role="tabpanel" :aria-labelledby="`tab-ketentuan`" v-show="tab === 'ketentuan'" class="p-6 sm:p-8">
+            <h2 id="ketentuan" class="sr-only">{{ t('vehicle.terms') }}</h2>
+            <p :class="['mt-1 mb-5 text-xs font-extrabold uppercase tracking-wider', isCar ? 'text-[#1E40AF] dark:text-sky-400' : 'text-amber-600 dark:text-amber-400']">{{ policyLabel }}</p>
+            <ul class="space-y-3.5 text-sm text-slate-600 leading-relaxed dark:text-slate-300">
+              <li v-for="item in policy" :key="item.title" class="flex items-start gap-3">
+                <span :class="['flex h-8 w-8 shrink-0 items-center justify-center rounded-xl', isCar ? 'bg-blue-50 text-[#1E40AF] dark:bg-blue-950/60 dark:text-sky-400' : 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400']">
+                  <component :is="item.icon" aria-hidden="true" class="h-4 w-4" />
+                </span>
+                <div><strong class="text-slate-900 dark:text-white">{{ item.title }}:</strong> {{ item.text }}</div>
+              </li>
+            </ul>
+            <h3 class="mt-6 mb-3 text-base font-extrabold text-slate-900 dark:text-white">{{ t('vehicle.requirementsTitle') }}</h3>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div v-for="r in requirements" :key="r.key" class="rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+                <p class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white"><component :is="r.icon" aria-hidden="true" class="h-4 w-4 text-[#1E40AF] dark:text-sky-400" />{{ r.title }}</p>
+                <p class="mt-2 flex gap-2 text-sm text-slate-600 dark:text-slate-300"><FileCheck2 aria-hidden="true" class="mt-0.5 h-4 w-4 shrink-0 text-[#16A34A]" />{{ r.text }}</p>
               </div>
             </div>
-            <div class="rounded-card bg-coral/10 p-4 text-sm">
-              <p class="font-semibold text-coral">{{ t('payment.warning') }}</p>
-              <NuxtLink :to="`${localePath('/contact')}#payment`" class="mt-2 inline-block font-bold text-ocean underline">{{ t('booking.paymentTitle') }}</NuxtLink>
-            </div>
-          </aside>
+          </section>
+          </article>
         </div>
+
+        <!-- Kartu harga: harga, kalender, tombol WhatsApp -->
+        <aside class="lg:sticky lg:top-24 lg:self-start space-y-3">
+          <div class="rounded-3xl border border-[#E2E8F0] bg-white p-5 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+            <span class="block text-xs font-semibold text-slate-400">{{ t('common.from') }}</span>
+            <p class="flex items-baseline gap-1.5">
+              <span class="text-3xl font-extrabold tabular-nums text-[#1E40AF] dark:text-sky-400">{{ vehPrice(v.pricePerDay) }}</span>
+              <span class="text-sm text-slate-400">{{ t('vehicle.perDayShort') }}</span>
+            </p>
+            <p v-if="fxNote('vehicle')" class="mt-1 text-[11px] text-slate-400">{{ fxNote('vehicle') }}</p>
+
+            <!-- Kalender -->
+            <div class="mt-5 rounded-2xl border border-slate-100 p-3 dark:border-slate-800">
+              <p class="mb-2 flex items-center gap-1.5 text-sm font-bold text-slate-900 dark:text-white"><CalendarDays aria-hidden="true" class="h-4 w-4 text-[#1E40AF] dark:text-sky-400" />{{ t('booking.pickDates') }}</p>
+              <ClientOnly>
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <button type="button" :disabled="!canPrev" :aria-label="t('booking.prevMonth')" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800" @click="shift(-1)">
+                      <ChevronLeft aria-hidden="true" class="h-4 w-4" />
+                    </button>
+                    <span class="text-sm font-extrabold capitalize text-slate-900 dark:text-white">{{ monthLabel }}</span>
+                    <button type="button" :aria-label="t('booking.nextMonth')" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" @click="shift(1)">
+                      <ChevronRight aria-hidden="true" class="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase text-slate-400">
+                    <span v-for="(w, i) in weekdays" :key="i">{{ w }}</span>
+                  </div>
+                  <div class="mt-1 grid grid-cols-7 gap-1">
+                    <template v-for="(d, i) in cells" :key="i">
+                      <span v-if="!d" />
+                      <button
+                        v-else
+                        type="button"
+                        :disabled="d < today"
+                        :aria-pressed="d === start || d === finish"
+                        :class="[
+                          'h-9 rounded-lg text-sm font-semibold tabular-nums transition disabled:cursor-not-allowed disabled:text-slate-300 dark:disabled:text-slate-600',
+                          d === start || d === finish
+                            ? 'bg-[#1E40AF] text-white shadow-md'
+                            : start && finish && d > start && d < finish
+                              ? 'bg-blue-100 text-[#1E40AF] dark:bg-blue-950/70 dark:text-sky-300'
+                              : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800',
+                          d === today && d !== start && 'ring-1 ring-[#1E40AF]/40',
+                        ]"
+                        @click="pick(d)"
+                      >
+                        {{ Number(d.slice(8)) }}
+                      </button>
+                    </template>
+                  </div>
+                </div>
+                <template #fallback>
+                  <div class="h-[264px] animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+                </template>
+              </ClientOnly>
+              <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                {{ !start ? t('booking.pickStart') : !finish ? t('booking.selectEnd') : `${fmtDate(start)} – ${fmtDate(finish)}` }}
+              </p>
+            </div>
+
+            <!-- Ringkasan & tombol WA -->
+            <div class="mt-4 flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-800/60">
+              <span class="text-sm text-slate-500 dark:text-slate-400">{{ t('booking.daysSelected', { days }) }}</span>
+              <span class="text-lg font-extrabold tabular-nums text-slate-900 dark:text-white">{{ vehPrice(v.pricePerDay, days) }}</span>
+            </div>
+            <a
+              :href="waUrl(message)"
+              target="_blank"
+              rel="noopener"
+              data-wa="vehicle"
+              class="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#15803D] py-3.5 text-base font-bold text-white shadow-md transition-all hover:bg-[#166534] hover:shadow-lg active:scale-[0.99]"
+            >
+              <span aria-hidden="true" class="icon-wa h-5 w-5" />{{ t('common.bookWhatsApp') }}
+            </a>
+          </div>
+          <p class="px-2 text-center text-xs text-slate-500 dark:text-slate-400">
+            {{ t('payment.warning') }}
+            <NuxtLink :to="`${localePath('/contact')}#payment`" class="font-bold text-[#1E40AF] underline dark:text-sky-400">{{ t('booking.paymentTitle') }}</NuxtLink>
+          </p>
+        </aside>
       </div>
     </section>
 
-    <section class="bg-sand">
-      <div class="section wrap">
-        <h2 class="mb-6 text-2xl font-extrabold text-navy">{{ t('vehicle.otherVehicles') }}</h2>
-        <ul class="grid gap-3 sm:grid-cols-3">
-          <li v-for="x in others" :key="x.slug">
-            <NuxtLink :to="localePath(`/vehicles/${x.slug}`)" class="flex h-full flex-col rounded-card bg-white p-5 shadow-card hover:-translate-y-0.5">
-              <span class="font-extrabold text-navy">{{ x.brand }} {{ x.model }}</span>
-              <span class="mt-1 text-sm text-muted">{{ t('common.from') }} {{ vehPrice(x.pricePerDay) }} {{ t('common.perDay') }}</span>
-            </NuxtLink>
-          </li>
-        </ul>
+    <!-- 6. Kendaraan lainnya (kartu sama dengan halaman daftar) -->
+    <section class="wrap pb-4">
+      <div class="mb-6 flex items-end justify-between gap-3">
+        <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ t('common.recommendations') }}</h2>
+        <NuxtLink :to="localePath('/vehicles')" class="inline-flex items-center gap-1 text-sm font-bold text-[#1E40AF] hover:underline dark:text-sky-400">
+          {{ t('vehicle.fleetTitle') }} <ArrowRight aria-hidden="true" class="h-4 w-4" />
+        </NuxtLink>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <article
+          v-for="x in others"
+          :key="x.slug"
+          :class="[
+            'group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+            x.bestSeller ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
+          ]"
+        >
+          <NuxtLink :to="localePath(`/vehicles/${x.slug}`)" class="relative block rounded-xl overflow-hidden aspect-[16/10] mb-4 bg-slate-100 dark:bg-slate-800">
+            <img v-if="img(x.images[0])" :src="img(x.images[0])" :alt="`${x.brand} ${x.model}`" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          </NuxtLink>
+          <div class="flex-1 flex flex-col px-1">
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900 mb-1 dark:text-white">
+              <NuxtLink :to="localePath(`/vehicles/${x.slug}`)" class="hover:text-[#1E40AF] transition-colors dark:hover:text-sky-400">{{ x.brand }} {{ x.model }}</NuxtLink>
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed mb-3.5 line-clamp-2 dark:text-slate-400">{{ loc(x.tagline) }}</p>
+            <div class="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700 bg-slate-50 rounded-xl p-2.5 mb-3 border border-slate-100 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-800">
+              <div class="flex items-center gap-1.5"><Users aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ x.seats }} Penumpang</div>
+              <div class="flex items-center gap-1.5"><Luggage aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ x.luggage }} Bagasi</div>
+              <div class="flex items-center gap-1.5"><Cog aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t(`common.transmission.${x.transmission}`) }}</div>
+              <div class="flex items-center gap-1.5">
+                <component :is="x.type === 'car' ? UserCheck : KeyRound" aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
+                {{ x.type === 'car' ? 'Supir Lokal' : 'Lepas Kunci' }}
+              </div>
+            </div>
+            <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800">
+              <span class="block text-[10px] font-semibold text-slate-400">{{ t('common.from') }}</span>
+              <div class="flex items-baseline gap-1 mb-3">
+                <span class="text-xl sm:text-2xl font-extrabold text-[#1E40AF] tabular-nums dark:text-sky-400">{{ vehPrice(x.pricePerDay) }}</span>
+                <span class="text-xs text-slate-400 font-medium">{{ t('vehicle.perDayShort') }}</span>
+              </div>
+              <NuxtLink
+                :to="localePath(`/vehicles/${x.slug}`)"
+                class="flex items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2.5 px-3 rounded-full transition-all dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200"
+              >
+                <span>Lihat Detail</span>
+                <ArrowRight aria-hidden="true" class="h-3.5 w-3.5" />
+              </NuxtLink>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
+
+    <!-- 7. CTA -->
     <Cta />
   </div>
 </template>

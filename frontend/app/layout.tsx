@@ -5,6 +5,7 @@ import { AnnouncementBar } from "@/components/layouts/announcement-bar";
 import { SiteHeader } from "@/components/layouts/site-header";
 import { SiteFooter } from "@/components/layouts/site-footer";
 import { WhatsAppFloat } from "@/components/layouts/whatsapp-float";
+import { GoogleAnalytics } from "@/components/seo/google-analytics";
 import { StructuredData } from "@/components/seo/structured-data";
 import { LanguageProvider } from "@/lib/i18n";
 
@@ -138,6 +139,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </div>
           <WhatsAppFloat />
         </LanguageProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );

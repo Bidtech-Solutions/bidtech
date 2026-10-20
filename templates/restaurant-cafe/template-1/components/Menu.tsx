@@ -1,22 +1,22 @@
 'use client';
-
 import Image from 'next/image';
+import Link from 'next/link';
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { MENU_FILTERS, MENU_ITEMS, formatPrice } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { duration, ease, fadeUp, spring, staggerParent } from '@/lib/motion';
+import { fadeUp, spring, staggerParent } from '@/lib/motion';
 import { Reveal } from '@/components/motion/Reveal';
 import { SplitWords } from '@/components/motion/SplitWords';
+import { useLanguage } from '@/context/LanguageContext';
 
-type MenuFilter = (typeof MENU_FILTERS)[number];
-type MenuItem = (typeof MENU_ITEMS)[number];
-
+const C_PRIMARY = '#9E3B2B';
 const PAGE_SIZE = 4;
 
 export default function Menu() {
   const reduce = useReducedMotion();
-  const [activeFilter, setActiveFilter] = useState<MenuFilter>('Semua');
+  const { t, isEn } = useLanguage();
+  const [activeFilter, setActiveFilter] = useState('Semua');
   const [page, setPage] = useState(1);
 
   const filteredItems = useMemo(() => {
@@ -28,57 +28,62 @@ export default function Menu() {
   const visibleItems = filteredItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
-  function chooseFilter(filter: MenuFilter) {
-    setActiveFilter(filter);
+  function chooseFilter(filterKey: string) {
+    setActiveFilter(filterKey);
     setPage(1);
   }
 
   return (
-    <section id="menu" className="section overflow-hidden bg-[#fffdf8]">
+    <section id="menu" className="py-10 bg-[#fffdf8]">
       <div className="shell">
-        <div className="mb-12 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
+        {/* Judul & Filter */}
+        <div className="mb-8 grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <Reveal>
-              <p className="eyebrow mb-4">Pilihan Musiman</p>
+              <p className="eyebrow mb-2 font-medium tracking-widest text-sm" style={{ color: C_PRIMARY }}>
+                {t.homeMenu.eyebrow}
+              </p>
             </Reveal>
-
             <SplitWords
               as="h2"
-              text="Dari Dapur Kami"
-              className="heading text-3xl sm:text-4xl lg:text-5xl"
+              text={t.homeMenu.title}
+              className="heading text-3xl sm:text-4xl font-bold text-gray-900"
             />
           </div>
-
           <Reveal delay={0.12}>
             <LayoutGroup id="menu-filter-tabs">
               <div
                 role="tablist"
                 aria-label="Filter kategori menu"
-                className="-mx-5 flex min-w-0 gap-3 overflow-x-auto px-5 pb-2 md:mx-0 md:justify-end md:overflow-visible md:px-0"
+                className="flex flex-wrap gap-2.5 justify-start md:justify-end"
               >
-                {MENU_FILTERS.map((filter) => {
-                  const active = filter === activeFilter;
-
+                {MENU_FILTERS.map((f) => {
+                  const active = f.key === activeFilter;
+                  const label = isEn ? f.labelEn : f.labelId;
                   return (
                     <button
-                      key={filter}
+                      key={f.key}
                       type="button"
                       role="tab"
                       aria-selected={active}
-                      onClick={() => chooseFilter(filter)}
+                      onClick={() => chooseFilter(f.key)}
                       className={cn(
-                        'relative h-10 shrink-0 rounded-full px-7 text-xs font-bold transition-colors duration-300 ease-smooth',
-                        active ? 'text-cream' : 'text-cocoa hover:text-ember',
+                        'relative h-9 px-5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer',
+                        active
+                          ? 'text-white shadow-lg'
+                          : 'bg-transparent text-gray-600 hover:text-gray-900'
                       )}
+                      style={active ? { backgroundColor: C_PRIMARY, boxShadow: `0 10px 15px -3px ${C_PRIMARY}20` } : {}}
                     >
                       {active && (
                         <motion.span
                           layoutId="active-menu-filter"
-                          className="absolute inset-0 rounded-full bg-ember shadow-[0_14px_30px_rgba(170,48,21,0.22)]"
+                          className="absolute inset-0 rounded-full"
+                          style={{ backgroundColor: C_PRIMARY }}
                           transition={spring.soft}
                         />
                       )}
-                      <span className="relative">{filter}</span>
+                      <span className="relative">{label}</span>
                     </button>
                   );
                 })}
@@ -87,70 +92,58 @@ export default function Menu() {
           </Reveal>
         </div>
 
+        {/* Grid Kartu Menu */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={`${activeFilter}-${page}`}
-            variants={reduce ? undefined : staggerParent(0.09)}
+            key={`${activeFilter}-${page}-${isEn}`}
+            variants={reduce ? undefined : staggerParent(0.08)}
             initial={reduce ? false : 'hidden'}
             animate={reduce ? undefined : 'show'}
             exit={
               reduce
                 ? undefined
-                : {
-                    opacity: 0,
-                    y: 10,
-                    transition: { duration: duration.fast, ease: ease.inOut },
-                  }
+                : { opacity: 0, y: 8, transition: { duration: 0.2 } }
             }
-            className="grid min-h-[29rem] gap-6 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
           >
             {visibleItems.length > 0 ? (
               visibleItems.map((item) => (
-                <MenuCard key={item.name} item={item} reduce={Boolean(reduce)} />
+                <MenuCard key={item.slug} item={item} isEn={isEn} reduce={Boolean(reduce)} />
               ))
             ) : (
-              <motion.div
-                variants={reduce ? undefined : fadeUp}
-                className="col-span-full grid min-h-[20rem] place-items-center rounded-2xl border border-blush/50 bg-cream/70 text-center"
-              >
-                <p className="max-w-sm text-sm font-semibold text-cocoa">
-                  Menu untuk kategori ini belum tersedia.
-                </p>
-              </motion.div>
+              <div className="col-span-full py-12 text-center text-gray-500">
+                {isEn ? 'No dishes available in this category.' : 'Belum ada menu untuk kategori ini.'}
+              </div>
             )}
           </motion.div>
         </AnimatePresence>
 
+        {/* Paginasi */}
         {totalPages > 1 && (
-          <nav
-            aria-label="Halaman menu"
-            className="mt-9 flex items-center justify-center gap-3"
-          >
+          <nav className="mt-8 flex items-center justify-center gap-2">
             <PaginationButton
-              label="Halaman sebelumnya"
+              label={isEn ? "Previous page" : "Halaman sebelumnya"}
               disabled={page === 1}
-              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              onClick={() => setPage((c) => Math.max(1, c - 1))}
             >
-              <span aria-hidden>&lsaquo;</span>
+              &lsaquo;
             </PaginationButton>
-
-            {pages.map((pageNumber) => (
+            {pages.map((n) => (
               <PaginationButton
-                key={pageNumber}
-                label={`Halaman ${pageNumber}`}
-                active={pageNumber === page}
-                onClick={() => setPage(pageNumber)}
+                key={n}
+                label={isEn ? `Page ${n}` : `Halaman ${n}`}
+                active={n === page}
+                onClick={() => setPage(n)}
               >
-                {pageNumber}
+                {n}
               </PaginationButton>
             ))}
-
             <PaginationButton
-              label="Halaman berikutnya"
+              label={isEn ? "Next page" : "Halaman berikutnya"}
               disabled={page === totalPages}
-              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              onClick={() => setPage((c) => Math.min(totalPages, c + 1))}
             >
-              <span aria-hidden>&rsaquo;</span>
+              &rsaquo;
             </PaginationButton>
           </nav>
         )}
@@ -159,81 +152,65 @@ export default function Menu() {
   );
 }
 
-function MenuCard({
-  item,
-  reduce,
-}: {
-  item: MenuItem;
-  reduce: boolean;
-}) {
+function MenuCard({ item, isEn, reduce }: { item: any; isEn: boolean; reduce: boolean }) {
+  const name = isEn ? item.nameEn : item.name;
+  const description = isEn ? item.descriptionEn : item.description;
+  const badge = isEn ? (item.badgeEn || item.badge) : item.badge;
+
   return (
-    <motion.article
-      layout
-      variants={reduce ? undefined : fadeUp}
-      whileHover={reduce ? undefined : { y: -10 }}
-      transition={spring.soft}
-      className={cn(
-        'group overflow-hidden rounded-[1.75rem] border border-blush/45 bg-white/90',
-        'shadow-[0_24px_60px_rgba(89,65,60,0.08)] transition-colors duration-500 ease-smooth',
-        'hover:border-ember/35 hover:bg-white',
-      )}
-    >
-      <div className="relative aspect-[1.04/1] overflow-hidden bg-ember-soft">
-        <Image
-          src={item.image}
-          alt={item.name}
-          fill
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-105"
-        />
-
-        {item.badge && (
-          <motion.span
-            initial={reduce ? false : { opacity: 0, scale: 0.86 }}
-            whileInView={reduce ? undefined : { opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.7 }}
-            transition={{ duration: duration.fast, ease: ease.back }}
-            className="absolute right-4 top-4 rounded-full bg-ember px-3 py-1 text-[10px] font-bold text-cream shadow-[0_10px_24px_rgba(170,48,21,0.24)]"
-          >
-            {item.badge}
-          </motion.span>
-        )}
-      </div>
-
-      <div className="p-6 pt-5">
-        <h3 className="mb-3 text-sm font-extrabold tracking-tight text-ink">
-          {item.name}
-        </h3>
-
-        <p className="line-clamp-2 min-h-[2.9rem] text-sm leading-relaxed text-cocoa/80">
-          {item.description}
-        </p>
-
-        <span
-          className={cn(
-            'mt-5 flex h-11 w-full items-center justify-center rounded-full border border-blush/80',
-            'bg-[#fffdf8] text-xs font-extrabold text-cocoa transition-colors duration-300 ease-smooth',
-            'group-hover:border-ember/45 group-hover:text-ember',
+    <Link href={`/menu/${item.slug}`} className="block cursor-pointer">
+      <motion.article
+        layout
+        variants={reduce ? undefined : fadeUp}
+        whileHover={reduce ? undefined : { y: -4 }}
+        transition={spring.soft}
+        className="group bg-white rounded-2xl overflow-hidden border border-[#f8e7e0] transition-all duration-300 hover:shadow-md"
+      >
+        <div className="relative aspect-[4/3] overflow-hidden bg-[#fff3ed]">
+          <Image
+            src={item.image}
+            alt={name}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          {badge && (
+            <span
+              className="absolute right-3 top-3 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow-sm"
+              style={{ backgroundColor: C_PRIMARY }}
+            >
+              {badge}
+            </span>
           )}
-        >
-          {formatPrice(item.price)}
-        </span>
-      </div>
-    </motion.article>
+        </div>
+        <div className="p-4">
+          <h3 className="font-bold text-base mb-1 text-gray-900 group-hover:text-[#9E3B2B] transition-colors">
+            {name}
+          </h3>
+          <p className="text-sm text-gray-500 mb-4 line-clamp-2 min-h-[2.5rem]">
+            {description}
+          </p>
+          <div className="w-full py-2 border border-[#f0d9cf] rounded-full text-center group-hover:border-[#9E3B2B]/30 transition-colors">
+            <span className="font-semibold text-sm text-gray-900">
+              {formatPrice(item.price)}
+            </span>
+          </div>
+        </div>
+      </motion.article>
+    </Link>
   );
 }
 
 function PaginationButton({
+  children,
+  label,
   active = false,
   disabled = false,
-  label,
-  children,
   onClick,
 }: {
+  children: React.ReactNode;
+  label: string;
   active?: boolean;
   disabled?: boolean;
-  label: string;
-  children: React.ReactNode;
   onClick: () => void;
 }) {
   return (
@@ -244,12 +221,12 @@ function PaginationButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        'grid h-9 w-9 place-items-center rounded-full text-xs font-bold transition-[transform,background-color,color,opacity] duration-300 ease-smooth',
+        'grid h-9 w-9 place-items-center rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer',
         active
-          ? 'bg-ember text-cream shadow-[0_12px_26px_rgba(170,48,21,0.22)]'
-          : 'text-cocoa/60 hover:bg-ember-soft hover:text-ember',
-        disabled && 'cursor-not-allowed opacity-30',
-        !disabled && 'active:translate-y-px',
+          ? 'bg-[#9E3B2B] text-white shadow-sm'
+          : disabled
+            ? 'cursor-not-allowed opacity-30 text-gray-400'
+            : 'border border-[#f0d9cf] bg-white text-gray-700 hover:border-[#9E3B2B] hover:text-[#9E3B2B]'
       )}
     >
       {children}

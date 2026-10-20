@@ -1,5 +1,4 @@
 'use client';
-
 import Image from 'next/image';
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'motion/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -8,8 +7,10 @@ import { cn } from '@/lib/utils';
 import { duration, ease, spring } from '@/lib/motion';
 import { Reveal } from '@/components/motion/Reveal';
 import { SplitWords } from '@/components/motion/SplitWords';
+import { useLanguage } from '@/context/LanguageContext';
 
-type GalleryFilter = (typeof GALLERY_FILTERS)[number];
+// type GalleryFilter
+
 type GalleryItem = (typeof GALLERY_ITEMS)[number];
 
 const cardLayout = [
@@ -27,27 +28,16 @@ const imagePosition = [
 ];
 
 const flightPath = [
-  {
-    from: 'translate3d(-34vw, -110px, 0) rotate(-8deg) scale(0.96)',
-    delay: 0,
-  },
-  {
-    from: 'translate3d(30vw, -130px, 0) rotate(7deg) scale(0.95)',
-    delay: 0.08,
-  },
-  {
-    from: 'translate3d(-28vw, 120px, 0) rotate(9deg) scale(0.96)',
-    delay: 0.16,
-  },
-  {
-    from: 'translate3d(32vw, 110px, 0) rotate(-7deg) scale(0.95)',
-    delay: 0.24,
-  },
+  { from: 'translate3d(-34vw, -110px, 0) rotate(-8deg) scale(0.96)', delay: 0 },
+  { from: 'translate3d(30vw, -130px, 0) rotate(7deg) scale(0.95)', delay: 0.08 },
+  { from: 'translate3d(-28vw, 120px, 0) rotate(9deg) scale(0.96)', delay: 0.16 },
+  { from: 'translate3d(32vw, 110px, 0) rotate(-7deg) scale(0.95)', delay: 0.24 },
 ];
 
 export default function Gallery() {
   const reduce = useReducedMotion();
-  const [activeFilter, setActiveFilter] = useState<GalleryFilter>('Food');
+  const { isEn } = useLanguage();
+  const [activeFilter, setActiveFilter] = useState<string>('Food');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [originItemId, setOriginItemId] = useState<string | null>(null);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -57,69 +47,67 @@ export default function Gallery() {
     [activeFilter],
   );
 
-  const selectedItem = selectedIndex === null ? null : filteredItems[selectedIndex] ?? null;
+  const selectedItem = useMemo(() => 
+    selectedIndex !== null && filteredItems[selectedIndex] 
+      ? filteredItems[selectedIndex] 
+      : null,
+    [selectedIndex, filteredItems]
+  );
 
   const closeGallery = useCallback(() => {
     setSelectedIndex(null);
+    setOriginItemId(null); // ✅ Bersihkan saat tutup
   }, []);
 
-  const chooseFilter = (filter: GalleryFilter) => {
+  const chooseFilter = (filter: string) => {
     setActiveFilter(filter);
     setSelectedIndex(null);
     setOriginItemId(null);
     setDirection(1);
   };
 
-  const openGallery = (index: number) => {
+  const openGallery = useCallback((index: number) => {
     const item = filteredItems[index];
-
     if (!item) return;
-
+    setOriginItemId(item.id); // ✅ Set dulu sebelum index
     setSelectedIndex(index);
-    setOriginItemId(item.id);
     setDirection(1);
-  };
+  }, [filteredItems]);
 
   const moveGallery = useCallback(
     (step: 1 | -1) => {
       setDirection(step);
       setSelectedIndex((current) => {
         if (current === null) return current;
-
         const nextIndex = (current + step + filteredItems.length) % filteredItems.length;
-        setOriginItemId(filteredItems[nextIndex]?.id ?? null);
-
+        const nextItem = filteredItems[nextIndex];
+        if (nextItem) setOriginItemId(nextItem.id); // ✅ Update origin
         return nextIndex;
       });
     },
     [filteredItems],
   );
 
+  // ✅ Kunci scroll saat dialog terbuka
   useEffect(() => {
     if (!selectedItem) return;
-
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-
     return () => {
       document.body.style.overflow = previousOverflow;
     };
   }, [selectedItem]);
 
+  // ✅ Tombol keyboard
   useEffect(() => {
     if (!selectedItem) return;
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') closeGallery();
       if (event.key === 'ArrowRight') moveGallery(1);
       if (event.key === 'ArrowLeft') moveGallery(-1);
     };
-
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [closeGallery, moveGallery, selectedItem]);
 
   return (
@@ -130,14 +118,12 @@ export default function Gallery() {
             <Reveal>
               <p className="eyebrow mb-4">Koleksi Menu</p>
             </Reveal>
-
             <SplitWords
               as="h2"
               text="Galeri"
               className="heading text-3xl sm:text-4xl lg:text-5xl"
             />
           </div>
-
           <Reveal delay={0.12}>
             <LayoutGroup id="gallery-filter-tabs">
               <div
@@ -145,16 +131,17 @@ export default function Gallery() {
                 aria-label="Filter kategori galeri"
                 className="-mx-5 flex min-w-0 gap-4 overflow-x-auto px-5 pb-2 md:mx-0 md:justify-end md:overflow-visible md:px-0"
               >
-                {GALLERY_FILTERS.map((filter) => {
-                  const active = filter === activeFilter;
-
+                {GALLERY_FILTERS.map((filterItem: any) => {
+                  const key = typeof filterItem === 'string' ? filterItem : filterItem.key;
+                  const label = typeof filterItem === 'string' ? filterItem : (isEn ? filterItem.labelEn : filterItem.labelId);
+                  const active = key === activeFilter;
                   return (
                     <button
-                      key={filter}
+                      key={key}
                       type="button"
                       role="tab"
                       aria-selected={active}
-                      onClick={() => chooseFilter(filter)}
+                      onClick={() => chooseFilter(key)}
                       className={cn(
                         'relative h-8 shrink-0 rounded-full px-6 text-xs font-bold transition-colors duration-300 ease-smooth',
                         active ? 'text-cream' : 'text-cocoa hover:text-ember',
@@ -167,7 +154,7 @@ export default function Gallery() {
                           transition={spring.soft}
                         />
                       )}
-                      <span className="relative">{filter}</span>
+                      <span className="relative">{label}</span>
                     </button>
                   );
                 })}
@@ -183,15 +170,11 @@ export default function Gallery() {
                 key={activeFilter}
                 initial={reduce ? false : 'hidden'}
                 whileInView={reduce ? undefined : 'show'}
-                exit={
-                  reduce
-                    ? undefined
-                    : {
-                        opacity: 0,
-                        transform: 'translate3d(0, 18px, 0) scale(0.98)',
-                        transition: { duration: duration.fast, ease: ease.inOut },
-                      }
-                }
+                exit={reduce ? undefined : {
+                  opacity: 0,
+                  transform: 'translate3d(0, 18px, 0) scale(0.98)',
+                  transition: { duration: duration.fast, ease: ease.inOut },
+                }}
                 viewport={{ once: true, amount: 0.25 }}
                 className="grid gap-4 md:h-[430px] md:grid-cols-12 md:grid-rows-2"
               >
@@ -221,10 +204,10 @@ export default function Gallery() {
             )}
           </AnimatePresence>
 
+          {/* ✅ Tampilkan dialog HANYA saat keduanya ada — cek ketat */}
           <AnimatePresence onExitComplete={() => setOriginItemId(null)}>
             {selectedItem && originItemId && (
               <GalleryDialog
-                key="gallery-dialog"
                 item={selectedItem}
                 originItemId={originItemId}
                 total={filteredItems.length}
@@ -261,40 +244,23 @@ function GalleryCard({
     <motion.button
       type="button"
       aria-label={`Lihat foto ${item.title}`}
-      variants={
-        reduce
-          ? undefined
-          : {
-              hidden: {
-                opacity: 0,
-                transform: path.from,
-              },
-              show: {
-                opacity: 1,
-                transform: 'translate3d(0, 0, 0) rotate(0deg) scale(1)',
-                transition: {
-                  duration: duration.slow,
-                  delay: path.delay,
-                  ease: ease.out,
-                },
-              },
-            }
-      }
-      onAnimationStart={(definition) => {
-        if (definition === 'show') setIntroComplete(false);
+      variants={reduce ? undefined : {
+        hidden: { opacity: 0, transform: path.from },
+        show: {
+          opacity: 1,
+          transform: 'translate3d(0, 0, 0) rotate(0deg) scale(1)',
+          transition: { duration: duration.slow, delay: path.delay, ease: ease.out },
+        },
       }}
-      onAnimationComplete={(definition) => {
-        if (definition === 'show') setIntroComplete(true);
-      }}
+      onAnimationStart={(def) => { if (def === 'show') setIntroComplete(false); }}
+      onAnimationComplete={(def) => { if (def === 'show') setIntroComplete(true); }}
       onClick={onOpen}
-      whileHover={
-        reduce || !introComplete
-          ? undefined
-          : { transform: 'translate3d(0, -6px, 0) rotate(0deg) scale(1.01)' }
+      whileHover={reduce || !introComplete ? undefined : 
+        { transform: 'translate3d(0, -6px, 0) rotate(0deg) scale(1.01)' }
       }
       transition={spring.soft}
       className={cn(
-        'relative min-h-[190px] overflow-hidden rounded-xl border border-white/55 bg-ink text-left outline-none',
+        'relative min-h-[190px] overflow-hidden rounded-xl border border-white/55 bg-ink text-left outline-none cursor-pointer',
         introComplete && 'group',
         'shadow-[0_24px_60px_rgba(89,65,60,0.13)] will-change-transform md:min-h-0',
         'aspect-[1.62/1] md:aspect-auto',
@@ -320,7 +286,6 @@ function GalleryCard({
           )}
         />
       </motion.span>
-
       {item.moreCount && (
         <div className="absolute inset-0 grid place-items-center rounded-xl bg-ink/50">
           <span className="text-4xl font-extrabold tracking-tight text-cream sm:text-5xl">
@@ -354,23 +319,18 @@ function GalleryDialog({
   onPrevious: () => void;
 }) {
   const orbitVariants = {
-    enter: (travelDirection: 1 | -1) => ({
+    enter: (travelDir: 1 | -1) => ({
       opacity: 0,
-      transform:
-        travelDirection === 1
-          ? 'translate3d(34%, 9%, 0) rotate(5deg) scale(0.96)'
-          : 'translate3d(-34%, 9%, 0) rotate(-5deg) scale(0.96)',
+      transform: travelDir === 1
+        ? 'translate3d(34%, 9%, 0) rotate(5deg) scale(0.96)'
+        : 'translate3d(-34%, 9%, 0) rotate(-5deg) scale(0.96)',
     }),
-    center: {
-      opacity: 1,
-      transform: 'translate3d(0, 0, 0) rotate(0deg) scale(1)',
-    },
-    exit: (travelDirection: 1 | -1) => ({
+    center: { opacity: 1, transform: 'translate3d(0, 0, 0) rotate(0deg) scale(1)' },
+    exit: (travelDir: 1 | -1) => ({
       opacity: 0,
-      transform:
-        travelDirection === 1
-          ? 'translate3d(-34%, -9%, 0) rotate(-5deg) scale(0.96)'
-          : 'translate3d(34%, -9%, 0) rotate(5deg) scale(0.96)',
+      transform: travelDir === 1
+        ? 'translate3d(-34%, -9%, 0) rotate(-5deg) scale(0.96)'
+        : 'translate3d(34%, -9%, 0) rotate(5deg) scale(0.96)',
     }),
   };
 
@@ -388,8 +348,9 @@ function GalleryDialog({
     >
       <div
         className="relative flex w-full max-w-6xl flex-col gap-5"
-        onClick={(event) => event.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
+        {/* Judul & Tombol Tutup */}
         <div className="flex items-start justify-between gap-4 text-cream">
           <div className="min-w-0">
             <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.22em] text-cream/60">
@@ -399,25 +360,26 @@ function GalleryDialog({
               {item.title}
             </h3>
           </div>
-
           <button
             type="button"
             aria-label="Tutup galeri"
             onClick={onClose}
             className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-cream/20 bg-cream/10 text-2xl leading-none text-cream transition-colors duration-300 hover:bg-cream/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
           >
-            x
+            ×
           </button>
         </div>
 
+        {/* Gambar Utama + Navigasi */}
         <div className="relative grid min-h-[54dvh] place-items-center">
           <ViewerButton label="Foto sebelumnya" direction="left" onClick={onPrevious} />
           <ViewerButton label="Foto berikutnya" direction="right" onClick={onNext} />
-
+          
+          {/* ✅ layoutId dipastikan sama persis dengan kartu */}
           <motion.div
             layoutId={`gallery-image-${originItemId}`}
             className="relative w-full max-w-5xl overflow-hidden rounded-[1.75rem] bg-cream shadow-[0_40px_120px_rgba(0,0,0,0.45)]"
-            transition={spring.soft}
+            transition={{ ...spring.soft, layout: { duration: 0.4 } }}
           >
             <div className="relative aspect-[16/10] max-h-[72dvh] w-full overflow-hidden bg-[#211916]">
               <AnimatePresence custom={direction} mode="wait" initial={false}>
@@ -435,7 +397,7 @@ function GalleryDialog({
                     src={item.image}
                     alt={item.title}
                     fill
-                    priority
+                    priority // ✅ Selalu dimuat cepat
                     quality={90}
                     sizes="(min-width: 1024px) 80vw, 92vw"
                     className="object-contain"
@@ -446,6 +408,7 @@ function GalleryDialog({
           </motion.div>
         </div>
 
+        {/* Penomoran */}
         <div className="mx-auto flex items-center gap-4 text-xs font-bold text-cream/70">
           <span>{String(index + 1).padStart(2, '0')}</span>
           <span className="h-px w-12 bg-cream/30" />

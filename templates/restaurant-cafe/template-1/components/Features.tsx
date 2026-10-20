@@ -5,40 +5,37 @@ import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { SplitWords } from '@/components/motion/SplitWords';
 import { PILLARS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/context/LanguageContext';
 
-/**
- * Tiga pilar nilai jual restoran.
- *
- * Section ini contoh pola yang akan kamu ulang di SEMUA section berikutnya:
- *   <Reveal>        untuk eyebrow / heading
- *   <Stagger>       untuk daftar kartu
- *   <StaggerItem>   untuk tiap kartu
- *
- * Perhatikan: tidak ada satu pun `delay` manual di kartu. Induk <Stagger>
- * yang mengatur giliran. Kalau nanti kamu tambah kartu keempat, ritmenya
- * ikut menyesuaikan sendiri.
- */
 export default function Features() {
+  const { t, isEn } = useLanguage();
+
   return (
     <section className="section bg-cream">
       <div className="shell">
         <div className="mb-16 max-w-2xl">
           <Reveal>
-            <p className="eyebrow mb-4">Mengapa Kami</p>
+            <p className="eyebrow mb-4">
+              {isEn ? 'WHY CHEF’S TABLE' : 'Mengapa Kami'}
+            </p>
           </Reveal>
           <SplitWords
             as="h2"
-            text="Dibuat dengan niat, disajikan dengan bangga"
+            text={isEn ? 'Crafted with intent, served with pride' : 'Dibuat dengan niat, disajikan dengan bangga'}
             className="heading text-3xl sm:text-4xl lg:text-5xl"
           />
         </div>
 
         <Stagger className="grid gap-6 md:grid-cols-3" stagger={0.12}>
-          {PILLARS.map((pillar, i) => (
-            <StaggerItem key={pillar.title}>
-              <PillarCard index={i} {...pillar} />
-            </StaggerItem>
-          ))}
+          {PILLARS.map((pillar, i) => {
+            const title = isEn ? pillar.titleEn : pillar.title;
+            const description = isEn ? pillar.descriptionEn : pillar.description;
+            return (
+              <StaggerItem key={pillar.title}>
+                <PillarCard index={i} title={title} description={description} />
+              </StaggerItem>
+            );
+          })}
         </Stagger>
       </div>
     </section>
@@ -55,13 +52,6 @@ function PillarCard({
   description: string;
 }) {
   return (
-    /**
-     * whileHover di level motion.div, BUKAN CSS :hover.
-     *
-     * Alasannya: kita ingin kartu terangkat dengan spring (ada bobot,
-     * berhenti tidak kaku). CSS transition tidak bisa spring.
-     * Untuk perubahan warna sederhana, CSS tetap pilihan yang lebih ringan.
-     */
     <motion.article
       whileHover={{ y: -8 }}
       transition={{ type: 'spring', stiffness: 260, damping: 22 }}
@@ -70,8 +60,6 @@ function PillarCard({
         'transition-colors duration-500 ease-smooth hover:border-ember/40',
       )}
     >
-      {/* Nomor besar sebagai ornamen. Ikut bergeser saat hover supaya
-          kartu terasa satu kesatuan, bukan tumpukan elemen terpisah. */}
       <motion.span
         aria-hidden
         className="absolute -right-2 -top-6 text-[7rem] font-extrabold leading-none text-ember/[0.07]"
@@ -89,8 +77,6 @@ function PillarCard({
         <p className="text-sm leading-relaxed text-cocoa/80">{description}</p>
       </div>
 
-      {/* Garis aksen yang tumbuh dari kiri saat hover — pengulangan motif
-          yang sama dengan underline nav. Konsistensi motif = terasa dirancang. */}
       <span
         className={cn(
           'absolute inset-x-8 bottom-0 h-[2px] origin-left scale-x-0 bg-ember',

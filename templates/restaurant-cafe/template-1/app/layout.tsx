@@ -1,17 +1,11 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import localFont from 'next/font/local';
-import SmoothScroll from '@/components/SmoothScroll';
-import { BRAND } from '@/lib/constants';
+import SmoothScroll from '../components/SmoothScroll';
+import { LanguageProvider } from '../context/LanguageContext';
+import { BRAND } from '../lib/constants';
 import '../styles/globals.css';
 
-/**
- * next/font/local: font di-host sendiri, di-inline sebagai CSS variable,
- * dan Next otomatis menyisipkan `font-display: swap` + preload.
- * Hasilnya nol layout shift dan nol request ke server pihak ketiga.
- *
- * File ini variable font (satu file untuk semua ketebalan 200-800),
- * jadi cukup satu unduhan untuk seluruh halaman.
- */
 const jakarta = localFont({
   src: '../public/fonts/PlusJakartaSans-VariableFont_wght.ttf',
   variable: '--font-jakarta',
@@ -39,12 +33,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="id" className={jakarta.variable}>
       <body>
-        <SmoothScroll />
-        {children}
+        <LanguageProvider>
+          <SmoothScroll />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -6,14 +6,16 @@
   },
   "nav": {
     "home": "首页",
-    "packages": "旅游配套",
+    "packages": "度假配套",
     "vehicles": "租车",
     "contact": "联系我们",
     "menu": "菜单",
     "close": "关闭",
     "chatWhatsApp": "WhatsApp 咨询",
     "language": "语言",
+    "languageTitle": "选择语言",
     "currency": "货币",
+    "currencyTitle": "选择货币",
     "skip": "跳到主要内容",
     "theme": "切换深色模式"
   },
@@ -40,7 +42,48 @@
       "manual": "手动挡",
       "cvt": "CVT"
     },
-    "recommendations": "其他推荐"
+    "recommendations": "其他推荐",
+    "online": "在线",
+    "hours": "营业时间",
+    "contactNumber": "联系电话：",
+    "serving": "服务范围：",
+    "quickResponse": "5分钟内极速响应（WhatsApp）",
+    "freeConsult": "免费咨询家庭与团体度假套餐",
+    "hotline": "办公热线/电话：",
+    "emailOfficial": "官方公司邮箱：",
+    "corporateInvoice": "用于企业合作报价/正规发票",
+    "officialSocial": "官方社交媒体",
+    "officeLocation": "办公室位置与接送区域",
+    "officeLocationSubtitle": "我们的运营中心位于巴淡中心，在所有客运码头及巴淡机场提供免费接送服务。",
+    "openGoogleMaps": "在谷歌地图中打开",
+    "officeAddress": "办公室地址",
+    "popularPickup": "热门接送点：",
+    "sort": "排序：",
+    "sortPopular": "最受欢迎",
+    "sortPriceAsc": "价格最低",
+    "sortPriceDesc": "价格最高",
+    "sortDuration": "行程最长",
+    "sortCapacity": "载客量最大",
+    "searchPackagePlaceholder": "搜索套餐（例如：3天2晚、民丹岛、全包）...",
+    "searchVehiclePlaceholder": "搜索车辆（例如：Innova、HiAce、Scoopy）...",
+    "notFoundPackage": "未找到套餐，请尝试其他关键词。",
+    "notFoundVehicle": "未找到车辆，请尝试其他关键词。",
+    "allPackagesFilter": "全部套餐",
+    "batamOnlyFilter": "仅巴淡岛",
+    "bintanFilter": "民丹岛",
+    "tabCar": "汽车（配司机）",
+    "tabMotor": "摩托车（自驾）",
+    "seatsCount": "{count} 乘客",
+    "luggageCount": "{count} 行李",
+    "driverService": "本地司机",
+    "selfDriveService": "自驾",
+    "bestSeller": "畅销",
+    "popular": "热门",
+    "hotelNights": "{count} 晚酒店",
+    "breakfastHotel": "含酒店早餐",
+    "packagesCount": "{count} 个配套",
+    "vehiclesCount": "{count} 款车型可选",
+    "packagesSubtitle": "往返渡轮票、酒店住宿、专车接送（含本地司机）与随团领队全包一站式配套——精选心仪路线，即刻在 WhatsApp 预订。"
   },
   "price": {
     "estimateNote": "换算价格仅供参考（参考汇率日期 {date}），最终价格以客服确认为准。",
@@ -49,9 +92,9 @@
   },
   "home": {
     "metaTitle": "巴淡岛与民丹岛旅游配套及租车服务",
-    "heroTitle": "畅游巴淡岛与民丹岛",
+    "heroTitle": "畅游巴淡岛与民丹岛\n全程省心无忧",
     "heroScript": "Fun Holiday with Fun Travel",
-    "heroSubtitle": "从马来西亚和新加坡出发的全包旅游配套，以及巴淡岛包车（含司机）与摩托车租赁。",
+    "heroSubtitle": "专属中文司机包车、含码头税的快速轮渡票务、精选全包式度假行程以及专为新马游客打造的可靠摩托租赁。",
     "heroChip": "专为马来西亚与新加坡游客设计",
     "ctaPackages": "查看配套",
     "ctaVehicles": "租车服务",
@@ -73,7 +116,11 @@
     "step3": "付款出发",
     "step3Text": "向官方账户付款，开启愉快旅程。",
     "ctaTitle": "准备好开启愉快假期了吗？",
-    "ctaText": "我们的客服随时为您规划行程。"
+    "ctaText": "我们的客服随时为您规划行程。",
+    "spotWisataTitle": "巴淡岛与民丹岛标志性景点",
+    "spotWisataDesc": "壮丽的巴里浪大桥、民丹岛蓝色沙漠沙丘、免税购物中心以及海岸水上奎笼海鲜美食。",
+    "destHighlights": "精选旅游目的地",
+    "requestCustomTour": "申请定制旅游行程"
   },
   "packages": {
     "metaTitle": "巴淡岛与民丹岛旅游配套",
@@ -191,7 +238,10 @@
     "fleetTitle": "我们的车队",
     "facilities": "设施",
     "terms": "租赁条款",
-    "perDayShort": "/ 天"
+    "perDayShort": "/ 天",
+    "fleetSubtitle": "本地专业私家包车（含专职司机）与免押金摩托自驾——精选车款，查看配置，直接通过 WhatsApp 预约。",
+    "luggageLabel": "行李容量",
+    "luggageUnit": "{count} 个行李箱 / 背包"
   },
   "payment": {
     "title": "官方付款方式",
@@ -210,19 +260,50 @@
     "title": "联系我们",
     "intro": "通过 WhatsApp 与我们的客服联系。",
     "admins": "WhatsApp 客服",
-    "socials": "关注我们"
+    "socials": "关注我们",
+    "badge": "客户服务与预订",
+    "heroTitlePart1": "联系我们 — ",
+    "heroTitlePart2": "Fun Travel Batam",
+    "heroIntro": "旅游咨询服务、巴淡岛与民丹岛度假套餐、配当地司机的包车服务及自驾摩托车租赁。欢迎通过以下官方渠道直接联系我们。",
+    "officialOfficeTitle": "官方办事处联系方式",
+    "legalCompany": "PT Fun Batam Holiday",
+    "hotlineTime": "每天 07:30 – 21:00 印尼西部时间",
+    "budiTitle": "Budi Santoso",
+    "budiServices": "汽车日租（Innova、Avanza、HiAce、Alphard）、Harbour Bay与巴淡中心码头接送、Hang Nadim机场接送。",
+    "budiButton": "通过WhatsApp联系管理员Budi",
+    "budiTemplate": "您好，Budi管理员（Fun Travel Batam），我想咨询并预订巴淡岛与民丹岛的包车租车服务，请提供可用车辆与报价，谢谢！",
+    "dewiTitle": "Dewi Lestari",
+    "dewiServices": "巴淡岛美食与海滩定制行程、BatamFast/Majestic渡轮船票预订、企业团队建设活动。",
+    "dewiButton": "通过WhatsApp联系管理员Dewi",
+    "dewiTemplate": "您好，Dewi管理员（Fun Travel Batam），我想咨询巴淡岛与民丹岛的度假旅游套餐、渡轮船票或定制行程，请提供更多详情，谢谢！"
   },
   "faq": {
-    "title": "常见问题"
+    "title": "常见问题",
+    "tag": "常见问题",
+    "subtitle": "关于往返渡轮票务、巴淡岛租车包车流程及付款方式的常见问题解答。"
   },
   "footer": {
     "tagline": "您在巴淡岛与民丹岛的最佳旅行伙伴。",
-    "quickLinks": "快速链接",
+    "quickLinks": "快捷菜单",
     "contact": "联系方式",
     "followUs": "关注我们",
     "payments": "付款方式",
-    "rights": "© {year} {legal}。版权所有。",
-    "photoCredits": "图片来源（Wikimedia Commons）"
+    "rights": "© {year} Fun Travel & Transport。版权所有。",
+    "description": "巴淡岛值得信赖的旅游与交通出行首选，全方位满足您的度假、商务及专属出行需求。",
+    "supportTitle": "24小时 WhatsApp 专属客服",
+    "supportText": "我们的客服团队随时为您提供全方位协助。欢迎随时通过 WhatsApp 咨询与预订。",
+    "connect": "关注我们的社交媒体",
+    "developedBy": "技术支持与开发：",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "bookingTerms": "预订须知",
+    "links": {
+      "home": "首页",
+      "vehicles": "租车服务",
+      "packages": "度假套餐",
+      "destinations": "热门景点",
+      "contact": "联系我们"
+    }
   },
   "cta": {
     "title": "准备好畅游巴淡岛与民丹岛了吗？",
@@ -231,6 +312,14 @@
     "point2": "官方价格，无中间商",
     "point3": "仅向官方账户付款",
     "cardTitle": "通过 WhatsApp 直接预订",
-    "online": "在线"
+    "online": "在线",
+    "vipTitle": "3天2晚 巴淡岛全包VIP海鲜美食与海岛之旅",
+    "vipDesc": "全程无忧安排，从抵达到返程悉心照顾。享受海滨度假村住宿、每日海鲜美食盛宴、往返渡轮船票，以及专车MPV与私人司机全程陪伴。",
+    "vipChipMeals": "全包海鲜奎笼美食",
+    "vipChipHotel": "四星级度假村/酒店",
+    "vipChipTransport": "专属MPV车+私人司机",
+    "vipChipFerry": "往返渡轮票+码头海事税",
+    "vipPriceLabel": "全包特惠促销价",
+    "vipBookButton": "通过WhatsApp预订VIP套餐"
   }
 }

@@ -1,79 +1,73 @@
 <script setup lang="ts">
-import { BadgeCheck, ChevronRight, Clock, ShieldCheck } from '@lucide/vue';
+import { Car, Hotel, Ship, Utensils } from '@lucide/vue';
 
-/** Blok ajakan akhir halaman: tombol WhatsApp ke tiap admin. */
 const { t } = useI18n();
-const { site, waUrl } = useSite();
-const points = computed(() => [
-  { icon: Clock, text: t('cta.point1') },
-  { icon: BadgeCheck, text: t('cta.point2') },
-  { icon: ShieldCheck, text: t('cta.point3') },
+const { waUrl, pkgPrice } = useSite();
+
+const vipChips = computed(() => [
+  { icon: Utensils, label: t('package.facilities'), value: t('cta.vipChipMeals') },
+  { icon: Hotel, label: 'Hotel', value: t('cta.vipChipHotel') },
+  { icon: Car, label: 'Transport', value: t('cta.vipChipTransport') },
+  { icon: Ship, label: 'Ferry', value: t('cta.vipChipFerry') },
 ]);
 </script>
 
 <template>
-  <section id="contact" class="section scroll-mt-24">
-    <div class="wrap">
-      <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1E3A8A] via-[#1E40AF] to-[#B45309] bg-[length:300%_300%] animate-gradient p-6 sm:p-10 lg:p-14 text-white shadow-2xl">
-        <!-- Dekorasi: glow bergerak + pola titik halus -->
-        <div class="pointer-events-none absolute -top-28 -right-20 h-80 w-80 rounded-full bg-amber-300/30 blur-3xl animate-float" />
-        <div class="pointer-events-none absolute -bottom-28 -left-20 h-80 w-80 rounded-full bg-sky-400/30 blur-3xl animate-float [animation-delay:-4s]" />
-        <div class="pointer-events-none absolute inset-0 opacity-[0.12] [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:22px_22px]" />
+  <section id="vip-tour" class="wrap scroll-mt-24 py-10 sm:py-14">
+    <div class="relative rounded-3xl overflow-hidden shadow-xl min-h-[360px] flex items-center p-6 sm:p-10 lg:p-14">
+      <!-- Background Dining Photo -->
+      <img
+        src="/images/destinations/barelang-bridge.jpg"
+        :alt="t('cta.vipTitle')"
+        loading="lazy"
+        class="absolute inset-0 w-full h-full object-cover object-center"
+      />
+      <!-- Deep Navy Gradient Scrim -->
+      <div class="absolute inset-0 bg-gradient-to-r from-[#0B1B4D]/95 via-[#1E3A8A]/85 to-[#1E40AF]/60" />
 
-        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <!-- Kiri: judul, teks, poin kepercayaan -->
-          <div class="lg:col-span-7">
-            <h2 class="text-2xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight leading-tight">{{ t('cta.title') }}</h2>
-            <p class="mt-3 max-w-xl text-sm sm:text-base leading-relaxed text-blue-100/90">{{ t('cta.text') }}</p>
-            <ul class="mt-6 grid gap-2.5 sm:grid-cols-3">
-              <li v-for="p in points" :key="p.text" class="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-xs font-semibold backdrop-blur-md">
-                <component :is="p.icon" aria-hidden="true" class="h-4 w-4 shrink-0 text-amber-300" />
-                {{ p.text }}
-              </li>
-            </ul>
-          </div>
+      <!-- VIP Content Grid -->
+      <div class="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Left 8 Cols: Title, Description & 4 Glassmorphism Chips -->
+        <div class="lg:col-span-8 text-white">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight mb-3">
+            {{ t('cta.vipTitle') }}
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-200/90 leading-relaxed max-w-2xl mb-7">
+            {{ t('cta.vipDesc') }}
+          </p>
 
-          <!-- Kanan: kartu admin WhatsApp -->
-          <div class="lg:col-span-5 flex lg:justify-end">
-            <div class="w-full max-w-sm rounded-3xl bg-white p-5 sm:p-6 text-slate-900 shadow-2xl ring-1 ring-white/40 dark:bg-slate-900 dark:text-white">
-              <div class="mb-4 flex items-center justify-between gap-2">
-                <p class="text-sm font-extrabold">{{ t('cta.cardTitle') }}</p>
-                <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-400">
-                  <span class="relative flex h-2 w-2">
-                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                  </span>
-                  {{ t('cta.online') }}
-                </span>
+          <!-- 4 Glassmorphism Feature Chips -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl">
+            <div v-for="c in vipChips" :key="c.label" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3">
+              <div class="text-[#FACC15] text-xs font-bold mb-1 flex items-center gap-1.5">
+                <component :is="c.icon" aria-hidden="true" class="h-3.5 w-3.5" />
+                <span class="text-[10px] uppercase tracking-wider text-slate-300">{{ c.label }}</span>
               </div>
-              <div class="space-y-2.5">
-                <a
-                  v-for="(a, i) in site.admins"
-                  :key="a.id"
-                  :href="waUrl(t('whatsapp.generic'), i)"
-                  target="_blank"
-                  rel="noopener"
-                  data-wa="cta"
-                  :class="[
-                    'group flex w-full items-center justify-between rounded-2xl px-4 py-3 transition-all hover:-translate-y-0.5',
-                    i === 0
-                      ? 'bg-[#15803D] text-white shadow-md hover:bg-[#166534] hover:shadow-lg'
-                      : 'border border-blue-100 bg-[#EFF6FF] text-[#1E40AF] hover:bg-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-sky-400 dark:hover:bg-slate-700',
-                  ]"
-                >
-                  <span class="flex items-center gap-3 text-left">
-                    <span :class="['flex h-10 w-10 shrink-0 items-center justify-center rounded-full', i === 0 ? 'bg-white/20' : 'bg-[#15803D]/10 text-[#15803D] dark:text-emerald-400']">
-                      <span aria-hidden="true" class="icon-wa h-5 w-5" />
-                    </span>
-                    <span>
-                      <span class="block text-sm font-extrabold leading-tight">{{ a.label }}<template v-if="a.name"> ({{ a.name }})</template></span>
-                      <span :class="['block text-xs tabular-nums', i === 0 ? 'text-emerald-100' : 'text-slate-500 dark:text-slate-400']">{{ a.display }}</span>
-                    </span>
-                  </span>
-                  <ChevronRight aria-hidden="true" class="h-5 w-5 stroke-[2.5] opacity-80 transition-transform group-hover:translate-x-1" />
-                </a>
-              </div>
+              <p class="text-xs sm:text-sm font-extrabold text-white">{{ c.value }}</p>
             </div>
+          </div>
+        </div>
+
+        <!-- Right 4 Cols: Floating White Pricing Card -->
+        <div class="lg:col-span-4 flex lg:justify-end">
+          <div class="w-full max-w-xs bg-white rounded-2xl p-6 text-center shadow-2xl border border-white/40 dark:bg-slate-900">
+            <span class="block text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">
+              {{ t('cta.vipPriceLabel') }}
+            </span>
+            <div class="text-3xl sm:text-4xl font-extrabold text-[#1E40AF] tabular-nums tracking-tight my-1 dark:text-sky-400">
+              {{ pkgPrice(666) }}
+            </div>
+            <span class="block text-xs text-slate-500 dark:text-slate-400 mb-5">{{ t('common.perPax') }} &bull; min 2 to go</span>
+            <a
+              :href="waUrl(t('whatsapp.packageQuick', { name: '3D2N VIP Gourmet Barelang' }))"
+              target="_blank"
+              rel="noopener"
+              data-wa="cta"
+              class="w-full inline-flex items-center justify-center gap-2 bg-[#15803D] hover:bg-[#166534] text-white font-bold text-xs sm:text-sm py-3 px-5 rounded-full shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+            >
+              <span aria-hidden="true" class="icon-wa w-4 h-4" />
+              <span>{{ t('cta.vipBookButton') }}</span>
+            </a>
           </div>
         </div>
       </div>

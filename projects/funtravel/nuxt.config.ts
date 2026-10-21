@@ -53,12 +53,20 @@ export default defineNuxtConfig({
       meta: [
         { name: 'theme-color', content: '#0B1B4D' },
         { name: 'format-detection', content: 'telephone=no, address=no, email=no' },
+        { name: 'author', content: 'Bidtech — Software House Batam (https://www.bidtech.co.id)' },
+        { name: 'publisher', content: 'Bidtech' },
+        { name: 'developer', content: 'Bidtech — Software House Batam (www.bidtech.co.id)' },
+        { name: 'creator', content: 'Bidtech' },
+        { name: 'geo.region', content: 'ID-KR' },
+        { name: 'geo.placename', content: 'Batam, Kepulauan Riau, Indonesia' },
+        { name: 'geo.position', content: '1.1301;104.0529' },
+        { name: 'ICBM', content: '1.1301, 104.0529' },
       ],
     },
   },
 
   runtimeConfig: {
-    public: { gaId: '' }, // NUXT_PUBLIC_GA_ID (opsional)
+    public: { gaId: process.env.NUXT_PUBLIC_GA_ID || 'G-WHRTBCCN9Y' }, // Google tag (gtag.js)
   },
 
   // ── @nuxtjs/i18n ── https://next.i18n.nuxtjs.org

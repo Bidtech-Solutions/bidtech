@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, Car, Check, ChevronDown, Hotel, Info, Ship, Star, Utensils, X } from '@lucide/vue';
+import { ArrowDown, ArrowRight, Car, Check, ChevronDown, Info, Ship, X } from '@lucide/vue';
 import faqs from '~/assets/data/faqs.json';
 import pkgData from '~/assets/data/packages.json';
 
@@ -32,17 +32,27 @@ const allPackages = computed(() => pkgData.packages);
 const destinations = computed(() => pkgData.destinations);
 const homeFaqs = computed(() => faqs.filter((f) => f.home));
 
+const departureOptions = [
+  { value: 'Johor Bahru (Stulang Laut)', label: 'Johor Bahru (Stulang Laut Ferry)' },
+  { value: 'Johor Bahru (Pasir Gudang)', label: 'Johor Bahru (Pasir Gudang Ferry)' },
+  { value: 'Singapore (HarbourFront)', label: 'Singapore (HarbourFront Ferry)' },
+  { value: 'Singapore (Tanah Merah)', label: 'Singapore (Tanah Merah Ferry)' },
+  { value: 'Pelabuhan Batam Centre', label: 'Pelabuhan Batam Centre' },
+  { value: 'Pelabuhan Harbour Bay', label: 'Pelabuhan Harbour Bay' },
+  { value: 'Bandara Hang Nadim Batam', label: 'Bandara Hang Nadim Batam' },
+  { value: 'Hotel di Batam', label: 'Hotel di Batam' },
+];
+
 const filteredPackages = computed(() => {
+  let list = allPackages.value;
   if (activeCategory.value === 'BATAM') {
-    return allPackages.value.filter((p) => p.region === 'batam');
+    list = list.filter((p) => p.region === 'batam');
+  } else if (activeCategory.value === 'BINTAN') {
+    list = list.filter((p) => p.region === 'batam-bintan');
+  } else if (activeCategory.value === 'FULL_BOARD') {
+    list = list.filter((p) => p.fullBoard);
   }
-  if (activeCategory.value === 'BINTAN') {
-    return allPackages.value.filter((p) => p.region === 'batam-bintan');
-  }
-  if (activeCategory.value === 'FULL_BOARD') {
-    return allPackages.value.filter((p) => p.fullBoard);
-  }
-  return allPackages.value;
+  return list.slice(0, 3);
 });
 
 function openBookingModal(type: 'package' | 'car' | 'scooter', itemName = '') {
@@ -68,18 +78,10 @@ function handleBookingSubmit() {
     'Mohon info ketersediaan dan detailnya. Terima kasih!',
   ].join('\n');
 
+
   window.open(waUrl(message, 0), '_blank');
   isModalOpen.value = false;
 }
-
-
-// Chip fitur banner VIP (paket A4 Full Board)
-const vipChips = [
-  { icon: Utensils, label: 'Meals', value: 'Full Board' },
-  { icon: Hotel, label: 'Stay', value: 'Hotel + Breakfast' },
-  { icon: Car, label: 'Transport', value: 'Dedicated MPV' },
-  { icon: Ship, label: 'Ferry', value: 'Included' },
-];
 </script>
 
 <template>
@@ -88,51 +90,45 @@ const vipChips = [
     <!-- 1. HERO SECTION (MATCHING SCREENSHOT)      -->
     <!-- ========================================== -->
     <section class="wrap pt-6 pb-8 sm:pb-10">
-      <div class="relative rounded-3xl overflow-hidden shadow-lg min-h-[460px] sm:min-h-[520px] flex items-center px-6 py-12 sm:px-12 lg:px-16">
-        <!-- Hero Tropical Seascape Background -->
+      <div class="relative rounded-[2.25rem] sm:rounded-[2.5rem] overflow-hidden shadow-xl min-h-[440px] sm:min-h-[500px] flex items-center px-6 py-12 sm:px-12 lg:px-16">
+        <!-- Hero Tropical Seascape Background (Pemandangan Barelang Dari Jauh) -->
         <img
-          src="https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Jembatan_Barelang.jpg/1280px-Jembatan_Barelang.jpg"
-          alt="Jembatan Barelang, Batam"
+          src="/images/barelang-distant.jpg"
+          alt="Pemandangan Jembatan Barelang dari jauh, Batam"
           fetchpriority="high"
           class="absolute inset-0 w-full h-full object-cover object-center"
         />
-        <!-- Dark Scrim Gradient on Left for WCAG AAA Text Contrast -->
-        <div class="absolute inset-0 bg-gradient-to-r from-[#0B1B4D]/90 via-[#1E3A8A]/65 to-[#1E40AF]/25" />
-        <div class="absolute inset-0 bg-gradient-to-t from-[#0B1B4D]/70 via-transparent to-[#1E40AF]/15" />
+        <!-- Dark Scrim Gradient on Left & Bottom for WCAG AAA Text Contrast -->
+        <div class="absolute inset-0 bg-gradient-to-r from-[#071638]/90 via-[#0c2452]/65 to-[#0e2c66]/20" />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#061430]/90 via-[#07193f]/40 to-transparent" />
 
         <!-- Content Overlay (Left-aligned, Clean & Spacious) -->
-        <div class="relative z-10 max-w-2xl space-y-5">
-          <!-- Top Specialist Badge -->
-          <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FEC71D] text-slate-950 text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-sm">
-            <Star aria-hidden="true" class="h-3.5 w-3.5 fill-current" />
-            <span>BATAM &amp; BINTAN TOUR SPECIALIST</span>
-          </div>
-
+        <div class="relative z-10 max-w-2xl space-y-4 sm:space-y-5">
           <!-- Main Bold Headline -->
-          <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.12]">
-            Explore Batam &amp; Bintan with Zero Hassle
+          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] whitespace-pre-line">
+            {{ t('home.heroTitle') }}
           </h1>
 
           <!-- Subtitle Description -->
-          <p class="text-xs sm:text-base text-slate-200/90 font-normal leading-relaxed max-w-xl">
-            Private car charters with driver, curated holiday packages, resort stays, and seamless ferry arrangements — tailored for Malaysia &amp; Singapore travelers.
+          <p class="text-xs sm:text-sm lg:text-[15px] text-slate-200/95 font-normal leading-relaxed max-w-2xl">
+            {{ t('home.heroSubtitle') }}
           </p>
 
           <!-- Action CTA Buttons -->
-          <div class="flex flex-wrap items-center gap-3 pt-2">
+          <div class="flex flex-wrap items-center gap-3.5 pt-3">
             <a
               href="#packages"
-              class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#FACC15] hover:bg-[#EAB308] text-slate-950 font-extrabold text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer"
+              class="inline-flex items-center gap-1.5 px-6 py-3.5 rounded-full bg-[#FFC72C] hover:bg-[#F2BD27] text-slate-950 font-black text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer"
             >
-              <span>View Packages</span>
-              <ArrowRight class="w-4 h-4 stroke-[2.5]" />
+              <span>{{ t('home.ctaPackages') }}</span>
+              <ArrowDown class="w-4 h-4 stroke-[2.5]" />
             </a>
             <NuxtLink
               :to="localePath('/vehicles')"
-              class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/30 text-white font-bold text-sm transition-all hover:-translate-y-0.5"
+              class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#243c5a]/60 hover:bg-[#243c5a]/80 backdrop-blur-md border border-white/20 text-white font-bold text-sm transition-all hover:-translate-y-0.5 shadow-sm"
             >
-              <Car class="w-4 h-4 text-[#FACC15]" />
-              <span>Rent a Vehicle</span>
+              <Car class="w-4 h-4 text-slate-100" />
+              <span>{{ t('home.ctaVehicles') }}</span>
             </NuxtLink>
           </div>
         </div>
@@ -148,10 +144,10 @@ const vipChips = [
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
-              Batam &amp; Bintan Holiday Packages
+              {{ t('home.popularPackages') }}
             </h2>
             <p class="text-sm sm:text-base text-[#475569] mt-1 dark:text-slate-300">
-              All-inclusive packages with ferry, private transport, hotel, and guided tours.
+              {{ t('home.popularPackagesIntro') }}
             </p>
           </div>
 
@@ -159,9 +155,9 @@ const vipChips = [
           <div class="p-1.5 bg-white rounded-full shadow-sm flex items-center gap-2 border border-[#E2E8F0] self-start md:self-auto overflow-x-auto max-w-full dark:bg-slate-900 dark:border-slate-800">
             <button
               v-for="f in [
-                { id: 'ALL', label: 'ALL PACKAGES' },
-                { id: 'BATAM', label: 'BATAM ONLY' },
-                { id: 'BINTAN', label: 'BINTAN ISLAND' },
+                { id: 'ALL', label: t('common.allPackagesFilter') },
+                { id: 'BATAM', label: t('common.batamOnlyFilter') },
+                { id: 'BINTAN', label: t('common.bintanFilter') },
               ]"
               :key="f.id"
               type="button"
@@ -182,7 +178,7 @@ const vipChips = [
           <span>{{ fxNote('package') }}</span>
         </p>
 
-        <!-- Packages Grid -->
+        <!-- Packages Grid (Limited to 3) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <article
             v-for="p in filteredPackages"
@@ -227,114 +223,51 @@ const vipChips = [
                 <span>{{ t('package.ferryText') }} {{ ferryAddOn(p.sgAddOn) }}</span>
               </p>
 
-              <button
-                type="button"
-                @click="openBookingModal('package', loc(p.name))"
-                class="w-full bg-[#1E40AF] hover:bg-[#1D4ED8] text-white font-bold text-xs sm:text-sm py-3 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.99] cursor-pointer"
+              <NuxtLink
+                :to="localePath(`/packages/${p.slug}`)"
+                class="w-full inline-flex items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white font-bold text-xs sm:text-sm py-3 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.99]"
               >
-                Book Package
-              </button>
+                <span>{{ t('common.viewDetails') }}</span>
+                <ArrowRight class="h-4 w-4" />
+              </NuxtLink>
             </div>
           </article>
         </div>
-      </div>
-    </section>
 
-    <!-- ========================================== -->
-    <!-- 3. VIP GOURMET & ISLAND TOUR BANNER        -->
-    <!-- ========================================== -->
-    <section id="vip-tour" class="wrap scroll-mt-24 py-8 sm:py-10">
-      <div class="relative rounded-3xl overflow-hidden shadow-xl min-h-[360px] flex items-center p-6 sm:p-10 lg:p-14">
-        <!-- Background Dining Photo -->
-        <img
-          src="https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Barelang_Bridge_%2834095925856%29.jpg/1280px-Barelang_Bridge_%2834095925856%29.jpg"
-          alt="3D2N Batam Full Board VIP Gourmet & Island Tour"
-          loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        <!-- Deep Navy Gradient Scrim -->
-        <div class="absolute inset-0 bg-gradient-to-r from-[#0B1B4D]/95 via-[#1E3A8A]/85 to-[#1E40AF]/60" />
-
-        <!-- VIP Content Grid -->
-        <div class="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <!-- Left 8 Cols: Title, Description & 4 Glassmorphism Chips -->
-          <div class="lg:col-span-8 text-white">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight mb-3">
-              3D2N Batam Full Board VIP Gourmet &amp; Island Tour
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-200/90 leading-relaxed max-w-2xl mb-7">
-              Everything taken care of from arrival to departure. Enjoy resort accommodation, daily gourmet seafood feasts, return ferry tickets, and a dedicated MPV with driver throughout your trip.
-            </p>
-
-            <!-- 4 Glassmorphism Feature Chips -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl">
-              <div v-for="c in vipChips" :key="c.label" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3">
-                <div class="text-[#FACC15] text-xs font-bold mb-1 flex items-center gap-1.5">
-                  <component :is="c.icon" aria-hidden="true" class="h-3.5 w-3.5" />
-                  <span class="text-[10px] uppercase tracking-wider text-slate-300">{{ c.label }}</span>
-                </div>
-                <p class="text-xs sm:text-sm font-extrabold text-white">{{ c.value }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right 4 Cols: Floating White Pricing Card -->
-          <div class="lg:col-span-4 flex lg:justify-end">
-            <div class="w-full max-w-xs bg-white rounded-2xl p-6 text-center shadow-2xl border border-white/40 dark:bg-slate-900">
-              <span class="block text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">
-                All-In Promo Price
-              </span>
-              <div class="text-3xl sm:text-4xl font-extrabold text-[#1E40AF] tabular-nums tracking-tight my-1 dark:text-sky-400">
-                {{ pkgPrice(666) }}
-              </div>
-              <span class="block text-xs text-slate-500 dark:text-slate-400" :class="fxNote('package') ? 'mb-2' : 'mb-5'">per pax &bull; min 2 to go</span>
-              <p v-if="fxNote('package')" class="mb-4 text-[11px] leading-snug text-slate-400">{{ fxNote('package') }}</p>
-              <button
-                type="button"
-                @click="openBookingModal('package', '3D2N Batam Full Board VIP Gourmet & Island Tour')"
-                class="w-full inline-flex items-center justify-center gap-2 bg-[#15803D] hover:bg-[#166534] text-white font-bold text-xs sm:text-sm py-3 px-5 rounded-full shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
-              >
-                <span aria-hidden="true" class="icon-wa w-4 h-4" />
-                <span>Book VIP via WhatsApp</span>
-              </button>
-            </div>
-          </div>
+        <!-- View All Packages Link -->
+        <div class="flex justify-center pt-2">
+          <NuxtLink
+            :to="localePath('/packages')"
+            class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white hover:bg-slate-50 text-[#1E40AF] font-bold text-sm border border-[#E2E8F0] shadow-sm hover:shadow transition-all hover:-translate-y-0.5 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-sky-300 dark:border-slate-800"
+          >
+            <span>{{ t('common.allPackages') }}</span>
+            <ArrowRight class="w-4 h-4 stroke-[2.5]" />
+          </NuxtLink>
         </div>
       </div>
     </section>
 
     <!-- ========================================== -->
-    <!-- 5. POPULAR DESTINATIONS BENTO GRID         -->
+    <!-- 4. POPULAR DESTINATIONS BENTO GRID         -->
     <!-- ========================================== -->
     <section id="destinasi" class="wrap scroll-mt-24 py-8 sm:py-10 space-y-7">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <span class="block text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] mb-1 dark:text-sky-400">Destination Highlights</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
-            Spot Wisata Ikonik Batam &amp; Bintan
-          </h2>
-          <p class="text-sm sm:text-base text-[#475569] mt-1 max-w-xl dark:text-slate-300">
-            Jembatan megah Barelang, danau gurun pasir Bintan, pusat perbelanjaan bebas bea, dan kelezatan seafood kelong tepi laut.
-          </p>
-        </div>
-        <button
-          type="button"
-          @click="openBookingModal('package', 'Custom Itinerary Destinasi Batam & Bintan')"
-          class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-ocean hover:text-navy transition cursor-pointer self-start md:self-auto dark:text-sky-400 dark:hover:text-white"
-        >
-          <span>Request Custom Tour</span>
-          <ArrowRight class="w-4 h-4" />
-        </button>
+      <div>
+        <span class="block text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] mb-1 dark:text-sky-400">{{ t('home.destHighlights') }}</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
+          {{ t('home.spotWisataTitle') }}
+        </h2>
+        <p class="text-sm sm:text-base text-[#475569] mt-1 max-w-xl dark:text-slate-300">
+          {{ t('home.spotWisataDesc') }}
+        </p>
       </div>
 
-      <!-- Bento Grid with Real Photos from destinations array -->
+      <!-- Bento Grid with Real Photos from destinations array (Tema Biru Gelap - Borderless & Hover Only) -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5">
         <div
           v-for="(dest, i) in destinations"
           :key="dest.id"
-          @click="openBookingModal('package', 'Tur Destinasi ' + loc(dest.name))"
           :class="[
-            'group cursor-pointer relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300',
+            'group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#071330] shadow-[0_8px_24px_rgba(11,27,77,0.18)] hover:shadow-[0_16px_36px_rgba(14,35,95,0.32)] hover:-translate-y-1 transition-all duration-300',
             i === 0 ? 'md:col-span-6 h-64 sm:h-72' : i === 1 || i === 2 ? 'md:col-span-3 h-64 sm:h-72' : 'md:col-span-6 h-60 sm:h-64',
           ]"
         >
@@ -343,17 +276,22 @@ const vipChips = [
             :src="img(dest.image)"
             :alt="loc(dest.name)"
             loading="lazy"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/35 to-transparent" />
-          <span class="absolute top-3.5 left-3.5 bg-white/95 text-navy text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs">
+          <!-- Deep Midnight Blue Cinematic Gradient Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-[#06122d]/95 via-[#0b1b4d]/50 to-[#0b1b4d]/10 transition-opacity duration-300" />
+          
+          <!-- Island Badge (Warna Putih Polos Tanpa Titik) -->
+          <span class="absolute top-3.5 left-3.5 bg-white/95 text-slate-900 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-xs">
             {{ dest.island.toUpperCase() }}
           </span>
-          <div class="absolute bottom-0 inset-x-0 p-5 text-white">
-            <h3 class="text-base sm:text-lg font-extrabold mb-1 group-hover:text-sun transition-colors">
+
+          <!-- Content Info Card -->
+          <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6 text-white flex flex-col justify-end">
+            <h3 class="text-base sm:text-lg font-extrabold text-white group-hover:text-amber-400 transition-colors duration-200 mb-1">
               {{ loc(dest.name) }}
             </h3>
-            <p class="text-xs text-slate-200 line-clamp-2 leading-relaxed">
+            <p class="text-xs text-slate-200/90 line-clamp-2 leading-relaxed">
               {{ loc(dest.summary) }}
             </p>
           </div>
@@ -364,33 +302,44 @@ const vipChips = [
     <!-- ========================================== -->
     <!-- 7. FREQUENTLY ASKED QUESTIONS (FAQ)        -->
     <!-- ========================================== -->
-    <section id="faq" class="wrap scroll-mt-24 py-8 sm:py-10 max-w-3xl space-y-8">
-      <div class="text-center">
-        <span class="block text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] mb-1 dark:text-sky-400">Got Questions?</span>
+    <section id="faq" class="wrap scroll-mt-24 py-8 sm:py-10 space-y-7">
+      <div>
+        <span class="block text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] mb-1 dark:text-sky-400">{{ t('faq.tag') }}</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
           {{ t('faq.title') }}
         </h2>
-        <p class="text-sm text-[#475569] mt-1 dark:text-slate-300">
-          Pertanyaan yang sering diajukan mengenai tiket feri, prosedur sewa kendaraan, dan pembayaran.
+        <p class="text-sm sm:text-base text-[#475569] mt-1 max-w-xl dark:text-slate-300">
+          {{ t('faq.subtitle') }}
         </p>
       </div>
 
       <div class="space-y-3">
-        <div v-for="f in homeFaqs" :key="f.id" class="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden shadow-sm dark:bg-slate-900 dark:border-slate-800">
+        <div
+          v-for="f in homeFaqs"
+          :key="f.id"
+          class="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden shadow-xs hover:border-slate-300 dark:bg-slate-900 dark:border-slate-800 dark:hover:border-slate-700 transition-colors"
+        >
           <button
             type="button"
             :aria-expanded="openFaq === f.id"
             @click="openFaq = openFaq === f.id ? null : f.id"
-            class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-900 hover:bg-slate-50/80 transition-colors cursor-pointer dark:hover:bg-slate-800/50 dark:text-white"
+            class="w-full px-5 py-4 sm:px-6 sm:py-4.5 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-900 hover:bg-slate-50/80 transition-colors cursor-pointer dark:hover:bg-slate-800/50 dark:text-white"
           >
             <span>{{ loc(f.q) }}</span>
             <ChevronDown
-              :class="['w-4 h-4 shrink-0 stroke-[2.5] transition-transform duration-200', openFaq === f.id ? 'rotate-180 text-[#1E40AF] dark:text-sky-400' : 'text-slate-400']"
+              :class="['w-4 h-4 shrink-0 stroke-[2.5] transition-transform duration-300 ease-in-out', openFaq === f.id ? 'rotate-180 text-[#1E40AF] dark:text-sky-400' : 'text-slate-400']"
             />
           </button>
-          <p v-if="openFaq === f.id" class="px-5 pb-4 pt-3 text-xs sm:text-sm text-[#475569] leading-relaxed border-t border-slate-100 dark:text-slate-300 dark:border-slate-800">
-            {{ loc(f.a) }}
-          </p>
+          <div
+            class="grid transition-all duration-300 ease-in-out"
+            :class="openFaq === f.id ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
+          >
+            <div class="overflow-hidden">
+              <p class="px-5 pb-5 pt-2 sm:px-6 text-xs sm:text-sm text-[#475569] leading-relaxed border-t border-slate-100 dark:text-slate-300 dark:border-slate-800">
+                {{ loc(f.a) }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -524,20 +473,14 @@ const vipChips = [
 
           <!-- Departure / Pickup -->
           <div>
-            <label class="block text-xs font-bold text-navy uppercase mb-1 dark:text-white">Jeti Keberangkatan / Titik Jemput</label>
-            <select
+            <label class="block text-xs font-bold text-navy uppercase mb-1.5 dark:text-white">Jeti Keberangkatan / Titik Jemput</label>
+            <CustomSelect
               v-model="formDeparture"
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:border-ocean focus:outline-hidden bg-white dark:bg-slate-900 dark:border-slate-800"
-            >
-              <option value="Johor Bahru (Stulang Laut)">Johor Bahru (Stulang Laut Ferry)</option>
-              <option value="Johor Bahru (Pasir Gudang)">Johor Bahru (Pasir Gudang Ferry)</option>
-              <option value="Singapore (HarbourFront)">Singapore (HarbourFront Ferry)</option>
-              <option value="Singapore (Tanah Merah)">Singapore (Tanah Merah Ferry)</option>
-              <option value="Pelabuhan Batam Centre">Pelabuhan Batam Centre</option>
-              <option value="Pelabuhan Harbour Bay">Pelabuhan Harbour Bay</option>
-              <option value="Bandara Hang Nadim Batam">Bandara Hang Nadim Batam</option>
-              <option value="Hotel di Batam">Hotel di Batam</option>
-            </select>
+              :options="departureOptions"
+              button-class="w-full h-11 rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-sm font-semibold"
+              dropdown-class="w-full"
+              align="left"
+            />
           </div>
 
           <!-- Notes -->

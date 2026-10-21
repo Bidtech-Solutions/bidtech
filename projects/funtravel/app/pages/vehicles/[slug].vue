@@ -38,7 +38,7 @@ if (!v) throw createError({ statusCode: 404, statusMessage: 'Vehicle not found',
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const siteUrl = useSiteConfig().url;
-const { loc, img, fmt, fmtDate, waUrl, vehPrice, fxNote, scheme } = useSite();
+const { loc, locArray, chipLoc, img, fmt, fmtDate, waUrl, vehPrice, fxNote, scheme } = useSite();
 
 const name = `${v.brand} ${v.model}`;
 const isCar = v.type === 'car';
@@ -97,29 +97,95 @@ useHead(() => ({
 const photos = v.images.filter((f) => img(f));
 const active = ref(0);
 
+const policyMap: Record<'car' | 'motor', Record<string, { title: string; text: string }[]>> = {
+  car: {
+    id: [
+      { title: 'Bebas Capek & Tanpa Resiko Kerusakan', text: 'Anda tidak perlu khawatir klaim baret bodi atau tersesat di jalan sempit. Supir lokal kami yang bertanggung jawab penuh terhadap mobil.' },
+      { title: 'Durasi Standar 10–12 Jam per Hari', text: 'Fleksibel mulai dari kedatangan ferry atau jam jemput hotel. Overtime sangat transparan hanya Rp 50.000 (RM 15) per jam.' },
+      { title: 'Paket Termasuk BBM & Jasa Supir', text: 'Harga paket sudah termasuk bahan bakar dan akomodasi harian supir di pulau Batam. Uang makan supir bersifat sukarela.' },
+      { title: 'Metode Pembayaran Mudah', text: 'Terima Ringgit (MYR), Dollar Singapura (SGD), Transfer BCA/Mandiri, atau QRIS instan saat serah terima.' },
+    ],
+    en: [
+      { title: 'Stress-Free & Zero Damage Liability', text: 'No need to worry about narrow streets or scratches. Our experienced local driver takes full responsibility for the car.' },
+      { title: 'Standard 10–12 Hours Daily Service', text: 'Flexible pickup directly from ferry terminals or hotels. Transparent overtime fee of only Rp 50,000 (~RM 15) per hour.' },
+      { title: 'Package Includes Fuel & Driver', text: 'Rental rates fully include fuel and daily driver expenses across Batam Island. Meal allowance is voluntary.' },
+      { title: 'Convenient Multi-Currency Payment', text: 'We accept Malaysian Ringgit (MYR), Singapore Dollar (SGD), BCA/Mandiri bank transfer, or instant QRIS.' },
+    ],
+    ms: [
+      { title: 'Bebas Penat & Tanpa Risiko Kerosakan', text: 'Anda tidak perlu risau tentang jalan sempit atau calar. Pemandu tempatan kami bertanggungjawab sepenuhnya terhadap kereta.' },
+      { title: 'Tempoh Standard 10–12 Jam Sehari', text: 'Fleksibel bermula dari terminal feri atau hotel. Lebih masa sangat telus hanya RM 15 (Rp 50,000) sejam.' },
+      { title: 'Pakej Termasuk Minyak & Pemandu', text: 'Kadar sewaan termasuk minyak dan penginapan pemandu di Pulau Batam. Wang makan pemandu adalah sukarela.' },
+      { title: 'Kaedah Pembayaran Mudah', text: 'Menerima Ringgit (MYR), Dolar Singapura (SGD), pindahan bank, atau QRIS segera semasa penerimaan unit.' },
+    ],
+    zh: [
+      { title: '全程无忧·零车损赔付风险', text: '无需担心狭窄小巷路况或剐蹭纠纷，经验丰富的本地专职司机全程全权负责车辆安全与路线引导。' },
+      { title: '标准包车时长 10–12 小时/天', text: '从抵达渡轮码头或酒店大堂起算，超时费透明标准仅需约 RM 15（5万印尼盾）/小时。' },
+      { title: '全包价含全程燃油与司机服务', text: '套餐一口价已含全程燃油消耗与司机工时费，绝无隐形消费，司机餐费随心自愿。' },
+      { title: '支持多币种灵活便捷结算', text: '支持马币 (MYR)、新币 (SGD)、印尼盾银行转账及码头现场扫码 QRIS 即时结算。' },
+    ],
+  },
+  motor: {
+    id: [
+      { title: 'Dokumen SIM yang Berlaku', text: 'Wajib menunjukkan SIM C (Indonesia) atau Driving License sah (Malaysia Class B2, Singapore 2B, atau SIM Internasional).' },
+      { title: 'Jaminan Identitas Asli', text: 'Cukup titip foto paspor/IC/KTP dan satu dokumen identitas fisik asli yang disimpan secara aman selama masa sewa.' },
+      { title: 'Deposit Keamanan 100% Refundable', text: 'Deposit jaminan RM 50 / Rp 150.000 per unit, langsung dikembalikan utuh tanpa potongan saat motor dikembalikan.' },
+      { title: 'Free Drop & Return Point', text: 'Antar dan jemput unit gratis di Harbour Bay Ferry Terminal, Batam Centre, Mega Mall, serta seluruh hotel di Nagoya.' },
+    ],
+    en: [
+      { title: 'Valid Riding License', text: 'Requires valid national motorbike license (e.g., Malaysia Class B2, Singapore 2B, Indonesian SIM C, or IDP).' },
+      { title: 'Original ID Verification', text: 'A copy of passport/ID plus one physical identification document held safely for the duration of the rental.' },
+      { title: '100% Refundable Security Deposit', text: 'Security deposit of RM 50 / Rp 150,000 per unit, fully refunded immediately upon motorbike return.' },
+      { title: 'Free Delivery & Return Points', text: 'Complimentary drop-off & pickup at Batam Centre, Harbour Bay Terminal, and all major hotels in Nagoya.' },
+    ],
+    ms: [
+      { title: 'Lesen Memandu Sah', text: 'Wajib mengemukakan lesen memandu motosikal yang sah (Kelas B2 Malaysia, Singapura 2B, atau lesen antarabangsa).' },
+      { title: 'Pengesahan Identiti Asli', text: 'Salinan pasport/IC dan satu dokumen fizikal asli disimpan secara selamat sepanjang tempoh sewa.' },
+      { title: 'Deposit Keselamatan Dikembalikan 100%', text: 'Deposit jaminan RM 50 / Rp 150,000 seunit, dikembalikan sepenuhnya sebaik sahaja motosikal dipulangkan.' },
+      { title: 'Titik Hantar & Pulang Percuma', text: 'Penghantaran percuma di Terminal Feri Batam Centre, Harbour Bay, Mega Mall, serta semua hotel di Nagoya.' },
+    ],
+    zh: [
+      { title: '持有效合法驾驶执照', text: '需持有有效驾照（如中国驾照翻译件/国际驾照/马来西亚B2/新加坡2B或印尼当地SIM C）。' },
+      { title: '正规身份登记保障', text: '仅需出示护照/身份证复印件，并暂存一件有效随身证件原件，还车时完整奉还。' },
+      { title: '押金 100% 全额秒退', text: '每台摩托车押金仅 RM 50 / 15万印尼盾，验车无误还车现场立即秒退还。' },
+      { title: '免费全岛码头与酒店送取车', text: '巴淡中心码头、海湾码头 (Harbour Bay) 及名古屋商业区核心酒店均支持免费上门送车还车。' },
+    ],
+  },
+};
+
+const policyLabelMap: Record<'car' | 'motor', Record<string, string>> = {
+  car: {
+    id: 'Aturan Resmi Charter Mobil — 100% Wajib Didampingi Supir',
+    en: 'Official Car Charter Terms — 100% Guided with Dedicated Local Driver',
+    ms: 'Syarat Rasmi Sewa Kereta — 100% Bersama Pemandu Tempatan',
+    zh: '正规商务包车协议须知 — 100%配备本地专职司机全程护航',
+  },
+  motor: {
+    id: 'Syarat Resmi Sewa Motor — Khusus Lepas Kunci (Self-Drive)',
+    en: 'Official Scooter Rental Terms — Self-Drive Freedom',
+    ms: 'Syarat Rasmi Sewa Motosikal — Pandu Sendiri (Self-Drive)',
+    zh: '正规摩托车租赁须知 — 纯自由自驾 (Self-Drive)',
+  },
+};
+
 // ── Fasilitas ──
 const specs = computed(() => [
-  { icon: Users, label: t('vehicle.capacity'), value: t('common.seats', { count: v.seats }) },
-  { icon: Luggage, label: 'Bagasi', value: `${v.luggage} koper / tas` },
+  { icon: Users, label: t('vehicle.capacity'), value: t('common.seatsCount', { count: v.seats }) },
+  { icon: Luggage, label: t('vehicle.luggageLabel'), value: t('vehicle.luggageUnit', { count: v.luggage }) },
   { icon: Cog, label: t('vehicle.transmissionLabel'), value: t(`common.transmission.${v.transmission}`) },
-  { icon: isCar ? UserCheck : KeyRound, label: t('vehicle.serviceLabel'), value: scheme(v.type) },
+  { icon: isCar ? UserCheck : KeyRound, label: t('vehicle.serviceLabel'), value: isCar ? t('common.driverService') : t('common.selfDriveService') },
 ]);
 
-// ── Ketentuan sewa per tipe (teks dari klien via tim Bidtech) + syarat dokumen ──
-const policy = isCar
-  ? [
-      { icon: Shield, title: 'Bebas Capek & Tanpa Resiko Kerusakan', text: 'Anda tidak perlu khawatir klaim baret bodi atau tersesat di jalan sempit. Supir lokal kami yang bertanggung jawab penuh terhadap mobil.' },
-      { icon: Clock, title: 'Durasi Standar 10–12 Jam per Hari', text: 'Fleksibel mulai dari kedatangan ferry atau jam jemput hotel. Overtime sangat transparan hanya Rp 50.000 (RM 15) per jam.' },
-      { icon: Fuel, title: 'Paket Termasuk BBM & Jasa Supir', text: 'Harga paket sudah termasuk bahan bakar dan akomodasi harian supir di pulau Batam. Uang makan supir bersifat sukarela.' },
-      { icon: CreditCard, title: 'Metode Pembayaran Mudah', text: 'Terima Ringgit (MYR), Dollar Singapura (SGD), Transfer BCA/Mandiri, atau QRIS instan saat serah terima.' },
-    ]
-  : [
-      { icon: IdCard, title: 'Dokumen SIM yang Berlaku', text: 'Wajib menunjukkan SIM C (Indonesia) atau Driving License sah (Malaysia Class B2, Singapore 2B, atau SIM Internasional).' },
-      { icon: ShieldCheck, title: 'Jaminan Identitas Asli', text: 'Cukup titip foto paspor/IC/KTP dan satu dokumen identitas fisik asli yang disimpan secara aman selama masa sewa.' },
-      { icon: Wallet, title: 'Deposit Keamanan 100% Refundable', text: 'Deposit jaminan RM 50 / Rp 150.000 per unit, langsung dikembalikan utuh tanpa potongan saat motor dikembalikan.' },
-      { icon: MapPin, title: 'Free Drop & Return Point', text: 'Antar dan jemput unit gratis di Harbour Bay Ferry Terminal, Batam Centre, Mega Mall, serta seluruh hotel di Nagoya.' },
-    ];
-const policyLabel = isCar ? 'Aturan Resmi Charter Mobil — 100% Wajib Didampingi Supir' : 'Syarat Resmi Sewa Motor — Khusus Lepas Kunci (Self-Drive)';
+const policy = computed(() => {
+  const pType = isCar ? 'car' : 'motor';
+  const list = policyMap[pType][locale.value] ?? policyMap[pType].en ?? policyMap[pType].id;
+  const icons = isCar ? [Shield, Clock, Fuel, CreditCard] : [IdCard, ShieldCheck, Wallet, MapPin];
+  return list.map((item, idx) => ({ icon: icons[idx], title: item.title, text: item.text }));
+});
+
+const policyLabel = computed(() => {
+  const pType = isCar ? 'car' : 'motor';
+  return policyLabelMap[pType][locale.value] ?? policyLabelMap[pType].en ?? policyLabelMap[pType].id;
+});
 // Syarat dokumen: tamu mancanegara = paspor (+ IDP untuk motor); lokal = KTP (+ SIM C untuk motor). Locale id menampilkan syarat lokal dulu.
 const requirements = computed(() => {
   const r = [
@@ -233,7 +299,7 @@ const detailTabs = computed(() => [
             <div class="flex flex-wrap items-center gap-2">
               <span class="rounded-full bg-slate-200/70 px-3 py-1 text-xs font-bold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">{{ t(`vehicle.category.${v.category}`) }}</span>
               <span v-if="v.bestSeller" class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-extrabold uppercase text-amber-800 dark:bg-amber-950/70 dark:text-amber-300">
-                <Star aria-hidden="true" class="h-3 w-3 fill-current" /> Paling Laris
+                <Star aria-hidden="true" class="h-3 w-3 fill-current" /> {{ t('common.bestSeller') }}
               </span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ name }}</h1>
@@ -273,13 +339,13 @@ const detailTabs = computed(() => [
               </div>
             </dl>
             <ul class="mt-5 grid gap-2.5 sm:grid-cols-2">
-              <li v-for="inc in v.inclusions" :key="inc" class="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-200">
+              <li v-for="inc in locArray(v.inclusions)" :key="inc" class="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-200">
                 <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[#16A34A] dark:bg-emerald-950/60"><Check aria-hidden="true" class="h-3.5 w-3.5 stroke-[3]" /></span>
                 {{ inc }}
               </li>
             </ul>
             <div v-if="v.chips" class="mt-5 flex flex-wrap gap-2">
-              <span v-for="chip in v.chips" :key="chip" class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-[#1E40AF] dark:bg-slate-800 dark:text-sky-400">{{ chip }}</span>
+              <span v-for="chip in locArray(v.chips)" :key="chip" class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-[#1E40AF] dark:bg-slate-800 dark:text-sky-400">{{ chip }}</span>
             </div>
           </section>
 
@@ -425,12 +491,12 @@ const detailTabs = computed(() => [
             </h3>
             <p class="text-xs text-slate-500 leading-relaxed mb-3.5 line-clamp-2 dark:text-slate-400">{{ loc(x.tagline) }}</p>
             <div class="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700 bg-slate-50 rounded-xl p-2.5 mb-3 border border-slate-100 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-800">
-              <div class="flex items-center gap-1.5"><Users aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ x.seats }} Penumpang</div>
-              <div class="flex items-center gap-1.5"><Luggage aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ x.luggage }} Bagasi</div>
+              <div class="flex items-center gap-1.5"><Users aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.seatsCount', { count: x.seats }) }}</div>
+              <div class="flex items-center gap-1.5"><Luggage aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.luggageCount', { count: x.luggage }) }}</div>
               <div class="flex items-center gap-1.5"><Cog aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t(`common.transmission.${x.transmission}`) }}</div>
               <div class="flex items-center gap-1.5">
                 <component :is="x.type === 'car' ? UserCheck : KeyRound" aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
-                {{ x.type === 'car' ? 'Supir Lokal' : 'Lepas Kunci' }}
+                {{ x.type === 'car' ? t('common.driverService') : t('common.selfDriveService') }}
               </div>
             </div>
             <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -443,7 +509,7 @@ const detailTabs = computed(() => [
                 :to="localePath(`/vehicles/${x.slug}`)"
                 class="flex items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2.5 px-3 rounded-full transition-all dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200"
               >
-                <span>Lihat Detail</span>
+                <span>{{ t('common.viewDetails') }}</span>
                 <ArrowRight aria-hidden="true" class="h-3.5 w-3.5" />
               </NuxtLink>
             </div>

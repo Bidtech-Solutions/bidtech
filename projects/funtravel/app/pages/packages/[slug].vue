@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, Ban, CalendarDays, Check, ChevronLeft, ChevronRight, FileText, Hotel, Info, ListChecks, MapPin, Minus, Plus, ScrollText, Ship, Sparkles, Utensils } from '@lucide/vue';
+import { ArrowRight, Ban, CalendarDays, Check, ChevronLeft, ChevronRight, FileText, Hotel, ListChecks, MapPin, Minus, Plus, ScrollText, Ship, Sparkles, Utensils } from '@lucide/vue';
 import data from '~/assets/data/packages.json';
 
 const route = useRoute();
@@ -184,9 +184,6 @@ const detailTabs = computed(() => [
               <span v-if="pkg.fullBoard" class="rounded-full bg-amber-100 px-3 py-1 text-xs font-extrabold text-amber-800 dark:bg-amber-950/70 dark:text-amber-300">{{ t('common.fullBoard') }}</span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ loc(pkg.name) }}</h1>
-            <p v-if="locale === 'id'" class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
-              <Info aria-hidden="true" class="mt-0.5 h-4 w-4 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('packages.localBanner') }}
-            </p>
           </header>
 
           <!-- Kartu tab: fasilitas, deskripsi, (destinasi), ketentuan -->
@@ -312,7 +309,6 @@ const detailTabs = computed(() => [
               <span class="text-3xl font-extrabold tabular-nums text-[#1E40AF] dark:text-sky-400">{{ pkgPrice(pkg.price) }}</span>
               <span class="text-sm text-slate-400">{{ t('common.perPax') }}</span>
             </p>
-            <p v-if="fxNote('package')" class="mt-1 text-[11px] text-slate-400">{{ fxNote('package') }}</p>
 
             <!-- Kalender keberangkatan -->
             <div class="mt-5 rounded-2xl border border-slate-100 p-3 dark:border-slate-800">
@@ -380,21 +376,6 @@ const detailTabs = computed(() => [
               </div>
             </div>
 
-            <!-- Terminal keberangkatan -->
-            <p class="mt-4 mb-1 text-xs font-semibold text-slate-600 dark:text-slate-300">{{ t('booking.terminal') }}</p>
-            <div class="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
-              <button
-                v-for="v in (['MY', 'SG'] as const)"
-                :key="v"
-                type="button"
-                :aria-pressed="terminal === v"
-                :class="['rounded-lg py-2 text-xs font-bold transition', terminal === v ? 'bg-white text-[#1E40AF] shadow-sm dark:bg-slate-900 dark:text-sky-400' : 'text-slate-600 hover:text-slate-900 dark:text-slate-300']"
-                @click="terminal = v"
-              >
-                {{ v === 'MY' ? t('booking.terminalMY') : t('booking.terminalSG') }}
-              </button>
-            </div>
-
             <!-- Total & WhatsApp -->
             <div class="mt-4 flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-800/60">
               <span class="text-sm text-slate-500 dark:text-slate-400">{{ t('booking.estimateTotal') }}</span>
@@ -410,10 +391,6 @@ const detailTabs = computed(() => [
               <span aria-hidden="true" class="icon-wa h-5 w-5" />{{ t('common.bookWhatsApp') }}
             </a>
           </div>
-          <p class="px-2 text-center text-xs text-slate-500 dark:text-slate-400">
-            {{ t('payment.warning') }}
-            <NuxtLink :to="`${localePath('/contact')}#payment`" class="font-bold text-[#1E40AF] underline dark:text-sky-400">{{ t('booking.paymentTitle') }}</NuxtLink>
-          </p>
         </aside>
       </div>
     </section>
@@ -445,9 +422,9 @@ const detailTabs = computed(() => [
             </h3>
             <div class="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700 bg-slate-50 rounded-xl p-2.5 mb-3 border border-slate-100 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-800">
               <div class="flex items-center gap-1.5"><CalendarDays aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.durationLong', { days: p.days, nights: p.nights }) }}</div>
-              <div class="flex items-center gap-1.5"><Hotel aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ p.nights }} malam hotel</div>
+              <div class="flex items-center gap-1.5"><Hotel aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.hotelNights', { count: p.nights }) }}</div>
               <div class="flex items-center gap-1.5"><MapPin aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ p.region === 'batam' ? t('packages.filterBatam') : t('packages.filterBatamBintan') }}</div>
-              <div class="flex items-center gap-1.5"><Utensils aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ p.fullBoard ? t('common.fullBoard') : 'Sarapan hotel' }}</div>
+              <div class="flex items-center gap-1.5"><Utensils aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ p.fullBoard ? t('common.fullBoard') : t('common.breakfastHotel') }}</div>
             </div>
             <p class="mb-4 flex items-start gap-1.5 text-[11px] text-slate-400">
               <Ship aria-hidden="true" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
@@ -463,7 +440,7 @@ const detailTabs = computed(() => [
                 :to="localePath(`/packages/${p.slug}`)"
                 class="flex items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2.5 px-3 rounded-full transition-all dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200"
               >
-                <span>Lihat Detail</span>
+                <span>{{ t('common.viewDetails') }}</span>
                 <ArrowRight aria-hidden="true" class="h-3.5 w-3.5" />
               </NuxtLink>
             </div>

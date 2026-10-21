@@ -8,6 +8,20 @@ const { gaId } = useRuntimeConfig().public;
 // hreflang (4 bahasa + x-default), canonical, og:url, og:locale → dari @nuxtjs/i18n (butuh i18n.baseUrl)
 const i18nHead = useLocaleHead({ lang: true, seo: true });
 
+const developer = {
+  '@type': 'Organization',
+  name: 'Bidtech',
+  alternateName: 'PT Bidtech Solusi Teknologi',
+  url: 'https://www.bidtech.co.id',
+  description: 'Software House Batam - Jasa Pembuatan Website, Aplikasi Mobile, dan Sistem Informasi Profesional di Batam',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Batam',
+    addressRegion: 'Kepulauan Riau',
+    addressCountry: 'ID',
+  },
+};
+
 const agency = {
   '@context': 'https://schema.org',
   '@type': 'TravelAgency',
@@ -24,6 +38,13 @@ const agency = {
   areaServed: site.areaServed.map((name) => ({ '@type': 'Place', name })),
   currenciesAccepted: 'IDR, MYR, SGD',
   paymentAccepted: 'QRIS, Bank Transfer',
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 1.1301,
+    longitude: 104.0529,
+  },
+  creator: developer,
+  publisher: developer,
   contactPoint: site.admins.map((a) => ({
     '@type': 'ContactPoint',
     telephone: `+${a.phone}`,
@@ -36,7 +57,17 @@ const agency = {
 useHead(() => ({
   htmlAttrs: i18nHead.value.htmlAttrs,
   link: i18nHead.value.link,
-  meta: [...(i18nHead.value.meta ?? []), { name: 'geo.region', content: 'ID-KR' }, { name: 'geo.placename', content: 'Batam' }],
+  meta: [
+    ...(i18nHead.value.meta ?? []),
+    { name: 'author', content: 'Bidtech — Software House Batam (https://www.bidtech.co.id)' },
+    { name: 'publisher', content: 'Bidtech' },
+    { name: 'developer', content: 'Bidtech — Software House Batam (www.bidtech.co.id)' },
+    { name: 'creator', content: 'Bidtech' },
+    { name: 'geo.region', content: 'ID-KR' },
+    { name: 'geo.placename', content: 'Batam, Kepulauan Riau, Indonesia' },
+    { name: 'geo.position', content: '1.1301;104.0529' },
+    { name: 'ICBM', content: '1.1301, 104.0529' },
+  ],
   titleTemplate: (title?: string) => (title ? `${title} | ${t('meta.titleSuffix')}` : t('meta.siteTitle')),
   script: [
     // Tema sebelum paint (tanpa kedip): default terang; gelap hanya bila pengunjung memilihnya (ft_theme). Kelas di <html> tidak dirender Vue → hidrasi aman.
@@ -54,7 +85,13 @@ useHead(() => ({
       : []),
   ],
 }));
-useSeoMeta({ ogSiteName: site.brandName, ogType: 'website', ogImage: siteUrl + logo, twitterCard: 'summary_large_image' });
+useSeoMeta({
+  ogSiteName: site.brandName,
+  ogType: 'website',
+  ogImage: siteUrl + logo,
+  twitterCard: 'summary_large_image',
+  creator: 'Bidtech (www.bidtech.co.id)',
+});
 
 onNuxtReady(initClient);
 </script>

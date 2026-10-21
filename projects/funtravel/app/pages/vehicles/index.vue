@@ -4,7 +4,7 @@ import data from '~/assets/data/vehicles.json';
 
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
-const { site, loc, img, fmt, vehPrice, fxNote, scheme, waUrl } = useSite();
+const { site, loc, locArray, img, fmt, vehPrice, fxNote, scheme, waUrl } = useSite();
 
 useSeoMeta({
   title: () => `${t('vehicles.title')} — Fun Travel & Transport Batam`,
@@ -29,8 +29,8 @@ const formNotes = ref('');
 
 const tabs = computed(() => [
   { id: 'all', label: t('vehicles.filterAll') },
-  { id: 'car', label: 'Mobil (+ Supir)' },
-  { id: 'motorcycle', label: 'Motor (Lepas Kunci)' },
+  { id: 'car', label: t('common.tabCar') },
+  { id: 'motorcycle', label: t('common.tabMotor') },
 ]);
 
 const processedVehicles = computed(() => {
@@ -64,6 +64,23 @@ const processedVehicles = computed(() => {
   return list;
 });
 
+const sortOptions = computed(() => [
+  { value: 'popular', label: t('common.sortPopular') },
+  { value: 'price-asc', label: t('common.sortPriceAsc') },
+  { value: 'price-desc', label: t('common.sortPriceDesc') },
+  { value: 'capacity', label: t('common.sortCapacity') },
+]);
+
+const pickupOptions = [
+  { value: 'Pelabuhan Ferry Batam Centre', label: 'Pelabuhan Ferry Batam Centre' },
+  { value: 'Pelabuhan Ferry Harbour Bay', label: 'Pelabuhan Ferry Harbour Bay' },
+  { value: 'Pelabuhan Ferry Sekupang', label: 'Pelabuhan Ferry Sekupang' },
+  { value: 'Pelabuhan Ferry Nongsa Pura', label: 'Pelabuhan Ferry Nongsa Pura' },
+  { value: 'Bandara Hang Nadim Batam (BTH)', label: 'Bandara Hang Nadim Batam (BTH)' },
+  { value: 'Hotel di Area Batam Centre / Nagoya', label: 'Hotel di Area Batam Centre / Nagoya' },
+  { value: 'Alamat Lainnya di Batam', label: 'Alamat Lainnya di Batam' },
+];
+
 function openBooking(vehicleName: string, type: 'car' | 'motorcycle' = 'car') {
   selectedVehicle.value = vehicleName;
   selectedType.value = type;
@@ -95,18 +112,25 @@ function handleBookingSubmit() {
 <template>
   <div class="bg-[#F8FAFC] min-h-screen text-[#0F172A] pb-16 dark:bg-slate-950 dark:text-slate-100">
     <!-- 1. Hero Header Banner with Soft Ambient Mesh & Floating Search/Sort Bar -->
-    <section class="relative overflow-hidden flex items-center min-h-[420px] sm:min-h-[500px] bg-gradient-to-br from-[#BFDBFE] via-[#F8FAFC] to-[#FDE68A] bg-[length:300%_300%] animate-gradient border-b border-slate-200/80 pt-16 sm:pt-24 pb-16 sm:pb-20 dark:border-slate-800 dark:from-slate-900 dark:via-[#0B1B4D] dark:to-amber-950/40">
-      <!-- Decorative ambient glow circles (bergerak pelan) -->
-      <div class="pointer-events-none absolute -top-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-amber-300/30 blur-3xl animate-float" />
-      <div class="pointer-events-none absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-blue-400/20 blur-3xl animate-float [animation-delay:-4s]" />
+    <section class="relative z-20 flex items-center min-h-[420px] sm:min-h-[500px] bg-gradient-to-br from-[#BFDBFE] via-[#F8FAFC] to-[#FDE68A] bg-[length:300%_300%] animate-gradient pt-16 sm:pt-24 pb-16 sm:pb-20 dark:from-slate-900 dark:via-[#0B1B4D] dark:to-amber-950/40">
+      <!-- Decorative ambient glow circles (terisolasi overflow-hidden agar tidak menyebabkan scrollbar dan tidak memotong dropdown) -->
+      <div class="pointer-events-none absolute inset-0 overflow-hidden">
+        <div class="pointer-events-none absolute -top-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-amber-300/30 blur-3xl animate-float" />
+        <div class="pointer-events-none absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-blue-400/20 blur-3xl animate-float [animation-delay:-4s]" />
+      </div>
+
+      <!-- Transisi halus menyatu dengan warna konten di bawahnya tanpa garis pembatas -->
+      <div class="pointer-events-none absolute bottom-0 inset-x-0 h-32 sm:h-40 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/60 to-transparent dark:from-slate-950 dark:via-slate-950/60" />
 
       <div class="wrap relative z-10">
         <div class="max-w-3xl">
-          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-4 dark:text-white">
-            Armada Transportasi &amp; Rental Batam
+          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] dark:text-white">
+            {{ t('vehicles.title') }} &amp; <span class="text-[#1E40AF] dark:text-sky-400">Rental Batam</span>
           </h1>
+          <!-- Aksen garis kuning di bawah judul hero -->
+          <div class="h-1.5 w-24 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full mt-3.5 mb-4 shadow-xs" />
           <p class="text-sm sm:text-lg text-slate-600 leading-relaxed max-w-2xl dark:text-slate-300">
-            Sewa mobil privat lengkap supir lokal berpengalaman &amp; rental motor matic keliling Batam tanpa ribet. Harga jujur tanpa biaya tersembunyi, unit wangi &amp; terawat, dengan layanan jemput gratis di pelabuhan ferry serta hotel.
+            {{ t('vehicles.intro') }}
           </p>
           <p v-if="fxNote('vehicle')" class="mt-2 text-xs text-slate-500 font-medium dark:text-slate-400">
             <Info aria-hidden="true" class="inline h-3.5 w-3.5 -mt-0.5 mr-1" />{{ fxNote('vehicle') }}
@@ -114,7 +138,7 @@ function handleBookingSubmit() {
         </div>
 
         <!-- Floating Search & Sort Bar -->
-        <div class="mt-10 max-w-2xl mx-auto">
+        <div class="mt-10 max-w-2xl mx-auto relative z-30">
           <div class="bg-white/95 backdrop-blur-md border border-slate-200 rounded-3xl sm:rounded-full p-1.5 shadow-md flex flex-col sm:flex-row items-stretch sm:items-center gap-2 dark:border-slate-700 dark:bg-slate-900/95">
             <!-- Search Input -->
             <div class="flex items-center gap-2.5 flex-1 pl-4 pr-2 py-1.5">
@@ -122,7 +146,7 @@ function handleBookingSubmit() {
               <input
                 v-model="searchQuery"
                 type="text"
-                placeholder="Cari mobil atau motor (cth: Innova, HiAce, Scoopy)..."
+                :placeholder="t('common.searchVehiclePlaceholder')"
                 class="w-full bg-transparent text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden dark:text-slate-200"
               />
               <button
@@ -134,16 +158,17 @@ function handleBookingSubmit() {
               </button>
             </div>
 
-            <!-- Sort Dropdown -->
-            <div class="flex items-center justify-between sm:justify-end gap-1.5 bg-slate-100 rounded-full px-4 py-2 text-xs font-semibold text-slate-600 border border-slate-200/70 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
-              <span class="inline-flex items-center gap-1 text-slate-400"><ArrowUpDown aria-hidden="true" class="h-3.5 w-3.5" />Urutkan:</span>
-              <select v-model="sortBy" class="bg-transparent font-extrabold text-slate-900 focus:outline-hidden cursor-pointer dark:text-white">
-                <option value="popular">Paling Populer</option>
-                <option value="price-asc">Harga Terendah</option>
-                <option value="price-desc">Harga Tertinggi</option>
-                <option value="capacity">Kapasitas Kursi</option>
-              </select>
-            </div>
+            <CustomSelect
+              v-model="sortBy"
+              :options="sortOptions"
+              :prefix-text="t('common.sort')"
+              button-class="h-10 rounded-full bg-slate-100 dark:bg-slate-800 border-slate-200/70 dark:border-slate-700 text-slate-900 dark:text-white px-4 hover:bg-slate-200/70 dark:hover:bg-slate-700 shrink-0"
+              dropdown-class="w-56"
+            >
+              <template #icon>
+                <ArrowUpDown class="h-3.5 w-3.5 text-slate-400 shrink-0" />
+              </template>
+            </CustomSelect>
           </div>
         </div>
 
@@ -174,10 +199,10 @@ function handleBookingSubmit() {
           <div>
             <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-white">{{ t('vehicle.fleetTitle') }}</h2>
             <p class="text-xs sm:text-sm text-slate-500 mt-1 dark:text-slate-400">
-              Mobil privat dengan supir lokal &amp; motor matic lepas kunci — pilih unit, cek detail, lalu pesan langsung via WhatsApp.
+              {{ t('vehicle.fleetSubtitle') }}
             </p>
           </div>
-          <span class="text-xs font-bold text-slate-400 self-start sm:self-auto whitespace-nowrap">{{ processedVehicles.length }} Unit Tersedia</span>
+          <span class="text-xs font-bold text-slate-400 self-start sm:self-auto whitespace-nowrap">{{ t('common.vehiclesCount', { count: processedVehicles.length }) }}</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -202,7 +227,7 @@ function handleBookingSubmit() {
                 v-if="v.bestSeller"
                 class="absolute top-3 left-3 inline-flex items-center gap-1 bg-white/95 text-amber-700 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm"
               >
-                <Star aria-hidden="true" class="h-3 w-3 fill-current" /> Paling Laris
+                <Star aria-hidden="true" class="h-3 w-3 fill-current" /> {{ t('common.bestSeller') }}
               </span>
             </NuxtLink>
 
@@ -214,17 +239,17 @@ function handleBookingSubmit() {
 
               <!-- Spesifikasi 2x2 (sama untuk mobil & motor) -->
               <div class="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700 bg-slate-50 rounded-xl p-2.5 mb-3 border border-slate-100 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-800">
-                <div class="flex items-center gap-1.5"><Users aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ v.seats }} Penumpang</div>
-                <div class="flex items-center gap-1.5"><Luggage aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ v.luggage }} Bagasi</div>
+                <div class="flex items-center gap-1.5"><Users aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.seatsCount', { count: v.seats }) }}</div>
+                <div class="flex items-center gap-1.5"><Luggage aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.luggageCount', { count: v.luggage }) }}</div>
                 <div class="flex items-center gap-1.5"><Cog aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t(`common.transmission.${v.transmission}`) }}</div>
                 <div class="flex items-center gap-1.5">
                   <component :is="v.type === 'car' ? UserCheck : KeyRound" aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
-                  {{ v.type === 'car' ? 'Supir Lokal' : 'Lepas Kunci' }}
+                  {{ v.type === 'car' ? t('common.driverService') : t('common.selfDriveService') }}
                 </div>
               </div>
 
               <div v-if="v.chips" class="flex flex-wrap gap-1.5 mb-4">
-                <span v-for="chip in v.chips" :key="chip" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-blue-50 text-[#1E40AF] dark:bg-slate-800 dark:text-sky-400">{{ chip }}</span>
+                <span v-for="chip in locArray(v.chips)" :key="chip" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-blue-50 text-[#1E40AF] dark:bg-slate-800 dark:text-sky-400">{{ chip }}</span>
               </div>
 
               <!-- Harga & aksi -->
@@ -232,31 +257,21 @@ function handleBookingSubmit() {
                 <span class="block text-[10px] font-semibold text-slate-400">{{ t('common.from') }}</span>
                 <div class="flex items-baseline gap-1 mb-3">
                   <span class="text-xl sm:text-2xl font-extrabold text-[#1E40AF] tabular-nums dark:text-sky-400">{{ vehPrice(v.pricePerDay) }}</span>
-                  <span class="text-xs text-slate-400 font-medium">/ hari</span>
+                  <span class="text-xs text-slate-400 font-medium">{{ t('common.perDay') }}</span>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    @click="openBooking(`${v.brand} ${v.model}`, v.type === 'car' ? 'car' : 'motorcycle')"
-                    class="inline-flex items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white text-xs font-bold py-2.5 px-3 rounded-full shadow-sm transition-all cursor-pointer"
-                  >
-                    <span aria-hidden="true" class="icon-wa h-3.5 w-3.5" />
-                    <span>Pesan WA</span>
-                  </button>
-                  <NuxtLink
-                    :to="localePath(`/vehicles/${v.slug}`)"
-                    class="inline-flex items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2.5 px-3 rounded-full transition-all dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200"
-                  >
-                    <span>Lihat Detail</span>
-                    <ArrowRight aria-hidden="true" class="h-3.5 w-3.5" />
-                  </NuxtLink>
-                </div>
+                <NuxtLink
+                  :to="localePath(`/vehicles/${v.slug}`)"
+                  class="w-full inline-flex items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white text-xs font-bold py-2.5 px-4 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.99]"
+                >
+                  <span>{{ t('common.viewDetails') }}</span>
+                  <ArrowRight aria-hidden="true" class="h-3.5 w-3.5" />
+                </NuxtLink>
               </div>
             </div>
           </article>
         </div>
 
-        <p v-if="!processedVehicles.length" class="text-center text-sm text-slate-500 py-10 dark:text-slate-400">Kendaraan tidak ditemukan. Coba kata kunci lain.</p>
+        <p v-if="!processedVehicles.length" class="text-center text-sm text-slate-500 py-10 dark:text-slate-400">{{ t('common.notFoundVehicle') }}</p>
       </section>
     </main>
 
@@ -346,19 +361,14 @@ function handleBookingSubmit() {
 
           <!-- Pickup Location -->
           <div>
-            <label class="block text-xs font-bold text-navy uppercase mb-1 dark:text-white">Titik Antar / Jemput Unit</label>
-            <select
+            <label class="block text-xs font-bold text-navy uppercase mb-1.5 dark:text-white">Titik Antar / Jemput Unit</label>
+            <CustomSelect
               v-model="formPickup"
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:border-ocean focus:outline-hidden bg-white dark:bg-slate-900 dark:border-slate-800"
-            >
-              <option value="Pelabuhan Ferry Batam Centre">Pelabuhan Ferry Batam Centre</option>
-              <option value="Pelabuhan Ferry Harbour Bay">Pelabuhan Ferry Harbour Bay</option>
-              <option value="Pelabuhan Ferry Sekupang">Pelabuhan Ferry Sekupang</option>
-              <option value="Pelabuhan Ferry Nongsa Pura">Pelabuhan Ferry Nongsa Pura</option>
-              <option value="Bandara Hang Nadim Batam (BTH)">Bandara Hang Nadim Batam (BTH)</option>
-              <option value="Hotel di Area Batam Centre / Nagoya">Hotel di Area Batam Centre / Nagoya</option>
-              <option value="Alamat Lainnya di Batam">Alamat Lainnya di Batam</option>
-            </select>
+              :options="pickupOptions"
+              button-class="w-full h-11 rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-sm font-semibold"
+              dropdown-class="w-full"
+              align="left"
+            />
           </div>
 
           <!-- Notes -->

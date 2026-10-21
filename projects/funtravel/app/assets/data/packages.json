@@ -161,7 +161,7 @@
         "zh": "连接六座岛屿的巴淡标志性壮丽大桥，拥有无敌海景打卡点与水上奎笼海鲜美食。",
         "id": "Ikon legendaris Batam yang menghubungkan 6 pulau eksotis dengan spot foto laut dan restoran kelong seafood segar."
       },
-      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Barelang_Bridge_in_Indonesia.jpg/1280px-Barelang_Bridge_in_Indonesia.jpg"
+      "image": "/images/destinations/barelang-bridge.jpg"
     },
     {
       "id": "welcome-to-batam",
@@ -178,7 +178,7 @@
         "zh": "坐落在山坡上的巨型城市地标，邻近渡轮码头、大清真寺与本地特色风味小吃街。",
         "id": "Tulisan raksasa di atas bukit hijau dekat pelabuhan ferry, masjid agung, dan pusat jajanan kuliner lokal."
       },
-      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Welcome_to_Batam.jpg/1280px-Welcome_to_Batam.jpg"
+      "image": "/images/destinations/welcome-to-batam.jpg"
     },
     {
       "id": "pink-beach",
@@ -195,7 +195,7 @@
         "zh": "民丹岛布松超现实绿松石色蓝湖与金色沙丘，犹如置身热带沙漠绿洲的拍照圣地。",
         "id": "Danau kawah toska jernih yang dikelilingi perbukitan pasir keemasan ala gurun di Busung, Bintan."
       },
-      "image": null
+      "image": "/images/destinations/telaga-biru-bintan.jpg"
     },
     {
       "id": "grand-batam",
@@ -212,7 +212,7 @@
         "zh": "顶级现代购物中心、正宗印尼千层糕手信店、传统泰式/印尼足疗按摩与美食云集。",
         "id": "Mall perbelanjaan favorit terlengkap, panti pijat refleksi keluarga, toko kue lapis legit, dan aneka kuliner lezat."
       },
-      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Nagoya_Hill_Shopping_Mall.jpg/1280px-Nagoya_Hill_Shopping_Mall.jpg"
+      "image": "/images/destinations/grand-batam.jpg"
     },
     {
       "id": "nongsa-beach",
@@ -229,7 +229,7 @@
         "zh": "巴淡岛东北部的静谧高端度假胜地，拥有高品质沙滩俱乐部、高尔夫球场与壮美日落。",
         "id": "Kawasan resor pantai tenang di timur laut Batam dengan beach club eksklusif, padang golf, dan panorama sunset memukau."
       },
-      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Turi_Beach_Resort_Hotel_at_Nongsa_Batam_-_panoramio.jpg/1280px-Turi_Beach_Resort_Hotel_at_Nongsa_Batam_-_panoramio.jpg"
+      "image": "/images/destinations/nongsa-beach.jpg"
     }
   ],
   "packages": [
@@ -272,7 +272,7 @@
       "accent": "blue",
       "featured": true,
       "images": [
-        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Welcome_to_Batam.jpg/1280px-Welcome_to_Batam.jpg"
+        "/images/destinations/welcome-to-batam.jpg"
       ]
     },
     {
@@ -314,7 +314,7 @@
       "accent": "green",
       "featured": true,
       "images": [
-        "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Barelang_Bridge%2C_Batam.jpg/1280px-Barelang_Bridge%2C_Batam.jpg"
+        "/images/destinations/barelang-bridge.jpg"
       ]
     },
     {
@@ -358,7 +358,7 @@
       "accent": "magenta",
       "featured": false,
       "images": [
-        "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Nagoya_Hill_Shopping_Mall.jpg/1280px-Nagoya_Hill_Shopping_Mall.jpg"
+        "/images/destinations/grand-batam.jpg"
       ]
     },
     {
@@ -402,7 +402,7 @@
       "accent": "orange",
       "featured": true,
       "images": [
-        "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Barelang_Bridge_in_Indonesia.jpg/1280px-Barelang_Bridge_in_Indonesia.jpg"
+        "/images/destinations/nongsa-beach.jpg"
       ]
     },
     {
@@ -446,7 +446,7 @@
       "accent": "teal",
       "featured": true,
       "images": [
-        "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Trikora_Beach.jpg/1280px-Trikora_Beach.jpg"
+        "/images/destinations/telaga-biru-bintan.jpg"
       ]
     },
     {
@@ -492,7 +492,7 @@
       "accent": "purple",
       "featured": true,
       "images": [
-        "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Kelong_4.jpg/1280px-Kelong_4.jpg"
+        "/images/destinations/barelang-bridge.jpg"
       ]
     }
   ]

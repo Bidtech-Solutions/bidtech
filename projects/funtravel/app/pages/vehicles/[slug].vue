@@ -177,14 +177,14 @@ const specs = computed(() => [
 
 const policy = computed(() => {
   const pType = isCar ? 'car' : 'motor';
-  const list = policyMap[pType][locale.value] ?? policyMap[pType].en ?? policyMap[pType].id;
+  const list = policyMap[pType][locale.value] ?? policyMap[pType].en ?? policyMap[pType].id ?? [];
   const icons = isCar ? [Shield, Clock, Fuel, CreditCard] : [IdCard, ShieldCheck, Wallet, MapPin];
   return list.map((item, idx) => ({ icon: icons[idx], title: item.title, text: item.text }));
 });
 
 const policyLabel = computed(() => {
   const pType = isCar ? 'car' : 'motor';
-  return policyLabelMap[pType][locale.value] ?? policyLabelMap[pType].en ?? policyLabelMap[pType].id;
+  return policyLabelMap[pType][locale.value] ?? policyLabelMap[pType].en ?? policyLabelMap[pType].id ?? '';
 });
 // Syarat dokumen: tamu mancanegara = paspor (+ IDP untuk motor); lokal = KTP (+ SIM C untuk motor). Locale id menampilkan syarat lokal dulu.
 const requirements = computed(() => {

@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import {
-  Banknote,
   Car,
   Check,
   ChevronDown,
-  Globe,
   Menu,
-  Moon,
-  Sun,
   TreePalm,
   X,
 } from '@lucide/vue';
@@ -17,7 +13,7 @@ const { t, locale, locales } = useI18n();
 const localePath = useLocalePath();
 const switchLocalePath = useSwitchLocalePath();
 const route = useRoute();
-const { site, currency, setCurrency, waUrl, toggleTheme } = useSite();
+const { site, currency, setCurrency, waUrl } = useSite();
 
 const nav = computed(() => [
   { to: localePath('/'), label: t('nav.home'), page: 'home' },
@@ -75,12 +71,16 @@ const changeCurrency = (c: 'IDR' | 'MYR' | 'SGD') => {
 // Halaman aktif untuk nav desktop & switcher mobile
 const onVehicles = computed(() => route.path.startsWith(localePath('/vehicles')));
 const onPackages = computed(() => route.path.startsWith(localePath('/packages')));
-const isActive = (page?: string) =>
-  page === 'vehicles'
-    ? onVehicles.value
-    : page === 'packages'
-      ? onPackages.value
-      : page === 'home' && route.path === localePath('/');
+const onContact = computed(() => route.path.startsWith(localePath('/contact')));
+const isHome = computed(() => route.path === localePath('/') || route.path === `/${locale.value}`);
+
+const isActive = (page?: string) => {
+  if (page === 'vehicles') return onVehicles.value;
+  if (page === 'packages') return onPackages.value;
+  if (page === 'contact') return onContact.value;
+  if (page === 'home') return isHome.value;
+  return false;
+};
 
 // Menu mobile
 const open = ref(false);
@@ -130,9 +130,10 @@ onMounted(() => {
           :key="i.to"
           :to="i.to"
           :class="[
-            'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors duration-200',
-            'hover:text-[#0047AB] hover:bg-blue-50 dark:hover:text-sky-400 dark:hover:bg-slate-800',
-            isActive(i.page) && 'text-[#0047AB] dark:text-sky-400 font-extrabold bg-blue-50/70 dark:bg-slate-800/80',
+            'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0047AB]',
+            isActive(i.page)
+              ? 'text-[#0047AB] font-extrabold bg-blue-50/80 shadow-2xs'
+              : 'text-slate-600 hover:text-[#0047AB] hover:bg-blue-50/60 font-semibold',
           ]"
         >
           <span>{{ i.label }}</span>
@@ -155,7 +156,7 @@ onMounted(() => {
             ]"
             @click.stop="toggleLang"
           >
-            <Globe aria-hidden="true" class="h-4 w-4 shrink-0 text-[#0047AB] dark:text-sky-400" />
+            <FlagIcon :code="locale" class="w-5 h-3.5" />
             <span class="tracking-wide">{{ locale.toUpperCase() }}</span>
             <ChevronDown
               aria-hidden="true"
@@ -198,16 +199,7 @@ onMounted(() => {
                 @click="changeLocale(l.code)"
               >
                 <div class="flex items-center gap-2.5">
-                  <span
-                    :class="[
-                      'w-7 h-5 rounded-md flex items-center justify-center text-[10px] font-black uppercase tracking-wider shrink-0 transition-all shadow-xs',
-                      locale === l.code
-                        ? 'bg-white text-[#0047AB]'
-                        : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700'
-                    ]"
-                  >
-                    {{ l.code }}
-                  </span>
+                  <FlagIcon :code="l.code" class="w-6 h-4" />
                   <div class="flex flex-col">
                     <span class="font-extrabold leading-tight">{{ l.label }}</span>
                     <span :class="['text-[10px] leading-tight mt-0.5', locale === l.code ? 'text-white/85' : 'text-slate-400 dark:text-slate-400']">{{ l.name }}</span>
@@ -233,7 +225,7 @@ onMounted(() => {
             ]"
             @click.stop="toggleCurr"
           >
-            <Banknote aria-hidden="true" class="h-4 w-4 shrink-0 text-[#15803D] dark:text-emerald-400" />
+            <FlagIcon :code="currency" class="w-5 h-3.5" />
             <span class="tracking-wide">{{ currency }}</span>
             <ChevronDown
               aria-hidden="true"
@@ -276,16 +268,7 @@ onMounted(() => {
                 @click="changeCurrency(c.code as 'IDR' | 'MYR' | 'SGD')"
               >
                 <div class="flex items-center gap-2.5">
-                  <span
-                    :class="[
-                      'w-7 h-5 rounded-md flex items-center justify-center text-[10px] font-black uppercase tracking-wider shrink-0 transition-all shadow-xs',
-                      currency === c.code
-                        ? 'bg-white text-[#0047AB]'
-                        : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700'
-                    ]"
-                  >
-                    {{ c.symbol }}
-                  </span>
+                  <FlagIcon :code="c.code" class="w-6 h-4" />
                   <div class="flex flex-col">
                     <span class="font-extrabold leading-tight">{{ c.label }} <span class="font-normal opacity-85">({{ c.symbol }})</span></span>
                     <span :class="['text-[10px] leading-tight mt-0.5', currency === c.code ? 'text-white/85' : 'text-slate-400 dark:text-slate-400']">{{ c.name }}</span>
@@ -308,17 +291,6 @@ onMounted(() => {
           <span aria-hidden="true" class="icon-wa h-4 w-4 shrink-0" />
           <span>{{ t('common.bookWhatsApp') }}</span>
         </a>
-
-        <!-- Theme / Dark Mode Button -->
-        <button
-          type="button"
-          :aria-label="t('nav.theme')"
-          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white hover:bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#0047AB]"
-          @click="toggleTheme"
-        >
-          <Moon aria-hidden="true" class="h-4 w-4 dark:hidden" />
-          <Sun aria-hidden="true" class="hidden h-4 w-4 text-amber-400 dark:block" />
-        </button>
 
         <!-- Mobile Menu Toggle Button -->
         <button
@@ -401,7 +373,7 @@ onMounted(() => {
                   ]"
                   @click="changeLocale(l.code)"
                 >
-                  <span class="text-base leading-none mb-1">{{ l.flag }}</span>
+                  <FlagIcon :code="l.code" class="w-6 h-4 mb-1.5" />
                   <span>{{ l.label }}</span>
                 </button>
               </div>
@@ -415,34 +387,15 @@ onMounted(() => {
                   :key="c.code"
                   type="button"
                   :class="[
-                    'flex items-center justify-center gap-1.5 p-2.5 rounded-xl text-xs font-bold transition-all',
+                    'flex items-center justify-center gap-2 p-2.5 rounded-xl text-xs font-bold transition-all',
                     currency === c.code ? 'bg-[#0047AB] text-white ring-2 ring-white/60 shadow-md' : 'bg-white/10 text-white/80 hover:bg-white/20'
                   ]"
                   @click="changeCurrency(c.code as 'IDR' | 'MYR' | 'SGD')"
                 >
-                  <span class="text-sm leading-none">{{ c.flag }}</span>
+                  <FlagIcon :code="c.code" class="w-5 h-3.5" />
                   <span>{{ c.label }}</span>
                 </button>
               </div>
-            </div>
-
-            <!-- Theme Switcher inside Mobile Drawer -->
-            <div class="pt-3 border-t border-white/10 flex items-center justify-between">
-              <span class="text-xs font-bold text-white/80 flex items-center gap-2">
-                <Moon aria-hidden="true" class="h-4 w-4 dark:hidden text-sky-300" />
-                <Sun aria-hidden="true" class="hidden h-4 w-4 text-amber-400 dark:block" />
-                <span>{{ t('nav.theme') }}</span>
-              </span>
-              <button
-                type="button"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition focus:outline-none"
-                @click="toggleTheme"
-              >
-                <Moon aria-hidden="true" class="h-3.5 w-3.5 dark:hidden text-sky-300" />
-                <Sun aria-hidden="true" class="hidden h-3.5 w-3.5 text-amber-400 dark:block" />
-                <span class="dark:hidden">Mode Gelap</span>
-                <span class="hidden dark:inline">Mode Terang</span>
-              </button>
             </div>
           </div>
 

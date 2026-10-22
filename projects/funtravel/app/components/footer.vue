@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { MapPin } from '@lucide/vue';
 import logo from '~/assets/images/logo.webp';
-import bgLight from '~/assets/images/Latar Putih dengan Palma dan Jembatan Kabut.png';
-import bgDark from '~/assets/images/Latar Gelap Siluet Tropis dan Jembatan.png';
+import bgLight from '~/assets/images/Latar Putih dengan Palma dan Jembatan Kabut.webp';
 
 const { t } = useI18n();
 const localePath = useLocalePath();
 const { site, waUrl } = useSite();
 
 const links = computed(() => [
-  { to: localePath('/'), label: t('footer.links.home') },
-  { to: localePath('/vehicles'), label: t('footer.links.vehicles') },
-  { to: localePath('/packages'), label: t('footer.links.packages') },
-  { to: `${localePath('/')}#destinasi`, label: t('footer.links.destinations') },
-  { to: localePath('/contact'), label: t('footer.links.contact') },
+  { to: localePath('/'), label: t('nav.home') },
+  { to: localePath('/vehicles'), label: t('nav.vehicles') },
+  { to: localePath('/packages'), label: t('nav.packages') },
+  { to: localePath('/contact'), label: t('nav.contact') },
 ]);
 
 const year = new Date().getFullYear();
@@ -22,24 +20,16 @@ const year = new Date().getFullYear();
 <template>
   <footer
     id="about"
-    class="relative mt-20 border-t border-slate-200/80 bg-white text-[#475569] pt-14 pb-8 text-xs sm:text-sm dark:border-slate-800 dark:bg-[#070D1B] dark:text-slate-300 overflow-hidden"
+    class="relative mt-20 border-t border-slate-200/80 bg-white text-[#475569] pt-14 pb-8 text-xs sm:text-sm overflow-hidden"
   >
     <!-- ======================================================== -->
-    <!-- AMBIENT ARTWORK BACKDROP (Light & Dark Images)            -->
+    <!-- AMBIENT ARTWORK BACKDROP (Light Image)                   -->
     <!-- ======================================================== -->
     <div class="pointer-events-none absolute inset-0 select-none overflow-hidden" aria-hidden="true">
-      <!-- Light Mode Background Image -->
       <img
         :src="bgLight"
         alt=""
-        class="h-full w-full object-cover object-bottom select-none dark:hidden"
-      />
-
-      <!-- Dark Mode Background Image -->
-      <img
-        :src="bgDark"
-        alt=""
-        class="h-full w-full object-cover object-bottom select-none hidden dark:block"
+        class="h-full w-full object-cover object-bottom select-none"
       />
     </div>
 
@@ -197,7 +187,7 @@ const year = new Date().getFullYear();
           <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-3 sm:gap-x-4 gap-y-1.5 text-center md:text-left">
             <p>{{ t('footer.rights', { year }) }}</p>
             <span class="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
-            <p>
+            <p class="hidden">
               {{ t('footer.developedBy') }}
               <a
                 href="https://www.bidtech.co.id"
@@ -209,7 +199,6 @@ const year = new Date().getFullYear();
               </a>
               – Software House Batam.
             </p>
-            <span class="hidden lg:inline text-slate-300 dark:text-slate-700">|</span>
             <div class="flex items-center gap-3 sm:gap-4">
               <NuxtLink :to="localePath('/contact')" class="hover:text-slate-800 dark:hover:text-white transition-colors">
                 {{ t('footer.privacy') }}

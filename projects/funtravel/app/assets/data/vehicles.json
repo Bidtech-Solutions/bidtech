@@ -86,10 +86,10 @@
         "Free Port Pickup"
       ],
       "images": [
-        "/images/vehicles/toyota-veloz.jpg",
-        "/images/vehicles/toyota-veloz-interior.jpg",
-        "/images/vehicles/toyota-veloz-seats.jpg",
-        "/images/vehicles/toyota-veloz-trunk.jpg"
+        "/images/vehicles/toyota-veloz.webp",
+        "/images/vehicles/toyota-veloz-interior.webp",
+        "/images/vehicles/toyota-veloz-seats.webp",
+        "/images/vehicles/toyota-veloz-trunk.webp"
       ]
     },
     {
@@ -123,10 +123,10 @@
         "Papan Nama Penjemputan"
       ],
       "images": [
-        "/images/vehicles/toyota-innova-reborn.jpg",
-        "/images/vehicles/toyota-innova-reborn-interior.jpg",
-        "/images/vehicles/toyota-innova-reborn-seats.jpg",
-        "/images/vehicles/toyota-innova-reborn-trunk.jpg"
+        "/images/vehicles/toyota-innova-reborn.webp",
+        "/images/vehicles/toyota-innova-reborn-interior.webp",
+        "/images/vehicles/toyota-innova-reborn-seats.webp",
+        "/images/vehicles/toyota-innova-reborn-trunk.webp"
       ]
     },
     {
@@ -159,10 +159,10 @@
         "Super Smooth Drive"
       ],
       "images": [
-        "/images/vehicles/toyota-innova-zenix.jpg",
-        "/images/vehicles/toyota-innova-zenix-interior.jpg",
-        "/images/vehicles/toyota-innova-zenix-seats.jpg",
-        "/images/vehicles/toyota-innova-zenix-trunk.jpg"
+        "/images/vehicles/toyota-innova-zenix.webp",
+        "/images/vehicles/toyota-innova-zenix-interior.webp",
+        "/images/vehicles/toyota-innova-zenix-seats.webp",
+        "/images/vehicles/toyota-innova-zenix-trunk.webp"
       ]
     },
     {
@@ -195,10 +195,10 @@
         "Muat Bag Golf & Koper"
       ],
       "images": [
-        "/images/vehicles/toyota-hiace.jpg",
-        "/images/vehicles/toyota-hiace-interior.jpg",
-        "/images/vehicles/toyota-hiace-seats.jpg",
-        "/images/vehicles/toyota-hiace-trunk.jpg"
+        "/images/vehicles/toyota-hiace.webp",
+        "/images/vehicles/toyota-hiace-interior.webp",
+        "/images/vehicles/toyota-hiace-seats.webp",
+        "/images/vehicles/toyota-hiace-trunk.webp"
       ]
     },
     {
@@ -231,10 +231,10 @@
         "Gagah & Prestisius"
       ],
       "images": [
-        "/images/vehicles/toyota-fortuner.jpg",
-        "/images/vehicles/toyota-fortuner-interior.jpg",
-        "/images/vehicles/toyota-fortuner-seats.jpg",
-        "/images/vehicles/toyota-fortuner-trunk.jpg"
+        "/images/vehicles/toyota-fortuner.webp",
+        "/images/vehicles/toyota-fortuner-interior.webp",
+        "/images/vehicles/toyota-fortuner-seats.webp",
+        "/images/vehicles/toyota-fortuner-trunk.webp"
       ]
     },
     {
@@ -267,10 +267,10 @@
         "Layanan Protokol VIP"
       ],
       "images": [
-        "/images/vehicles/toyota-alphard.jpg",
-        "/images/vehicles/toyota-alphard-interior.jpg",
-        "/images/vehicles/toyota-alphard-seats.jpg",
-        "/images/vehicles/toyota-alphard-trunk.jpg"
+        "/images/vehicles/toyota-alphard.webp",
+        "/images/vehicles/toyota-alphard-interior.webp",
+        "/images/vehicles/toyota-alphard-seats.webp",
+        "/images/vehicles/toyota-alphard-trunk.webp"
       ]
     },
     {
@@ -303,10 +303,10 @@
         "Super Irit Bensin"
       ],
       "images": [
-        "/images/vehicles/honda-scoopy.jpg",
-        "/images/vehicles/honda-scoopy-side.jpg",
-        "/images/vehicles/honda-scoopy-helmets.jpg",
-        "/images/vehicles/honda-scoopy-meter.jpg"
+        "/images/vehicles/honda-scoopy.webp",
+        "/images/vehicles/honda-scoopy-side.webp",
+        "/images/vehicles/honda-scoopy-helmets.webp",
+        "/images/vehicles/honda-scoopy-meter.webp"
       ]
     },
     {
@@ -339,10 +339,10 @@
         "Bebas Macet"
       ],
       "images": [
-        "/images/vehicles/honda-beat.jpg",
-        "/images/vehicles/honda-beat-side.jpg",
-        "/images/vehicles/honda-beat-helmets.jpg",
-        "/images/vehicles/honda-beat-meter.jpg"
+        "/images/vehicles/honda-beat.webp",
+        "/images/vehicles/honda-beat-side.webp",
+        "/images/vehicles/honda-beat-helmets.webp",
+        "/images/vehicles/honda-beat-meter.webp"
       ]
     },
     {
@@ -375,10 +375,10 @@
         "Rem CBS Aman"
       ],
       "images": [
-        "/images/vehicles/honda-vario-160.jpg",
-        "/images/vehicles/honda-vario-side.jpg",
-        "/images/vehicles/honda-vario-helmets.jpg",
-        "/images/vehicles/honda-vario-meter.jpg"
+        "/images/vehicles/honda-vario-160.webp",
+        "/images/vehicles/honda-vario-side.webp",
+        "/images/vehicles/honda-vario-helmets.webp",
+        "/images/vehicles/honda-vario-meter.webp"
       ]
     },
     {
@@ -411,10 +411,10 @@
         "Bagasi 24 Liter"
       ],
       "images": [
-        "/images/vehicles/yamaha-nmax.jpg",
-        "/images/vehicles/yamaha-nmax-side.jpg",
-        "/images/vehicles/yamaha-nmax-helmets.jpg",
-        "/images/vehicles/yamaha-nmax-meter.jpg"
+        "/images/vehicles/yamaha-nmax.webp",
+        "/images/vehicles/yamaha-nmax-side.webp",
+        "/images/vehicles/yamaha-nmax-helmets.webp",
+        "/images/vehicles/yamaha-nmax-meter.webp"
       ]
     }
   ]

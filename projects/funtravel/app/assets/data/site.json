@@ -6,21 +6,21 @@
   "admins": [
     {
       "id": "admin1",
-      "name": "Budi",
+      "name": "Billy",
       "label": "Admin 1",
-      "phone": "6281270002728",
-      "display": "+62 812 7000 2728"
+      "phone": "6285960577702",
+      "display": "+62 859 6057 7702"
     },
     {
       "id": "admin2",
-      "name": "Dewi",
+      "name": "Billy",
       "label": "Admin 2",
-      "phone": "6281277111154",
-      "display": "+62 812 7711 1154"
+      "phone": "6285272023809",
+      "display": "+62 852 7202 3809"
     }
   ],
   "socials": {
-    "instagram": "https://instagram.com/funtravel_transportasi",
+    "instagram": "https://instagram.com/funtravel_transportasi?cplk=aTY0Z3ZuOHlhcnFo",
     "tiktok": "https://www.tiktok.com/@fun_t.t_batam",
     "facebook": "https://www.facebook.com/profile.php?id=61591836087671"
   },

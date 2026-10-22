@@ -156,7 +156,7 @@ const detailTabs = computed(() => [
       <div class="grid gap-8 lg:grid-cols-[1fr_380px]">
         <div class="min-w-0 space-y-8">
           <!-- 1. Galeri: foto utama + baris thumbnail -->
-          <div id="galeri" class="scroll-mt-24 space-y-3">
+          <div id="galeri" class="anim-card scroll-mt-24 space-y-3">
             <div class="relative overflow-hidden rounded-3xl bg-slate-200 aspect-[16/10] shadow-lg dark:bg-slate-800">
               <img v-if="photos[active]" :src="img(photos[active])" :alt="name" fetchpriority="high" class="h-full w-full object-cover" />
               <span class="absolute top-4 left-4 rounded-xl bg-white/95 px-3 py-1 text-base font-black text-[#1E40AF] shadow-md">{{ pkg.code }}</span>
@@ -177,7 +177,7 @@ const detailTabs = computed(() => [
 
           <!-- 2. Judul -->
           <!-- Kartu judul -->
-          <header class="rounded-3xl border border-[#E2E8F0] bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-3 p-6 sm:p-8">
+          <header class="anim-fade-up delay-75 rounded-3xl border border-[#E2E8F0] bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-3 p-6 sm:p-8">
             <div class="flex flex-wrap items-center gap-2">
               <span class="rounded-full bg-[#1E40AF] px-3 py-1 text-xs font-bold text-white">{{ t('common.durationLong', { days: pkg.days, nights: pkg.nights }) }}</span>
               <span class="rounded-full bg-slate-200/70 px-3 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">{{ pkg.region === 'batam' ? t('packages.filterBatam') : t('packages.filterBatamBintan') }}</span>
@@ -187,7 +187,7 @@ const detailTabs = computed(() => [
           </header>
 
           <!-- Kartu tab: fasilitas, deskripsi, (destinasi), ketentuan -->
-          <article class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <article class="anim-card delay-150 overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <!-- Tab: hanya satu bagian tampil (semua tetap di HTML untuk SEO) -->
           <div role="tablist" :aria-label="name" class="flex gap-1 overflow-x-auto overflow-y-hidden [scrollbar-width:none] border-b border-slate-100 px-3 sm:px-5 dark:border-slate-800">
             <button
@@ -281,12 +281,20 @@ const detailTabs = computed(() => [
           <section id="panel-ketentuan" role="tabpanel" :aria-labelledby="`tab-ketentuan`" v-show="tab === 'ketentuan'" class="p-6 sm:p-8">
             <h2 id="ketentuan" class="sr-only">{{ t('package.terms') }}</h2>
             <!-- Wajib di setiap paket (permintaan klien): harga dari terminal Malaysia; Singapura = add-on -->
-            <div class="flex gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700/50 dark:bg-amber-950/30">
+            <div class="flex gap-3.5 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 via-sky-50/50 to-indigo-50/40 p-4 dark:border-slate-800 dark:bg-slate-800/60">
               <Ship aria-hidden="true" class="mt-0.5 h-6 w-6 shrink-0 text-[#1E40AF] dark:text-sky-400" />
-              <div>
-                <p class="font-bold text-slate-900 dark:text-white">{{ t('package.ferryTitle') }}</p>
-                <p class="text-sm text-slate-700 dark:text-slate-200">{{ t('package.ferryText') }}</p>
-                <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ ferryAddOn(pkg.sgAddOn) }}</p>
+              <div class="space-y-1.5">
+                <p class="font-extrabold text-base text-slate-900 dark:text-white">{{ t('package.ferryTitle') }}</p>
+                <div class="space-y-1 text-sm">
+                  <p class="flex items-start gap-2 text-slate-700 dark:text-slate-200">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-blue-100 text-[#1E40AF] dark:bg-blue-900/60 dark:text-sky-300 shrink-0">MY</span>
+                    <span>{{ t('package.ferryTextMY') }}</span>
+                  </p>
+                  <p class="flex items-start gap-2 text-slate-600 dark:text-slate-300">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 shrink-0">SG</span>
+                    <span>{{ t('package.ferryTextSG') }}</span>
+                  </p>
+                </div>
               </div>
             </div>
             <ul class="mt-4 space-y-2.5">
@@ -302,7 +310,7 @@ const detailTabs = computed(() => [
         </div>
 
         <!-- Kartu harga (samping galeri): harga, kalender, peserta, terminal, WhatsApp -->
-        <aside class="lg:sticky lg:top-24 lg:self-start space-y-3">
+        <aside class="anim-card delay-200 lg:sticky lg:top-24 lg:self-start space-y-3">
           <div class="rounded-3xl border border-[#E2E8F0] bg-white p-5 shadow-xl dark:border-slate-800 dark:bg-slate-900">
             <span class="block text-xs font-semibold text-slate-400">{{ t('common.from') }}</span>
             <p class="flex items-baseline gap-1.5">
@@ -311,7 +319,7 @@ const detailTabs = computed(() => [
             </p>
 
             <!-- Kalender keberangkatan -->
-            <div class="mt-5 rounded-2xl border border-slate-100 p-3 dark:border-slate-800">
+            <div class="mt-5 rounded-2xl border border-slate-100 p-3 notranslate dark:border-slate-800" translate="no">
               <p class="mb-2 flex items-center gap-1.5 text-sm font-bold text-slate-900 dark:text-white"><CalendarDays aria-hidden="true" class="h-4 w-4 text-[#1E40AF] dark:text-sky-400" />{{ t('booking.departDate') }}</p>
               <ClientOnly>
                 <div>
@@ -319,24 +327,25 @@ const detailTabs = computed(() => [
                     <button type="button" :disabled="!canPrev" :aria-label="t('booking.prevMonth')" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800" @click="shift(-1)">
                       <ChevronLeft aria-hidden="true" class="h-4 w-4" />
                     </button>
-                    <span class="text-sm font-extrabold capitalize text-slate-900 dark:text-white">{{ monthLabel }}</span>
+                    <span class="text-sm font-extrabold capitalize text-slate-900 notranslate dark:text-white" translate="no">{{ monthLabel }}</span>
                     <button type="button" :aria-label="t('booking.nextMonth')" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" @click="shift(1)">
                       <ChevronRight aria-hidden="true" class="h-4 w-4" />
                     </button>
                   </div>
-                  <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase text-slate-400">
+                  <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase text-slate-400 notranslate" translate="no">
                     <span v-for="(w, i) in weekdays" :key="i">{{ w }}</span>
                   </div>
-                  <div class="mt-1 grid grid-cols-7 gap-1">
+                  <div class="mt-1 grid grid-cols-7 gap-1 notranslate" translate="no">
                     <template v-for="(d, i) in cells" :key="i">
-                      <span v-if="!d" />
+                      <span v-if="!d" class="h-9 w-full block" />
                       <button
                         v-else
                         type="button"
+                        translate="no"
                         :disabled="d < today"
                         :aria-pressed="d === date"
                         :class="[
-                          'h-9 rounded-lg text-sm font-semibold tabular-nums transition disabled:cursor-not-allowed disabled:text-slate-300 dark:disabled:text-slate-600',
+                          'h-9 min-h-[36px] max-h-[36px] w-full rounded-lg text-sm font-semibold tabular-nums transition notranslate flex items-center justify-center overflow-hidden whitespace-nowrap select-none disabled:cursor-not-allowed disabled:text-slate-300 dark:disabled:text-slate-600',
                           d === date || d === back
                             ? 'bg-[#1E40AF] text-white shadow-md'
                             : date && d > date && d < back
@@ -346,7 +355,7 @@ const detailTabs = computed(() => [
                         ]"
                         @click="date = d"
                       >
-                        {{ Number(d.slice(8)) }}
+                        <span class="notranslate" translate="no">{{ Number(d.slice(8)) }}</span>
                       </button>
                     </template>
                   </div>
@@ -373,6 +382,45 @@ const detailTabs = computed(() => [
                     <Plus aria-hidden="true" class="h-4 w-4" />
                   </button>
                 </div>
+              </div>
+            </div>
+
+            <!-- Pilihan Terminal Keberangkatan (Malaysia Standar vs Singapura Add-on) -->
+            <div class="mt-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                  <Ship aria-hidden="true" class="h-3.5 w-3.5 text-[#1E40AF] dark:text-sky-400" />
+                  <span>{{ t('booking.terminal') }}</span>
+                </p>
+                <span class="text-[10px] font-semibold text-slate-400">{{ terminal === 'SG' ? t('booking.terminalSgHint') : t('booking.terminalMyHint') }}</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 p-1 bg-white rounded-xl border border-slate-200/80 dark:bg-slate-900 dark:border-slate-700">
+                <button
+                  type="button"
+                  :class="[
+                    'py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer',
+                    terminal === 'MY'
+                      ? 'bg-[#1E40AF] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800',
+                  ]"
+                  @click="terminal = 'MY'"
+                >
+                  <FlagIcon code="MY" class="h-3.5 w-4.5" />
+                  <span>{{ t('booking.terminalMY') }}</span>
+                </button>
+                <button
+                  type="button"
+                  :class="[
+                    'py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer',
+                    terminal === 'SG'
+                      ? 'bg-[#1E40AF] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800',
+                  ]"
+                  @click="terminal = 'SG'"
+                >
+                  <FlagIcon code="SG" class="h-3.5 w-4.5" />
+                  <span>{{ t('booking.terminalSG') }}</span>
+                </button>
               </div>
             </div>
 
@@ -405,10 +453,11 @@ const detailTabs = computed(() => [
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <article
-          v-for="p in recs"
+          v-for="(p, idx) in recs"
           :key="p.slug"
           :class="[
-            'group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+            'anim-card group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+            idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : 'delay-200',
             p.featured ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
           ]"
         >
@@ -426,10 +475,23 @@ const detailTabs = computed(() => [
               <div class="flex items-center gap-1.5"><MapPin aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ p.region === 'batam' ? t('packages.filterBatam') : t('packages.filterBatamBintan') }}</div>
               <div class="flex items-center gap-1.5"><Utensils aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ p.fullBoard ? t('common.fullBoard') : t('common.breakfastHotel') }}</div>
             </div>
-            <p class="mb-4 flex items-start gap-1.5 text-[11px] text-slate-400">
-              <Ship aria-hidden="true" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
-              <span>{{ t('package.ferryText') }} {{ ferryAddOn(p.sgAddOn) }}</span>
-            </p>
+            <!-- Penegasan rute & terminal feri -->
+            <div class="mb-4 rounded-xl border border-blue-100/90 bg-gradient-to-r from-blue-50/70 to-indigo-50/40 p-2.5 dark:border-slate-800 dark:bg-slate-800/50">
+              <div class="flex items-center gap-1.5 font-extrabold text-[11px] text-[#1E40AF] dark:text-sky-400 mb-1">
+                <Ship aria-hidden="true" class="h-3.5 w-3.5 shrink-0" />
+                <span>{{ t('package.ferryTitle') }}</span>
+              </div>
+              <div class="space-y-1 text-[11px] leading-snug">
+                <p class="flex items-start gap-1.5 text-slate-700 dark:text-slate-200">
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black bg-blue-100 text-[#1E40AF] dark:bg-blue-900/60 dark:text-sky-300 shrink-0">MY</span>
+                  <span>{{ t('package.ferryTextMY') }}</span>
+                </p>
+                <p class="flex items-start gap-1.5 text-slate-600 dark:text-slate-300">
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 shrink-0">SG</span>
+                  <span>{{ t('package.ferryTextSG') }}</span>
+                </p>
+              </div>
+            </div>
             <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800">
               <span class="block text-[10px] font-semibold text-slate-400">{{ t('common.from') }}</span>
               <div class="flex items-baseline gap-1 mb-3">

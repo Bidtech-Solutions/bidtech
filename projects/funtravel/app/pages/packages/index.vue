@@ -57,17 +57,16 @@ const sortOptions = computed(() => [
 
       <div class="wrap relative z-10">
         <div class="max-w-3xl">
-          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] dark:text-white">
+          <h1 class="anim-fade-up text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] dark:text-white">
             {{ t('packages.title') }} <span class="text-[#1E40AF] dark:text-sky-400">Batam &amp; Bintan</span>
           </h1>
           <!-- Aksen garis kuning di bawah judul hero -->
-          <div class="h-1.5 w-24 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full mt-3.5 mb-4 shadow-xs" />
-          <p class="text-sm sm:text-lg text-slate-600 leading-relaxed max-w-2xl dark:text-slate-300">{{ t('packages.intro') }}</p>
-          <p v-if="fxNote('package')" class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ fxNote('package') }}</p>
+          <div class="anim-fade-up delay-100 h-1.5 w-24 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full mt-3.5 mb-4 shadow-xs" />
+          <p class="anim-fade-up delay-100 text-sm sm:text-lg text-slate-600 leading-relaxed max-w-2xl dark:text-slate-300">{{ t('packages.intro') }}</p>
         </div>
 
         <!-- Cari & urutkan -->
-        <div class="mt-10 max-w-2xl mx-auto relative z-30">
+        <div class="anim-fade-up delay-150 mt-10 max-w-2xl mx-auto relative z-30">
           <div class="bg-white/95 backdrop-blur-md border border-slate-200 rounded-3xl sm:rounded-full p-1.5 shadow-md flex flex-col sm:flex-row items-stretch sm:items-center gap-2 dark:border-slate-700 dark:bg-slate-900/95">
             <div class="flex items-center gap-2.5 flex-1 pl-4 pr-2 py-1.5">
               <Search aria-hidden="true" class="w-4 h-4 text-slate-400 shrink-0" />
@@ -99,7 +98,7 @@ const sortOptions = computed(() => [
 
     <main class="wrap py-10 sm:py-14 space-y-6">
       <!-- Tab filter -->
-      <div role="tablist" :aria-label="t('packages.title')" class="flex flex-wrap items-center gap-2">
+      <div role="tablist" :aria-label="t('packages.title')" class="anim-fade-up delay-200 flex flex-wrap items-center gap-2">
         <button
           v-for="tab in tabs"
           :key="tab.id"
@@ -116,7 +115,7 @@ const sortOptions = computed(() => [
         </button>
       </div>
 
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div class="anim-fade-up delay-250 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-white">{{ t('packages.title') }}</h2>
           <p class="text-xs sm:text-sm text-slate-500 mt-1 dark:text-slate-400">{{ t('common.packagesSubtitle') }}</p>
@@ -127,10 +126,11 @@ const sortOptions = computed(() => [
       <!-- Kartu paket (gaya sama dengan kartu kendaraan) -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <article
-          v-for="p in list"
+          v-for="(p, idx) in list"
           :key="p.slug"
           :class="[
-            'group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+            'anim-card group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+            idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : idx === 2 ? 'delay-200' : idx === 3 ? 'delay-250' : idx === 4 ? 'delay-300' : 'delay-350',
             p.featured ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
           ]"
         >
@@ -158,11 +158,23 @@ const sortOptions = computed(() => [
               <span v-for="k in p.includes.slice(0, 3)" :key="k" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-blue-50 text-[#1E40AF] dark:bg-slate-800 dark:text-sky-400">{{ facility(k).label }}</span>
             </div>
 
-            <!-- Catatan terminal ferry (wajib di setiap kartu paket) -->
-            <p class="mb-4 flex items-start gap-1.5 text-[11px] text-slate-400">
-              <Ship aria-hidden="true" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
-              <span>{{ t('package.ferryText') }} {{ ferryAddOn(p.sgAddOn) }}</span>
-            </p>
+            <!-- Penegasan rute & terminal feri (Malaysia Base vs Singapore Add-on) -->
+            <div class="mb-4 rounded-xl border border-blue-100/90 bg-gradient-to-r from-blue-50/70 to-indigo-50/40 p-2.5 dark:border-slate-800 dark:bg-slate-800/50">
+              <div class="flex items-center gap-1.5 font-extrabold text-[11px] text-[#1E40AF] dark:text-sky-400 mb-1">
+                <Ship aria-hidden="true" class="h-3.5 w-3.5 shrink-0" />
+                <span>{{ t('package.ferryTitle') }}</span>
+              </div>
+              <div class="space-y-1 text-[11px] leading-snug">
+                <p class="flex items-start gap-1.5 text-slate-700 dark:text-slate-200">
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black bg-blue-100 text-[#1E40AF] dark:bg-blue-900/60 dark:text-sky-300 shrink-0">MY</span>
+                  <span>{{ t('package.ferryTextMY') }}</span>
+                </p>
+                <p class="flex items-start gap-1.5 text-slate-600 dark:text-slate-300">
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 shrink-0">SG</span>
+                  <span>{{ t('package.ferryTextSG') }}</span>
+                </p>
+              </div>
+            </div>
 
             <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800">
               <span class="block text-[10px] font-semibold text-slate-400">{{ t('common.from') }}</span>

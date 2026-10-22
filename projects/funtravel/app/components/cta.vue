@@ -17,7 +17,7 @@ const vipChips = computed(() => [
     <div class="relative rounded-3xl overflow-hidden shadow-xl min-h-[360px] flex items-center p-6 sm:p-10 lg:p-14">
       <!-- Background Dining Photo -->
       <img
-        src="/images/destinations/barelang-bridge.jpg"
+        src="/images/destinations/barelang-bridge.webp"
         :alt="t('cta.vipTitle')"
         loading="lazy"
         class="absolute inset-0 w-full h-full object-cover object-center"
@@ -28,7 +28,7 @@ const vipChips = computed(() => [
       <!-- VIP Content Grid -->
       <div class="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         <!-- Left 8 Cols: Title, Description & 4 Glassmorphism Chips -->
-        <div class="lg:col-span-8 text-white">
+        <div class="anim-fade-up lg:col-span-8 text-white">
           <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight mb-3">
             {{ t('cta.vipTitle') }}
           </h2>
@@ -50,7 +50,7 @@ const vipChips = computed(() => [
 
         <!-- Right 4 Cols: Floating White Pricing Card -->
         <div class="lg:col-span-4 flex lg:justify-end">
-          <div class="w-full max-w-xs bg-white rounded-2xl p-6 text-center shadow-2xl border border-white/40 dark:bg-slate-900">
+          <div class="anim-card delay-150 w-full max-w-xs bg-white rounded-2xl p-6 text-center shadow-2xl border border-white/40 dark:bg-slate-900">
             <span class="block text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">
               {{ t('cta.vipPriceLabel') }}
             </span>

@@ -215,3 +215,85 @@ html.dark .ph::after {
   background-repeat: no-repeat;
   padding-inline: 0.15em;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────────────────
+   Scroll Reveal & Entrance Animations (GPU-accelerated, Smooth 60fps)
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Saat scroll reveal aktif di client: sembunyikan elemen sebelum masuk viewport */
+html.js-reveal .anim-fade-up,
+html.js-reveal .anim-card,
+html.js-reveal .anim-fade-in {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+/* Saat elemen terdeteksi masuk viewport ketika di-scroll: jalankan animasi */
+html.js-reveal .anim-fade-up.is-visible {
+  animation: fadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+html.js-reveal .anim-card.is-visible {
+  animation: cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+html.js-reveal .anim-fade-in.is-visible {
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Fallback tanpa JS atau saat render awal */
+html:not(.js-reveal) .anim-fade-up,
+html:not(.js-reveal) .anim-card,
+html:not(.js-reveal) .anim-fade-in {
+  opacity: 1;
+}
+
+/* Saat animasi selesai: lepas lock animation-fill-mode agar interaksi hover tetap bebas */
+.anim-done {
+  opacity: 1 !important;
+  animation: none !important;
+  will-change: auto !important;
+}
+
+.delay-75  { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-250 { animation-delay: 250ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-350 { animation-delay: 350ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+

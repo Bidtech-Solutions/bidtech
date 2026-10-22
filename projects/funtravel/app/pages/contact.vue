@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import {
-  AtSign,
   Building2,
-  CheckCircle2,
-  ExternalLink,
-  MapPin,
-  Navigation,
   Phone,
   PhoneCall,
 } from '@lucide/vue';
@@ -33,19 +28,14 @@ useSeoMeta({
 
       <div class="wrap relative z-10">
         <div class="max-w-3xl">
-          <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-white/80 text-[#1E40AF] backdrop-blur-xs border border-blue-200/60 shadow-xs mb-3.5 dark:bg-slate-900/80 dark:border-blue-900 dark:text-sky-400">
-            <Phone class="w-3.5 h-3.5" />
-            <span>{{ t('contact.badge') }}</span>
-          </span>
-
-          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] dark:text-white">
+          <h1 class="anim-fade-up text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] dark:text-white">
             {{ t('contact.heroTitlePart1') }}<span class="text-[#1E40AF] dark:text-sky-400">{{ t('contact.heroTitlePart2') }}</span>
           </h1>
 
           <!-- Aksen Garis Kuning di Bawah Judul Hero -->
-          <div class="h-1.5 w-24 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full mt-3.5 mb-4 shadow-xs" />
+          <div class="anim-fade-up delay-100 h-1.5 w-24 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full mt-3.5 mb-4 shadow-xs" />
 
-          <p class="text-sm sm:text-lg text-slate-600 leading-relaxed max-w-2xl dark:text-slate-300">
+          <p class="anim-fade-up delay-100 text-sm sm:text-lg text-slate-600 leading-relaxed max-w-2xl dark:text-slate-300">
             {{ t('contact.heroIntro') }}
           </p>
         </div>
@@ -61,7 +51,7 @@ useSeoMeta({
         <!-- ==================================================== -->
         <!-- CARD 1: Kontak Resmi Kantor (PT Fun Batam Holiday)    -->
         <!-- ==================================================== -->
-        <article class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between dark:bg-slate-900 dark:border-slate-800">
+        <article class="anim-card delay-150 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between dark:bg-slate-900 dark:border-slate-800">
           <div class="space-y-4">
             <!-- Header -->
             <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -86,23 +76,11 @@ useSeoMeta({
               </div>
             </div>
 
-            <!-- Email Resmi Perusahaan -->
-            <div class="bg-[#F8FAFC] rounded-2xl p-4 flex items-start gap-3.5 border border-slate-100 dark:bg-slate-800/60 dark:border-slate-800">
-              <div class="w-10 h-10 rounded-xl bg-[#0047AB] text-white flex items-center justify-center shrink-0 shadow-xs">
-                <AtSign class="w-5 h-5" />
-              </div>
-              <div class="min-w-0">
-                <span class="text-[11px] font-semibold text-slate-400 block">{{ t('common.emailOfficial') }}</span>
-                <span class="text-xs sm:text-sm font-extrabold text-[#0047AB] dark:text-sky-400 block leading-tight">info@funtravelbatam.com</span>
-                <span class="text-xs sm:text-sm font-extrabold text-[#0047AB] dark:text-sky-400 block leading-tight">booking@funtravelbatam.com</span>
-                <span class="text-[11px] text-slate-400 block mt-0.5">{{ t('common.corporateInvoice') }}</span>
-              </div>
-            </div>
           </div>
 
-          <!-- Media Sosial Resmi (@funtravelbatam) -->
+          <!-- Media Sosial Resmi -->
           <div class="pt-5 mt-4 border-t border-slate-100 dark:border-slate-800">
-            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block mb-3">{{ t('common.officialSocial') }} (@funtravelbatam):</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block mb-3">{{ t('common.officialSocial') }}:</span>
             <div class="grid grid-cols-3 gap-2 sm:gap-2.5">
               <a
                 :href="site.socials.instagram"
@@ -142,9 +120,9 @@ useSeoMeta({
         </article>
 
         <!-- ==================================================== -->
-        <!-- CARD 2: Budi Santoso (Admin 1)                        -->
+        <!-- CARD 2: Billy (Admin 1)                               -->
         <!-- ==================================================== -->
-        <article class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between relative overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+        <article class="anim-card delay-250 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between relative overflow-hidden dark:bg-slate-900 dark:border-slate-800">
           <!-- Ambient Glow Corner -->
           <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-blue-100/40 blur-2xl pointer-events-none dark:bg-blue-900/10" />
 
@@ -153,7 +131,7 @@ useSeoMeta({
             <div class="flex items-center gap-3.5">
               <div class="relative shrink-0">
                 <div class="w-14 h-14 rounded-2xl bg-[#0047AB] text-white flex items-center justify-center font-black text-xl shadow-sm">
-                  BS
+                  B
                 </div>
                 <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#10B981] border-2 border-white dark:border-slate-900 shadow-xs" />
               </div>
@@ -169,7 +147,7 @@ useSeoMeta({
                   <PhoneCall class="w-3.5 h-3.5 text-[#0047AB] dark:text-sky-400" />
                   {{ t('common.contactNumber') }}
                 </span>
-                <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">+62 812 7000 2728</span>
+                <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">{{ site.admins[0]?.display || '+62 859 6057 7702' }}</span>
               </div>
 
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -191,17 +169,13 @@ useSeoMeta({
               <span aria-hidden="true" class="icon-wa h-4 w-4 shrink-0" />
               <span>{{ t('contact.budiButton') }}</span>
             </a>
-            <div class="flex items-center justify-center gap-1.5 mt-2.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>{{ t('common.quickResponse') }}</span>
-            </div>
           </div>
         </article>
 
         <!-- ==================================================== -->
-        <!-- CARD 3: Dewi Lestari (Admin 2)                        -->
+        <!-- CARD 3: Billy (Admin 2)                               -->
         <!-- ==================================================== -->
-        <article class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between relative overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+        <article class="anim-card delay-350 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between relative overflow-hidden dark:bg-slate-900 dark:border-slate-800">
           <!-- Ambient Glow Corner -->
           <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-amber-100/50 blur-2xl pointer-events-none dark:bg-amber-900/10" />
 
@@ -210,7 +184,7 @@ useSeoMeta({
             <div class="flex items-center gap-3.5">
               <div class="relative shrink-0">
                 <div class="w-14 h-14 rounded-2xl bg-[#6E540C] text-white flex items-center justify-center font-black text-xl shadow-sm">
-                  DL
+                  B
                 </div>
                 <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#10B981] border-2 border-white dark:border-slate-900 shadow-xs" />
               </div>
@@ -226,7 +200,7 @@ useSeoMeta({
                   <PhoneCall class="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                   {{ t('common.contactNumber') }}
                 </span>
-                <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">+62 812 7711 1154</span>
+                <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">{{ site.admins[1]?.display || '+62 852 7202 3809' }}</span>
               </div>
 
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -248,95 +222,9 @@ useSeoMeta({
               <span aria-hidden="true" class="icon-wa h-4 w-4 shrink-0" />
               <span>{{ t('contact.dewiButton') }}</span>
             </a>
-            <div class="flex items-center justify-center gap-1.5 mt-2.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>{{ t('common.freeConsult') }}</span>
-            </div>
           </div>
         </article>
       </section>
-
-      <!-- ============================================================ -->
-      <!-- 3. LOKASI KANTOR & AREA PENJEMPUTAN                          -->
-      <!-- ============================================================ -->
-      <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 dark:bg-slate-900 dark:border-slate-800">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] dark:text-sky-400">{{ t('common.officeLocation') }}</span>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-white">
-              {{ t('common.officeLocation') }}
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl dark:text-slate-400">
-              {{ t('common.officeLocationSubtitle') }}
-            </p>
-          </div>
-          <a
-            href="https://maps.google.com/?q=Batam+Center,+Batam,+Kepulauan+Riau"
-            target="_blank"
-            rel="noopener"
-            class="inline-flex items-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white text-xs font-bold py-2.5 px-4 rounded-full shadow-sm transition-all self-start sm:self-auto"
-          >
-            <Navigation class="w-3.5 h-3.5" />
-            <span>{{ t('common.openGoogleMaps') }}</span>
-            <ExternalLink class="w-3 h-3 ml-0.5" />
-          </a>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          <!-- Detail Alamat & Area Layanan -->
-          <div class="lg:col-span-5 space-y-4 flex flex-col justify-between">
-            <div class="space-y-3">
-              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 dark:bg-slate-800/60 dark:border-slate-800">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1">{{ t('common.officeAddress') }}</span>
-                <p class="text-sm font-extrabold text-slate-900 dark:text-white leading-snug">
-                  Batam Center, Kota Batam
-                </p>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Kepulauan Riau 29432, Indonesia
-                </p>
-              </div>
-
-              <div>
-                <span class="text-xs font-bold text-slate-900 block mb-2 dark:text-white">{{ t('common.popularPickup') }}</span>
-                <ul class="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
-                  <li class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#1E40AF] shrink-0 dark:bg-sky-400" />
-                    <span>Pelabuhan Ferry Batam Centre</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#1E40AF] shrink-0 dark:bg-sky-400" />
-                    <span>Pelabuhan Ferry Harbour Bay (Batu Ampar)</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#1E40AF] shrink-0 dark:bg-sky-400" />
-                    <span>Pelabuhan Ferry Nongsapura &amp; Sekupang</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#1E40AF] shrink-0 dark:bg-sky-400" />
-                    <span>Bandara Internasional Hang Nadim (BTH)</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#1E40AF] shrink-0 dark:bg-sky-400" />
-                    <span>Hotel &amp; Resort Batam serta Kawasan Bintan</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Google Maps Embed -->
-          <div class="lg:col-span-7 h-72 sm:h-80 rounded-2xl overflow-hidden border border-slate-200 shadow-inner relative dark:border-slate-800">
-            <iframe
-              title="Lokasi Kantor Fun Travel Batam Center"
-              src="https://maps.google.com/maps?q=Batam+Center,+Batam,+Kepulauan+Riau,+Indonesia&t=&z=14&ie=UTF8&iwloc=&output=embed"
-              class="w-full h-full border-0"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            />
-          </div>
-        </div>
-      </section>
-
     </main>
 
     <!-- Global CTA Banner Component -->

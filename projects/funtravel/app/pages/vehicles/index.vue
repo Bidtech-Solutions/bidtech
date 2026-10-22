@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, ArrowUpDown, Bike, Car, Cog, Info, KeyRound, Luggage, Search, Star, UserCheck, Users, X } from '@lucide/vue';
+import { ArrowRight, ArrowUpDown, Bike, Car, Cog, KeyRound, Luggage, Search, Star, UserCheck, Users, X } from '@lucide/vue';
 import data from '~/assets/data/vehicles.json';
 
 const { t, locale } = useI18n();
@@ -124,21 +124,18 @@ function handleBookingSubmit() {
 
       <div class="wrap relative z-10">
         <div class="max-w-3xl">
-          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] dark:text-white">
+          <h1 class="anim-fade-up text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] dark:text-white">
             {{ t('vehicles.title') }} &amp; <span class="text-[#1E40AF] dark:text-sky-400">Rental Batam</span>
           </h1>
           <!-- Aksen garis kuning di bawah judul hero -->
-          <div class="h-1.5 w-24 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full mt-3.5 mb-4 shadow-xs" />
-          <p class="text-sm sm:text-lg text-slate-600 leading-relaxed max-w-2xl dark:text-slate-300">
+          <div class="anim-fade-up delay-100 h-1.5 w-24 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full mt-3.5 mb-4 shadow-xs" />
+          <p class="anim-fade-up delay-100 text-sm sm:text-lg text-slate-600 leading-relaxed max-w-2xl dark:text-slate-300">
             {{ t('vehicles.intro') }}
-          </p>
-          <p v-if="fxNote('vehicle')" class="mt-2 text-xs text-slate-500 font-medium dark:text-slate-400">
-            <Info aria-hidden="true" class="inline h-3.5 w-3.5 -mt-0.5 mr-1" />{{ fxNote('vehicle') }}
           </p>
         </div>
 
         <!-- Floating Search & Sort Bar -->
-        <div class="mt-10 max-w-2xl mx-auto relative z-30">
+        <div class="anim-fade-up delay-150 mt-10 max-w-2xl mx-auto relative z-30">
           <div class="bg-white/95 backdrop-blur-md border border-slate-200 rounded-3xl sm:rounded-full p-1.5 shadow-md flex flex-col sm:flex-row items-stretch sm:items-center gap-2 dark:border-slate-700 dark:bg-slate-900/95">
             <!-- Search Input -->
             <div class="flex items-center gap-2.5 flex-1 pl-4 pr-2 py-1.5">
@@ -178,7 +175,7 @@ function handleBookingSubmit() {
     <!-- Main Content Fleet Grids -->
     <main class="wrap py-10 sm:py-14 space-y-16">
       <!-- Category Tabs (filter section Mobil / Motor) -->
-      <div class="flex flex-wrap items-center gap-2 !mb-6">
+      <div class="anim-fade-up delay-200 flex flex-wrap items-center gap-2 !mb-6">
         <button
           v-for="tab in tabs"
           :key="tab.id"
@@ -195,7 +192,7 @@ function handleBookingSubmit() {
 
       <!-- Armada: satu grid, kartu mobil & motor seragam (beda hanya dari data) -->
       <section class="space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div class="anim-fade-up delay-250 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight dark:text-white">{{ t('vehicle.fleetTitle') }}</h2>
             <p class="text-xs sm:text-sm text-slate-500 mt-1 dark:text-slate-400">
@@ -207,10 +204,11 @@ function handleBookingSubmit() {
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <article
-            v-for="v in processedVehicles"
+            v-for="(v, idx) in processedVehicles"
             :key="v.slug"
             :class="[
-              'group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+              'anim-card group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+              idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : idx === 2 ? 'delay-200' : idx === 3 ? 'delay-250' : idx === 4 ? 'delay-300' : 'delay-350',
               v.bestSeller ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
             ]"
           >

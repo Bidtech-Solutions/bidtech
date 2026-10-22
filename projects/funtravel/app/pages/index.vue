@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDown, ArrowRight, Car, Check, ChevronDown, Info, Ship, X } from '@lucide/vue';
+import { ArrowDown, ArrowRight, Car, Check, ChevronDown, Ship, X } from '@lucide/vue';
 import faqs from '~/assets/data/faqs.json';
 import pkgData from '~/assets/data/packages.json';
 
@@ -93,7 +93,7 @@ function handleBookingSubmit() {
       <div class="relative rounded-[2.25rem] sm:rounded-[2.5rem] overflow-hidden shadow-xl min-h-[440px] sm:min-h-[500px] flex items-center px-6 py-12 sm:px-12 lg:px-16">
         <!-- Hero Tropical Seascape Background (Pemandangan Barelang Dari Jauh) -->
         <img
-          src="/images/barelang-distant.jpg"
+          src="/images/barelang-distant.webp"
           alt="Pemandangan Jembatan Barelang dari jauh, Batam"
           fetchpriority="high"
           class="absolute inset-0 w-full h-full object-cover object-center"
@@ -105,17 +105,17 @@ function handleBookingSubmit() {
         <!-- Content Overlay (Left-aligned, Clean & Spacious) -->
         <div class="relative z-10 max-w-2xl space-y-4 sm:space-y-5">
           <!-- Main Bold Headline -->
-          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] whitespace-pre-line">
+          <h1 class="anim-fade-up text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] whitespace-pre-line">
             {{ t('home.heroTitle') }}
           </h1>
 
           <!-- Subtitle Description -->
-          <p class="text-xs sm:text-sm lg:text-[15px] text-slate-200/95 font-normal leading-relaxed max-w-2xl">
+          <p class="anim-fade-up delay-100 text-xs sm:text-sm lg:text-[15px] text-slate-200/95 font-normal leading-relaxed max-w-2xl">
             {{ t('home.heroSubtitle') }}
           </p>
 
           <!-- Action CTA Buttons -->
-          <div class="flex flex-wrap items-center gap-3.5 pt-3">
+          <div class="anim-fade-up delay-200 flex flex-wrap items-center gap-3.5 pt-3">
             <a
               href="#packages"
               class="inline-flex items-center gap-1.5 px-6 py-3.5 rounded-full bg-[#FFC72C] hover:bg-[#F2BD27] text-slate-950 font-black text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer"
@@ -141,7 +141,7 @@ function handleBookingSubmit() {
     <section id="packages" class="wrap scroll-mt-24 py-8 sm:py-10">
       <div class="space-y-8">
         <!-- Section Header & Filter Pills -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div class="anim-fade-up flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
               {{ t('home.popularPackages') }}
@@ -172,18 +172,15 @@ function handleBookingSubmit() {
           </div>
         </div>
 
-        <!-- Catatan mata uang (IDR → paket tetap MYR; MYR→SGD = estimasi kurs) -->
-        <p v-if="fxNote('package')" class="flex items-start gap-1.5 text-xs text-slate-500 dark:text-slate-400 -mt-4">
-          <Info aria-hidden="true" class="h-3.5 w-3.5 mt-0.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
-          <span>{{ fxNote('package') }}</span>
-        </p>
-
         <!-- Packages Grid (Limited to 3) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <article
-            v-for="p in filteredPackages"
+            v-for="(p, idx) in filteredPackages"
             :key="p.slug"
-            class="bg-white rounded-2xl border border-[#E2E8F0] p-4 shadow-[0_4px_12px_rgba(30,64,175,0.08)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col dark:bg-slate-900 dark:border-slate-800"
+            :class="[
+              'anim-card bg-white rounded-2xl border border-[#E2E8F0] p-4 shadow-[0_4px_12px_rgba(30,64,175,0.08)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col dark:bg-slate-900 dark:border-slate-800',
+              idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : 'delay-200',
+            ]"
           >
             <!-- Visual Header with Image & Badges -->
             <div class="relative rounded-xl overflow-hidden aspect-[16/10] mb-4 bg-slate-200 dark:bg-slate-700">
@@ -217,11 +214,23 @@ function handleBookingSubmit() {
                 </li>
               </ul>
 
-              <!-- Ferry terminal note (wajib di setiap kartu paket) -->
-              <p class="mt-auto mb-4 flex items-center gap-1.5 text-[11px] text-slate-400">
-                <Ship class="w-3.5 h-3.5 text-[#1E40AF] shrink-0 dark:text-sky-400" />
-                <span>{{ t('package.ferryText') }} {{ ferryAddOn(p.sgAddOn) }}</span>
-              </p>
+              <!-- Penegasan rute & terminal feri (Malaysia Base vs Singapore Add-on) -->
+              <div class="mt-auto mb-4 rounded-xl border border-blue-100/90 bg-gradient-to-r from-blue-50/70 to-indigo-50/40 p-2.5 dark:border-slate-800 dark:bg-slate-800/50">
+                <div class="flex items-center gap-1.5 font-extrabold text-[11px] text-[#1E40AF] dark:text-sky-400 mb-1">
+                  <Ship class="w-3.5 h-3.5 text-[#1E40AF] shrink-0 dark:text-sky-400" />
+                  <span>{{ t('package.ferryTitle') }}</span>
+                </div>
+                <div class="space-y-1 text-[11px] leading-snug">
+                  <p class="flex items-start gap-1.5 text-slate-700 dark:text-slate-200">
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black bg-blue-100 text-[#1E40AF] dark:bg-blue-900/60 dark:text-sky-300 shrink-0">MY</span>
+                    <span>{{ t('package.ferryTextMY') }}</span>
+                  </p>
+                  <p class="flex items-start gap-1.5 text-slate-600 dark:text-slate-300">
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 shrink-0">SG</span>
+                    <span>{{ t('package.ferryTextSG') }}</span>
+                  </p>
+                </div>
+              </div>
 
               <NuxtLink
                 :to="localePath(`/packages/${p.slug}`)"
@@ -251,7 +260,7 @@ function handleBookingSubmit() {
     <!-- 4. POPULAR DESTINATIONS BENTO GRID         -->
     <!-- ========================================== -->
     <section id="destinasi" class="wrap scroll-mt-24 py-8 sm:py-10 space-y-7">
-      <div>
+      <div class="anim-fade-up">
         <span class="block text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] mb-1 dark:text-sky-400">{{ t('home.destHighlights') }}</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
           {{ t('home.spotWisataTitle') }}
@@ -267,8 +276,8 @@ function handleBookingSubmit() {
           v-for="(dest, i) in destinations"
           :key="dest.id"
           :class="[
-            'group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#071330] shadow-[0_8px_24px_rgba(11,27,77,0.18)] hover:shadow-[0_16px_36px_rgba(14,35,95,0.32)] hover:-translate-y-1 transition-all duration-300',
-            i === 0 ? 'md:col-span-6 h-64 sm:h-72' : i === 1 || i === 2 ? 'md:col-span-3 h-64 sm:h-72' : 'md:col-span-6 h-60 sm:h-64',
+            'anim-card group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#071330] shadow-[0_8px_24px_rgba(11,27,77,0.18)] hover:shadow-[0_16px_36px_rgba(14,35,95,0.32)] hover:-translate-y-1 transition-all duration-300',
+            i === 0 ? 'md:col-span-6 h-64 sm:h-72 delay-75' : i === 1 ? 'md:col-span-3 h-64 sm:h-72 delay-150' : i === 2 ? 'md:col-span-3 h-64 sm:h-72 delay-200' : 'md:col-span-6 h-60 sm:h-64 delay-250',
           ]"
         >
           <img
@@ -303,7 +312,7 @@ function handleBookingSubmit() {
     <!-- 7. FREQUENTLY ASKED QUESTIONS (FAQ)        -->
     <!-- ========================================== -->
     <section id="faq" class="wrap scroll-mt-24 py-8 sm:py-10 space-y-7">
-      <div>
+      <div class="anim-fade-up">
         <span class="block text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] mb-1 dark:text-sky-400">{{ t('faq.tag') }}</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
           {{ t('faq.title') }}
@@ -315,9 +324,12 @@ function handleBookingSubmit() {
 
       <div class="space-y-3">
         <div
-          v-for="f in homeFaqs"
+          v-for="(f, idx) in homeFaqs"
           :key="f.id"
-          class="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden shadow-xs hover:border-slate-300 dark:bg-slate-900 dark:border-slate-800 dark:hover:border-slate-700 transition-colors"
+          :class="[
+            'anim-card bg-white border border-[#E2E8F0] rounded-xl overflow-hidden shadow-xs hover:border-slate-300 dark:bg-slate-900 dark:border-slate-800 dark:hover:border-slate-700 transition-colors',
+            idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : idx === 2 ? 'delay-200' : 'delay-250',
+          ]"
         >
           <button
             type="button"

@@ -74,10 +74,10 @@ export default defineNuxtConfig({
     restructureDir: 'app/i18n', // app/i18n/{i18n.config.ts, locales/*.json}
     langDir: 'locales',
     locales,
-    defaultLocale: 'en',
+    defaultLocale: 'id',
     strategy: 'prefix', // /id/…, /en/…, /ms/…, /zh/…
     baseUrl: siteUrl,
-    detectBrowserLanguage: { useCookie: true, cookieKey: 'ft_locale', redirectOn: 'root', fallbackLocale: 'en' },
+    detectBrowserLanguage: { useCookie: true, cookieKey: 'ft_locale', redirectOn: 'root', fallbackLocale: 'id' },
   },
 
   // ── @nuxtjs/sitemap & @nuxtjs/robots ── membaca `site` (nuxt-site-config)

@@ -92,13 +92,8 @@ export function useSite() {
   // Kendaraan: harga dasar IDR, tampil IDR/MYR/SGD. Total hari dibulatkan sekali.
   const vehPrice = (idr: number, days = 1) => fmt(convert(idr * days, 'IDR', currency.value, rates.value), currency.value);
 
-  /** Catatan di dekat harga: "harga konversi = estimasi" atau "paket khusus mancanegara"; '' bila tidak perlu. */
-  const fxNote = (kind: 'package' | 'vehicle') => {
-    if (kind === 'package' && currency.value === 'IDR') return '';
-    if (currency.value === (kind === 'package' ? 'MYR' : 'IDR')) return '';
-    const d = rates.value.date;
-    return d ? t('price.estimateNote', { date: fmtDate(d) }) : t('price.estimateNoteSeed');
-  };
+  /** Catatan di dekat harga: dinonaktifkan sesuai permintaan klien. */
+  const fxNote = (_kind?: 'package' | 'vehicle') => '';
 
   /** Fasilitas paket (include/exclude/catatan) per kunci, sudah diterjemahkan. */
   const facility = (key: string) => {
@@ -120,11 +115,11 @@ export function useSite() {
     }
   }
 
-  /** Mode gelap/terang: kelas `dark` di <html> + simpan pilihan (dibaca skrip head di layout). */
+  /** Mode gelap dinonaktifkan: pastikan dokumen selalu dalam mode terang. */
   function toggleTheme() {
-    const dark = document.documentElement.classList.toggle('dark');
+    document.documentElement.classList.remove('dark');
     try {
-      localStorage.setItem('ft_theme', dark ? 'dark' : 'light');
+      localStorage.removeItem('ft_theme');
     } catch {
       /* penyimpanan diblokir */
     }

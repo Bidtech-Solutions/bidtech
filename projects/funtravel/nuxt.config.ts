@@ -1,6 +1,10 @@
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import packagesData from './app/assets/data/packages.json';
 import vehiclesData from './app/assets/data/vehicles.json';
+import faqsData from './app/assets/data/faqs.json';
+import siteData from './app/assets/data/site.json';
 
 // URL produksi tanpa "/" akhir. Dipakai canonical, hreflang, sitemap, robots, llms.txt.
 const siteUrl = (process.env.NUXT_PUBLIC_SITE_URL || 'https://fungetgo.com').replace(/\/$/, '');
@@ -28,6 +32,65 @@ const facilities = packagesData.facilities as Record<string, { label: { en: stri
 const rm = (n: number) => `RM ${n}`;
 const idr = (n: number) => `Rp ${n.toLocaleString('en-US')}`;
 
+const addr = siteData.address;
+const addressLine = `${addr.street}, ${addr.locality}, ${addr.city}, ${addr.region}, Indonesia`;
+const adminLine = siteData.admins.map((a) => `${a.label}: ${a.display} (WhatsApp)`).join('; ');
+const list = (xs: string[]) => xs.map((x) => `- ${x}`).join('\n');
+
+// llms-full.txt: versi lengkap llms.txt (nuxt-llms 0.2 hanya membuat ringkasan), dibentuk dari data yang sama.
+function buildLlmsFull() {
+  const f = packagesData.facilities as Record<string, { label: { en: string }; detail?: { en: string } }>;
+  const dest = Object.fromEntries(packagesData.destinations.map((d) => [d.id, d]));
+  const packages = packagesData.packages.map((p) =>
+    [
+      `### ${p.code} — ${p.name.en}`,
+      `URL: ${siteUrl}/en/packages/${p.slug}`,
+      `Duration: ${p.days} days ${p.nights} night(s). Price: from ${rm(p.price)} per person (departing from a Malaysian ferry terminal; departing from Singapore has an add-on).`,
+      `Includes:
+${list(p.includes.map((k) => `${f[k]?.label.en}${f[k]?.detail ? ` — ${f[k]?.detail?.en}` : ''}`))}`,
+      `Excludes:
+${list(p.excludes.map((k) => f[k]?.label.en ?? k))}`,
+      p.notes.length ? `Notes:
+${list(p.notes.map((k) => f[k]?.label.en ?? k))}` : '',
+      `Selectable destinations (choose up to ${p.maxDestinations}):
+${list(p.destinations.map((id) => `${dest[id]?.name.en}: ${dest[id]?.summary.en}`))}`,
+    ]
+      .filter(Boolean)
+      .join('\n\n'),
+  );
+  const vehicles = vehiclesData.vehicles.map(
+    (v) =>
+      `### ${v.brand} ${v.model}
+URL: ${siteUrl}/en/vehicles/${v.slug}
+Type: ${v.type === 'car' ? 'Car with driver' : 'Self-drive scooter'}. Price: from ${idr(v.pricePerDay)} per day. Seats: ${v.seats}. Transmission: ${v.transmission}.
+${(v as { tagline?: { en: string } }).tagline?.en ?? ''}`,
+  );
+  const faqs = faqsData.map((q) => `### ${q.q.en}
+${q.a.en}`);
+  return `# FUN TRAVEL & TRANSPORT (PT Fun Batam Holiday) — full reference
+
+> Travel agency in Batam, Indonesia: all-in Batam and Batam–Bintan holiday packages for travellers from Malaysia and Singapore, car rental with driver and self-drive scooter rental.
+
+## Business facts
+- Legal name: ${siteData.legalName}. Brand: ${siteData.brandName}.
+- Office: ${addressLine}.
+- Contact: ${adminLine}.
+- Website: ${siteUrl} (languages: Bahasa Indonesia /id, English /en, Bahasa Melayu /ms, Simplified Chinese /zh).
+- Service area: ${siteData.areaServed.join(', ')}. Prices are shown in IDR, MYR or SGD; final prices are confirmed by the admin on WhatsApp.
+- Cars are always rented with a driver; scooters are self-drive. Holiday packages are for international travellers (Malaysia and Singapore).
+- Short version of this file: ${siteUrl}/llms.txt
+
+## Holiday packages
+${packages.join('\n\n')}
+
+## Vehicle rental
+${vehicles.join('\n\n')}
+
+## Frequently asked questions
+${faqs.join('\n\n')}
+`;
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-01',
   devtools: { enabled: false },
@@ -36,6 +99,16 @@ export default defineNuxtConfig({
 
   // 100% statis: `nuxt generate` → .output/public (disajikan Nginx). Tanpa server Node di produksi.
   ssr: true,
+  hooks: {
+    // Tulis llms-full.txt ke folder publik hasil `nuxt generate`
+    'nitro:init': (nitro) => {
+      nitro.hooks.hook('compiled', () => {
+        const dir = nitro.options.output.publicDir;
+        mkdirSync(dir, { recursive: true });
+        writeFileSync(join(dir, 'llms-full.txt'), buildLlmsFull(), 'utf8');
+      });
+    },
+  },
   nitro: {
     prerender: {
       routes: locales.flatMap((l) => paths.map((p) => `/${l.code}${p}`)),
@@ -66,7 +139,11 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    public: { gaId: process.env.NUXT_PUBLIC_GA_ID || 'G-WHRTBCCN9Y' }, // Google tag (gtag.js)
+    public: {
+      gaId: process.env.NUXT_PUBLIC_GA_ID || 'G-WHRTBCCN9Y', // Google tag (gtag.js)
+      googleSiteVerification: process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '', // meta verifikasi Search Console (opsional)
+      bingSiteVerification: process.env.NUXT_PUBLIC_BING_SITE_VERIFICATION || '', // Bing Webmaster (opsional)
+    },
   },
 
   // ── @nuxtjs/i18n ── https://next.i18n.nuxtjs.org
@@ -83,6 +160,23 @@ export default defineNuxtConfig({
   // ── @nuxtjs/sitemap & @nuxtjs/robots ── membaca `site` (nuxt-site-config)
   site: { url: siteUrl, name: 'FUN TRAVEL & TRANSPORT' },
 
+  sitemap: {
+    // lastmod = waktu build (autoLastmod); 404 tidak dimasukkan
+    autoLastmod: true,
+    exclude: ['/**/404', '/404'],
+  },
+
+  robots: {
+    groups: [
+      { userAgent: ['*'], allow: ['/'], disallow: ['/_nuxt/builds/'] },
+      // Crawler AI/pencarian generatif diizinkan (tujuan GEO)
+      {
+        userAgent: ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'Bingbot'],
+        allow: ['/'],
+      },
+    ],
+  },
+
   // ── nuxt-llms ──
   llms: {
     domain: siteUrl,
@@ -90,6 +184,11 @@ export default defineNuxtConfig({
     description:
       'Travel agency in Batam, Indonesia. All-in Batam and Batam–Bintan holiday packages for international travellers from Malaysia and Singapore, plus car rental with driver and self-drive scooter rental.',
     sections: [
+      {
+        title: 'About',
+        description: `${siteData.legalName} (${siteData.brandName}) — office: ${addressLine}. Languages: Bahasa Indonesia, English, Bahasa Melayu, Simplified Chinese (${siteUrl}/id, /en, /ms, /zh). Full reference: ${siteUrl}/llms-full.txt`,
+        links: [{ title: 'Home', description: 'Overview of packages and vehicles.', href: `${siteUrl}/en` }],
+      },
       {
         title: 'Holiday packages',
         description: 'Prices are "from" prices per person in MYR, departing from a Malaysian ferry terminal. Departing from Singapore has an add-on.',
@@ -110,7 +209,7 @@ export default defineNuxtConfig({
       },
       {
         title: 'Contact',
-        links: [{ title: 'Contact, official payment methods and FAQ', description: 'WhatsApp admins, QRIS, bank accounts, frequently asked questions.', href: `${siteUrl}/en/contact` }],
+        links: [{ title: 'Contact and FAQ', description: `${adminLine}. Office: ${addressLine}. Frequently asked questions about packages, ferry, vehicle rental and booking.`, href: `${siteUrl}/en/contact` }],
       },
     ],
   },

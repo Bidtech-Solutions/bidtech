@@ -110,5 +110,37 @@
       "zh": "选择配套或车辆，填写行程信息后点击\"通过 WhatsApp 预订\"。系统会自动生成包含您信息的消息，客服将确认空位及最终价格。",
       "id": "Pilih paket atau kendaraan, isi detail perjalanan, lalu tekan \"Pesan via WhatsApp\". Pesan berisi detail Anda otomatis disiapkan untuk admin, yang akan mengonfirmasi ketersediaan dan harga final."
     }
+  },
+  {
+    "id": "office-location",
+    "home": false,
+    "q": {
+      "en": "Where is the Fun Travel & Transport office?",
+      "ms": "Di mana pejabat Fun Travel & Transport?",
+      "zh": "Fun Travel & Transport 的办公室在哪里？",
+      "id": "Di mana kantor Fun Travel & Transport?"
+    },
+    "a": {
+      "en": "Our office is at Ruko Botania 2 Blok B9 No. 2B, Batam Kota, Batam, Kepulauan Riau, Indonesia. Message our admins on WhatsApp before visiting.",
+      "ms": "Pejabat kami terletak di Ruko Botania 2 Blok B9 No. 2B, Batam Kota, Batam, Kepulauan Riau, Indonesia. Sila hubungi admin kami melalui WhatsApp sebelum berkunjung.",
+      "zh": "我们的办公室位于 Ruko Botania 2 Blok B9 No. 2B, Batam Kota, Batam, Kepulauan Riau, Indonesia。到访前请先通过 WhatsApp 联系客服。",
+      "id": "Kantor kami berada di Ruko Botania 2 Blok B9 No. 2B, Batam Kota, Batam, Kepulauan Riau. Silakan hubungi admin lewat WhatsApp sebelum berkunjung."
+    }
+  },
+  {
+    "id": "languages-currency",
+    "home": false,
+    "q": {
+      "en": "Which languages and currencies does the website support?",
+      "ms": "Bahasa dan mata wang apakah yang disokong laman web ini?",
+      "zh": "网站支持哪些语言和货币？",
+      "id": "Bahasa dan mata uang apa saja yang didukung situs ini?"
+    },
+    "a": {
+      "en": "The website is available in Bahasa Indonesia, English, Bahasa Melayu and Simplified Chinese. Prices can be shown in IDR, MYR or SGD; converted prices are estimates and the final price is confirmed by our admin on WhatsApp.",
+      "ms": "Laman web ini tersedia dalam Bahasa Indonesia, Inggeris, Bahasa Melayu dan Cina Ringkas. Harga boleh dipaparkan dalam IDR, MYR atau SGD; harga tukaran adalah anggaran dan harga akhir disahkan oleh admin kami melalui WhatsApp.",
+      "zh": "网站提供印尼语、英语、马来语和简体中文。价格可以印尼盾 (IDR)、马币 (MYR) 或新币 (SGD) 显示；换算价格仅为估算，最终价格由客服通过 WhatsApp 确认。",
+      "id": "Situs tersedia dalam Bahasa Indonesia, Inggris, Melayu, dan Mandarin Sederhana. Harga dapat ditampilkan dalam IDR, MYR, atau SGD; harga konversi adalah estimasi dan harga final dikonfirmasi admin lewat WhatsApp."
+    }
   }
 ]

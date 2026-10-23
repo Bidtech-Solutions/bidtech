@@ -40,17 +40,20 @@ const localePath = useLocalePath();
 const siteUrl = useSiteConfig().url;
 const { loc, locArray, chipLoc, img, fmt, fmtDate, waUrl, vehPrice, fxNote, scheme } = useSite();
 
+const photos = v.images.filter((f) => img(f));
+const absUrl = (u?: string) => (u?.startsWith('/') ? siteUrl + u : u);
 const name = `${v.brand} ${v.model}`;
 const isCar = v.type === 'car';
 const url = computed(() => `${siteUrl}${localePath(`/vehicles/${v.slug}`)}`);
 // Kendaraan lainnya: tipe yang sama didahulukan
 const others = [...data.vehicles.filter((x) => x.slug !== v.slug && x.type === v.type), ...data.vehicles.filter((x) => x.type !== v.type)].slice(0, 3);
-const description = computed(() => t(isCar ? 'vehicle.descCar' : 'vehicle.descMotor', { model: name }));
+const description = computed(() => `${loc(v.tagline)} ${t(isCar ? 'vehicle.descCar' : 'vehicle.descMotor', { model: name })}`); // tagline unik per unit → deskripsi tidak duplikat antar model
 const answer = computed(() => t('vehicle.answer', { name, price: fmt(v.pricePerDay, 'IDR'), scheme: scheme(v.type) })); // SEO: mata uang dasar (IDR)
 
 useSeoMeta({
   title: () => `${name} — ${fmt(v.pricePerDay, 'IDR')}${t('common.perDay')}`,
   description: () => `${answer.value} ${description.value}`,
+  ogImage: () => absUrl(img(photos[0])),
 });
 useHead(() => ({
   script: [
@@ -65,6 +68,7 @@ useHead(() => ({
         model: v.model,
         description: answer.value,
         url: url.value,
+        image: photos.map((f) => absUrl(img(f))),
         category: isCar ? 'Car rental with driver' : 'Self-drive scooter rental',
         offers: {
           '@type': 'Offer',
@@ -93,8 +97,6 @@ useHead(() => ({
   ],
 }));
 
-// ── Galeri: foto utama + grid thumbnail (klik → jadi foto utama) ──
-const photos = v.images.filter((f) => img(f));
 const active = ref(0);
 
 const policyMap: Record<'car' | 'motor', Record<string, { title: string; text: string }[]>> = {

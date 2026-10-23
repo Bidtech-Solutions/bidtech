@@ -120,7 +120,10 @@
     "spotWisataTitle": "巴淡岛与民丹岛标志性景点",
     "spotWisataDesc": "壮丽的巴里浪大桥、民丹岛蓝色沙漠沙丘、免税购物中心以及海岸水上奎笼海鲜美食。",
     "destHighlights": "精选旅游目的地",
-    "requestCustomTour": "申请定制旅游行程"
+    "requestCustomTour": "申请定制旅游行程",
+    "heroAlt": "远眺巴淡岛巴雷朗大桥",
+    "bookingTitle": "WhatsApp 预订表单",
+    "bookingSubtitle": "运营商官方价格，无中间商加价"
   },
   "packages": {
     "metaTitle": "巴淡岛与民丹岛旅游配套",
@@ -206,7 +209,9 @@
     "intro": "配本地司机的汽车与自驾摩托车，轻松畅游巴淡岛。",
     "filterAll": "全部",
     "filterCars": "汽车",
-    "filterMotorcycles": "摩托车"
+    "filterMotorcycles": "摩托车",
+    "bookingTitle": "租车预订",
+    "bookingSubtitle": "即时预订，直接发送给 WhatsApp 客服"
   },
   "vehicle": {
     "answer": "巴淡岛 {name} 租赁每天 {price} 起（{scheme}）。",
@@ -279,7 +284,8 @@
     "dewiTitle": "Billy（管理员 2）",
     "dewiServices": "定制海滩与美食行程、巴淡与民丹渡轮船票预订、家庭度假与企业团队团建。",
     "dewiButton": "通过WhatsApp联系管理员Billy（2号线）",
-    "dewiTemplate": "您好，Billy管理员（Fun Travel Batam），我想咨询巴淡岛与民丹岛的度假旅游套餐、渡轮船票或定制行程，请提供更多详情，谢谢！"
+    "dewiTemplate": "您好，Billy管理员（Fun Travel Batam），我想咨询巴淡岛与民丹岛的度假旅游套餐、渡轮船票或定制行程，请提供更多详情，谢谢！",
+    "addressTitle": "办公地址"
   },
   "faq": {
     "title": "常见问题",

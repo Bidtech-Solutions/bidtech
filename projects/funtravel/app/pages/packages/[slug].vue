@@ -21,12 +21,16 @@ const items = computed(() =>
     pkg.includes.map((k) => facility(k).label).map((s) => (locale.value === 'zh' ? s : s.charAt(0).toLowerCase() + s.slice(1))),
   ),
 );
+// ── Galeri: foto paket + foto destinasi paket ──
+const photos = [...new Set([...pkg.images, ...dests.map((d) => d.image)])].filter((f): f is string => !!f && !!img(f)); // tanpa foto ganda
+const absUrl = (u?: string) => (u?.startsWith('/') ? siteUrl + u : u);
 const priceText = computed(() => `RM ${pkg.price}`); // SEO selalu dalam mata uang dasar (MYR)
 const answer = computed(() => t('package.answer', { name: name.value, price: priceText.value, items: items.value }));
 
 useSeoMeta({
   title: name,
   description: () => t('package.metaDescription', { name: name.value, price: priceText.value, items: items.value }),
+  ogImage: () => absUrl(img(photos[0])),
 });
 useHead(() => ({
   script: [
@@ -39,6 +43,7 @@ useHead(() => ({
         name: name.value,
         description: answer.value,
         url: url.value,
+        image: photos.slice(0, 4).map((f) => absUrl(img(f))),
         touristType: ['Family', 'Leisure'],
         provider: { '@id': `${siteUrl}/#organization` },
         itinerary: {
@@ -72,8 +77,6 @@ useHead(() => ({
   ],
 }));
 
-// ── Galeri: foto paket + foto destinasi paket ──
-const photos = [...new Set([...pkg.images, ...dests.map((d) => d.image)])].filter((f): f is string => !!f && !!img(f)); // tanpa foto ganda
 const active = ref(0);
 const recs = [...data.packages.filter((p) => p.slug !== pkg.slug && p.region === pkg.region), ...data.packages.filter((p) => p.region !== pkg.region)].slice(0, 3);
 

@@ -120,7 +120,10 @@
     "spotWisataTitle": "Tarikan Ikonik Batam & Bintan",
     "spotWisataDesc": "Jambatan megah Barelang, bukit pasir biru Bintan, pusat beli-belah bebas cukai, dan hidangan makanan laut kelong tepi laut.",
     "destHighlights": "Destinasi Pilihan",
-    "requestCustomTour": "Minta Jadual Khas"
+    "requestCustomTour": "Minta Jadual Khas",
+    "heroAlt": "Pemandangan jauh Jambatan Barelang, Batam",
+    "bookingTitle": "Borang Tempahan WhatsApp",
+    "bookingSubtitle": "Harga rasmi pengendali tanpa caj orang tengah"
   },
   "packages": {
     "metaTitle": "Pakej Percutian Batam & Bintan",
@@ -206,7 +209,9 @@
     "intro": "Kereta dengan pemandu tempatan dan skuter pandu sendiri untuk bergerak di Batam.",
     "filterAll": "Semua",
     "filterCars": "Kereta",
-    "filterMotorcycles": "Skuter"
+    "filterMotorcycles": "Skuter",
+    "bookingTitle": "Tempahan Sewa Kenderaan",
+    "bookingSubtitle": "Tempahan segera terus ke admin WhatsApp kami"
   },
   "vehicle": {
     "answer": "Sewa {name} di Batam bermula dari {price} sehari ({scheme}).",
@@ -279,7 +284,8 @@
     "dewiTitle": "Billy (Admin 2)",
     "dewiServices": "Jadual Perjalanan Khas Pantai & Makanan, Tiket Feri Batam & Bintan, Percutian Keluarga & Korporat.",
     "dewiButton": "Hubungi Admin Billy (Line 2)",
-    "dewiTemplate": "Halo Admin Billy (Fun Travel Batam), saya ingin bertanya tentang pakej percutian, tiket feri, atau jadual perjalanan khas di Batam & Bintan. Mohon maklumat lanjut. Terima kasih!"
+    "dewiTemplate": "Halo Admin Billy (Fun Travel Batam), saya ingin bertanya tentang pakej percutian, tiket feri, atau jadual perjalanan khas di Batam & Bintan. Mohon maklumat lanjut. Terima kasih!",
+    "addressTitle": "Alamat pejabat"
   },
   "faq": {
     "title": "Soalan lazim",

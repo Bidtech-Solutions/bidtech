@@ -8,9 +8,24 @@ const localePath = useLocalePath();
 const { site, loc, img, pkgPrice, vehPrice, fxNote, facility, ferryAddOn, scheme, waUrl } = useSite();
 
 useSeoMeta({
-  title: () => `${site.brandName} — Explore Batam & Bintan with Zero Hassle`,
+  title: () => t('home.metaTitle'),
   description: () => t('meta.siteDescription'),
 });
+
+useHead(() => ({
+  script: [
+    {
+      key: 'ld-faq',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        inLanguage: locale.value,
+        mainEntity: faqs.filter((f) => f.home).map((f) => ({ '@type': 'Question', name: loc(f.q), acceptedAnswer: { '@type': 'Answer', text: loc(f.a) } })),
+      }),
+    },
+  ],
+}));
 
 // Interactive state
 const selectedDeparture = ref<'MY' | 'SG'>('MY');
@@ -94,7 +109,9 @@ function handleBookingSubmit() {
         <!-- Hero Tropical Seascape Background (Pemandangan Barelang Dari Jauh) -->
         <img
           src="/images/barelang-distant.webp"
-          alt="Pemandangan Jembatan Barelang dari jauh, Batam"
+          :alt="t('home.heroAlt')"
+          width="1376"
+          height="768"
           fetchpriority="high"
           class="absolute inset-0 w-full h-full object-cover object-center"
         />
@@ -373,8 +390,8 @@ function handleBookingSubmit() {
         <!-- Modal Header -->
         <div class="px-6 py-4 bg-ocean text-white flex items-center justify-between">
           <div>
-            <h3 class="text-lg font-bold tracking-tight">Formulir Pemesanan WhatsApp</h3>
-            <p class="text-xs text-blue-100">Harga resmi operator langsung tanpa biaya perantara</p>
+            <h3 class="text-lg font-bold tracking-tight">{{ t('home.bookingTitle') }}</h3>
+            <p class="text-xs text-blue-100">{{ t('home.bookingSubtitle') }}</p>
           </div>
           <button
             type="button"

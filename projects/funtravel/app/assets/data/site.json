@@ -25,7 +25,14 @@
     "facebook": "https://www.facebook.com/profile.php?id=61591836087671"
   },
   "email": null,
-  "address": null,
+  "address": {
+    "street": "Ruko Botania 2 Blok B9 No. 2B",
+    "locality": "Batam Kota",
+    "city": "Batam",
+    "region": "Kepulauan Riau",
+    "country": "ID"
+  },
+  "openingHours": null,
   "areaServed": [
     "Batam",
     "Bintan"

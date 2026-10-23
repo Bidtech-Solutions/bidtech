@@ -175,7 +175,7 @@ Tanpa skema/validator runtime; `nuxt typecheck` mengetik JSON (`resolveJsonModul
 | Title | `titleTemplate`: `{judul} \| {meta.titleSuffix}`; judul per halaman dari i18n |
 | Sitemap | `@nuxtjs/sitemap` — multi-sitemap per locale + `sitemap_index.xml` otomatis dari i18n |
 | robots.txt | `@nuxtjs/robots` (izinkan semua + URL sitemap) |
-| llms.txt | `nuxt-llms` di `nuxt.config.ts`; bagian paket/kendaraan dibangun dari JSON. **Tanpa `llms-full.txt`** (lihat ADR) |
+| llms.txt | `nuxt-llms` di `nuxt.config.ts`; bagian paket/kendaraan dibangun dari JSON. `llms-full.txt` dibuat oleh hook di `nuxt.config.ts` (ADR-12) |
 | JSON-LD | `useHead` + `<script type="application/ld+json">` di tiap halaman: `TravelAgency` (layout, `@id` stabil), `TouristTrip`+`Offer` (detail paket), `Product`+`Offer` (detail kendaraan), `FAQPage` (kontak), `BreadcrumbList` (halaman detail) |
 | Answer text | satu `<p>` faktual 2–3 kalimat di atas halaman detail |
 
@@ -326,6 +326,6 @@ Tidak ada ESLint/Vitest/Zod di fase ini (ADR-8). Ketaatan struktur dijaga oleh d
 | 9 | Halaman destinasi, tentang, FAQ, pembayaran, S&K, privasi dihapus sebagai halaman | Destinasi → bagian paket; FAQ+pembayaran → `/contact`; S&K/privasi → ditinjau ulang bila klien meminta |
 | 10 | Locale `ms` memakai berkas `my.json` | Sesuai struktur yang diminta; kode URL/hreflang tetap `ms` (benar secara BCP-47) |
 | 11 | Komponen dibatasi 4 (§2) | Mencegah sprawl akibat agent |
-| 12 | `llms-full.txt` tidak dibuat | `nuxt-llms` 0.2 hanya `llms.txt` ringkas; cukup untuk fase 1 |
+| 12 | `llms-full.txt` dibuat lewat hook `nitro:init` → `compiled` di `nuxt.config.ts` | `nuxt-llms` 0.2 hanya `llms.txt` ringkas; versi lengkap dibangun dari JSON yang sama (`buildLlmsFull`), tanpa skrip/folder baru |
 | 13 | 404 berupa shell SPA | Tanpa skrip postgenerate; konsol mencatat `NUXT_E1005` (normal) |
 | 14 | `nginx.conf` & `useSite.ts` adalah satu-satunya file di luar pohon permintaan awal | Redirect/cache tak bisa di Nuxt statis; logika mata uang dibagi lintas halaman |

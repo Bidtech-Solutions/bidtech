@@ -120,7 +120,10 @@
     "spotWisataTitle": "Spot Wisata Ikonik Batam & Bintan",
     "spotWisataDesc": "Jembatan megah Barelang, danau gurun pasir Bintan, pusat perbelanjaan bebas bea, dan kelezatan seafood kelong tepi laut.",
     "destHighlights": "Destinasi Pilihan",
-    "requestCustomTour": "Minta Custom Tour"
+    "requestCustomTour": "Minta Custom Tour",
+    "heroAlt": "Pemandangan Jembatan Barelang dari jauh, Batam",
+    "bookingTitle": "Formulir Pemesanan WhatsApp",
+    "bookingSubtitle": "Harga resmi operator langsung tanpa biaya perantara"
   },
   "packages": {
     "metaTitle": "Paket Liburan Batam & Bintan",
@@ -206,7 +209,9 @@
     "intro": "Mobil dengan sopir lokal dan motor lepas kunci untuk mobilitas Anda di Batam.",
     "filterAll": "Semua",
     "filterCars": "Mobil",
-    "filterMotorcycles": "Motor"
+    "filterMotorcycles": "Motor",
+    "bookingTitle": "Booking Sewa Kendaraan",
+    "bookingSubtitle": "Reservasi instan langsung terhubung ke WhatsApp Admin"
   },
   "vehicle": {
     "answer": "Sewa {name} di Batam mulai dari {price} per hari ({scheme}).",
@@ -279,7 +284,8 @@
     "dewiTitle": "Billy (Admin 2)",
     "dewiServices": "Custom Itinerary Wisata Pantai & Kuliner, Pemesanan Tiket Ferry Batam & Bintan, Corporate Gathering & Rombongan.",
     "dewiButton": "Hubungi Admin Billy (Line 2)",
-    "dewiTemplate": "Halo Admin Billy (Fun Travel Batam), saya ingin bertanya seputar paket tour wisata, tiket ferry, atau custom itinerary di Batam & Bintan. Mohon info lebih lanjut. Terima kasih!"
+    "dewiTemplate": "Halo Admin Billy (Fun Travel Batam), saya ingin bertanya seputar paket tour wisata, tiket ferry, atau custom itinerary di Batam & Bintan. Mohon info lebih lanjut. Terima kasih!",
+    "addressTitle": "Alamat kantor"
   },
   "faq": {
     "title": "Pertanyaan yang sering diajukan",

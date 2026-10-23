@@ -4,12 +4,44 @@ import data from '~/assets/data/packages.json';
 
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
+const siteUrl = useSiteConfig().url;
 const { loc, img, pkgPrice, fxNote, facility, ferryAddOn, waUrl } = useSite();
 
 useSeoMeta({
   title: () => t('packages.metaTitle'),
   description: () => t('packages.metaDescription', { price: Math.min(...data.packages.map((p) => p.price)) }),
 });
+useHead(() => ({
+  script: [
+    {
+      key: 'ld-collection',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: t('packages.metaTitle'),
+        url: siteUrl + localePath('/packages'),
+        inLanguage: locale.value,
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: data.packages.map((x, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + localePath(`/packages/${x.slug}`), name: `${x.code} ${loc(x.name)}` })),
+        },
+      }),
+    },
+    {
+      key: 'ld-breadcrumb',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { name: t('nav.home'), path: '/' },
+          { name: t('nav.packages'), path: '/packages' },
+        ].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: siteUrl + localePath(c.path) })),
+      }),
+    },
+  ],
+}));
 
 type Pkg = (typeof data.packages)[number];
 const filter = ref('all');

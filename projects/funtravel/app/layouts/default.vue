@@ -4,23 +4,9 @@ import logo from '~/assets/images/logo.webp';
 const { t } = useI18n();
 const { site, initClient } = useSite();
 const siteUrl = useSiteConfig().url;
-const { gaId } = useRuntimeConfig().public;
+const { gaId, googleSiteVerification, bingSiteVerification } = useRuntimeConfig().public;
 // hreflang (4 bahasa + x-default), canonical, og:url, og:locale → dari @nuxtjs/i18n (butuh i18n.baseUrl)
 const i18nHead = useLocaleHead({ lang: true, seo: true });
-
-const developer = {
-  '@type': 'Organization',
-  name: 'Bidtech',
-  alternateName: 'PT Bidtech Solusi Teknologi',
-  url: 'https://www.bidtech.co.id',
-  description: 'Software House Batam - Jasa Pembuatan Website, Aplikasi Mobile, dan Sistem Informasi Profesional di Batam',
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'Batam',
-    addressRegion: 'Kepulauan Riau',
-    addressCountry: 'ID',
-  },
-};
 
 const agency = {
   '@context': 'https://schema.org',
@@ -43,15 +29,33 @@ const agency = {
     latitude: 1.1301,
     longitude: 104.0529,
   },
-  creator: developer,
-  publisher: developer,
+  priceRange: '$$',
+  knowsLanguage: ['id', 'en', 'ms', 'zh'],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    addressCountry: site.address.country,
+  },
+  ...(site.email ? { email: site.email } : {}),
   contactPoint: site.admins.map((a) => ({
     '@type': 'ContactPoint',
     telephone: `+${a.phone}`,
     contactType: 'customer service',
     availableLanguage: ['en', 'ms', 'zh', 'id'],
   })),
-  // TODO(OQ-13): tambahkan "address" bila klien sudah memberi alamat kantor
+  // TODO(OQ-xx): openingHoursSpecification & email menunggu data klien (site.json: openingHours, email)
+};
+
+const website = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${siteUrl}/#website`,
+  url: siteUrl,
+  name: site.brandName,
+  inLanguage: ['id-ID', 'en', 'ms-MY', 'zh-Hans-SG'],
+  publisher: { '@id': `${siteUrl}/#organization` },
 };
 
 useHead(() => ({
@@ -63,6 +67,8 @@ useHead(() => ({
     { name: 'publisher', content: 'Bidtech' },
     { name: 'developer', content: 'Bidtech — Software House Batam (www.bidtech.co.id)' },
     { name: 'creator', content: 'Bidtech' },
+    ...(googleSiteVerification ? [{ name: 'google-site-verification', content: googleSiteVerification }] : []),
+    ...(bingSiteVerification ? [{ name: 'msvalidate.01', content: bingSiteVerification }] : []),
     { name: 'geo.region', content: 'ID-KR' },
     { name: 'geo.placename', content: 'Batam, Kepulauan Riau, Indonesia' },
     { name: 'geo.position', content: '1.1301;104.0529' },
@@ -77,6 +83,7 @@ useHead(() => ({
       innerHTML: `try{document.documentElement.classList.remove('dark');localStorage.removeItem('ft_theme')}catch(e){}`,
     },
     { key: 'ld-agency', type: 'application/ld+json', innerHTML: JSON.stringify(agency) },
+    { key: 'ld-website', type: 'application/ld+json', innerHTML: JSON.stringify(website) },
     ...(gaId
       ? [
           { key: 'ga', src: `https://www.googletagmanager.com/gtag/js?id=${gaId}`, async: true },
@@ -88,7 +95,8 @@ useHead(() => ({
 useSeoMeta({
   ogSiteName: site.brandName,
   ogType: 'website',
-  ogImage: siteUrl + logo,
+  ogImage: siteUrl + '/images/barelang-distant.webp', // default; halaman detail menimpa dengan foto produknya
+  ogImageAlt: site.brandName,
   twitterCard: 'summary_large_image',
   creator: 'Bidtech (www.bidtech.co.id)',
 });

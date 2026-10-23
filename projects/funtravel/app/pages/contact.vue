@@ -4,13 +4,43 @@ import {
   Phone,
   PhoneCall,
 } from '@lucide/vue';
+import faqs from '~/assets/data/faqs.json';
+
 const { t, locale } = useI18n();
+const localePath = useLocalePath();
+const siteUrl = useSiteConfig().url;
 const { site, loc, waUrl } = useSite();
 
 useSeoMeta({
-  title: () => `${t('contact.metaTitle')} — ${site.brandName}`,
+  title: () => t('contact.metaTitle'),
   description: () => t('contact.metaDescription'),
 });
+useHead(() => ({
+  script: [
+    {
+      key: 'ld-faq',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        inLanguage: locale.value,
+        mainEntity: faqs.map((f) => ({ '@type': 'Question', name: loc(f.q), acceptedAnswer: { '@type': 'Answer', text: loc(f.a) } })),
+      }),
+    },
+    {
+      key: 'ld-breadcrumb',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { name: t('nav.home'), path: '/' },
+          { name: t('nav.contact'), path: '/contact' },
+        ].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: siteUrl + localePath(c.path) })),
+      }),
+    },
+  ],
+}));
 </script>
 
 <template>
@@ -76,6 +106,11 @@ useSeoMeta({
               </div>
             </div>
 
+            <!-- Alamat kantor -->
+            <address class="not-italic bg-[#F8FAFC] rounded-2xl p-4 border border-slate-100 text-xs leading-relaxed text-slate-600 dark:bg-slate-800/60 dark:border-slate-800 dark:text-slate-300">
+              <strong class="block font-extrabold text-slate-900 dark:text-white">{{ t('contact.addressTitle') }}</strong>
+              {{ site.address.street }}, {{ site.address.locality }}, {{ site.address.city }}, {{ site.address.region }}
+            </address>
           </div>
 
           <!-- Media Sosial Resmi -->
@@ -224,6 +259,23 @@ useSeoMeta({
             </a>
           </div>
         </article>
+      </section>
+
+      <!-- FAQ lengkap (FAQPage JSON-LD di atas) -->
+      <section id="faq" class="scroll-mt-24 max-w-3xl">
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ t('faq.title') }}</h2>
+        <p class="mt-1 mb-6 text-sm sm:text-base text-[#475569] dark:text-slate-300">{{ t('faq.subtitle') }}</p>
+        <div class="space-y-3">
+          <details
+            v-for="f in faqs"
+            :id="f.id"
+            :key="f.id"
+            class="group bg-white border border-[#E2E8F0] rounded-xl overflow-hidden shadow-xs dark:bg-slate-900 dark:border-slate-800"
+          >
+            <summary class="cursor-pointer list-none px-5 py-4 sm:px-6 font-bold text-sm sm:text-base text-slate-900 dark:text-white">{{ loc(f.q) }}</summary>
+            <p class="px-5 pb-5 pt-2 sm:px-6 text-xs sm:text-sm text-[#475569] leading-relaxed border-t border-slate-100 dark:text-slate-300 dark:border-slate-800">{{ loc(f.a) }}</p>
+          </details>
+        </div>
       </section>
     </main>
 

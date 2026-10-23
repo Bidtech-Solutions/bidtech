@@ -120,7 +120,10 @@
     "spotWisataTitle": "Iconic Batam & Bintan Highlights",
     "spotWisataDesc": "Majestic Barelang Bridge, Bintan blue desert sand dunes, duty-free shopping centers, and fresh coastal seafood kelongs.",
     "destHighlights": "Destination Highlights",
-    "requestCustomTour": "Request Custom Tour"
+    "requestCustomTour": "Request Custom Tour",
+    "heroAlt": "Distant view of the Barelang Bridge, Batam",
+    "bookingTitle": "WhatsApp Booking Form",
+    "bookingSubtitle": "Official operator prices with no middleman fees"
   },
   "packages": {
     "metaTitle": "Batam & Bintan Holiday Packages",
@@ -206,7 +209,9 @@
     "intro": "Cars with a local driver and self-drive scooters for getting around Batam.",
     "filterAll": "All",
     "filterCars": "Cars",
-    "filterMotorcycles": "Scooters"
+    "filterMotorcycles": "Scooters",
+    "bookingTitle": "Vehicle Rental Booking",
+    "bookingSubtitle": "Instant reservation sent straight to our WhatsApp admin"
   },
   "vehicle": {
     "answer": "{name} rental in Batam starts from {price} per day ({scheme}).",
@@ -279,7 +284,8 @@
     "dewiTitle": "Billy (Admin 2)",
     "dewiServices": "Custom Culinary/Beach Batam Itinerary, Batam & Bintan Ferry Ticketing, Corporate & Family Gatherings.",
     "dewiButton": "Contact Admin Billy (Line 2)",
-    "dewiTemplate": "Hello Admin Billy (Fun Travel Batam), I would like to ask about holiday tour packages, ferry tickets, or custom itineraries in Batam & Bintan. Please share more details. Thank you!"
+    "dewiTemplate": "Hello Admin Billy (Fun Travel Batam), I would like to ask about holiday tour packages, ferry tickets, or custom itineraries in Batam & Bintan. Please share more details. Thank you!",
+    "addressTitle": "Office address"
   },
   "faq": {
     "title": "Frequently asked questions",

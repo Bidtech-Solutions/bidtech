@@ -4,12 +4,47 @@ import data from '~/assets/data/vehicles.json';
 
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
+const siteUrl = useSiteConfig().url;
 const { site, loc, locArray, img, fmt, vehPrice, fxNote, scheme, waUrl } = useSite();
 
 useSeoMeta({
-  title: () => `${t('vehicles.title')} — Fun Travel & Transport Batam`,
-  description: () => t('vehicles.metaDescription', { carPrice: 'RM 140', motorPrice: 'RM 30' }),
+  title: () => t('vehicles.metaTitle'),
+  description: () => t('vehicles.metaDescription', {
+    carPrice: fmt(Math.min(...data.vehicles.filter((v) => v.type === 'car').map((v) => v.pricePerDay)), 'IDR'),
+    motorPrice: fmt(Math.min(...data.vehicles.filter((v) => v.type === 'motorcycle').map((v) => v.pricePerDay)), 'IDR'),
+  }),
 });
+useHead(() => ({
+  script: [
+    {
+      key: 'ld-collection',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: t('vehicles.metaTitle'),
+        url: siteUrl + localePath('/vehicles'),
+        inLanguage: locale.value,
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: data.vehicles.map((x, i) => ({ '@type': 'ListItem', position: i + 1, url: siteUrl + localePath(`/vehicles/${x.slug}`), name: `${x.brand} ${x.model}` })),
+        },
+      }),
+    },
+    {
+      key: 'ld-breadcrumb',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { name: t('nav.home'), path: '/' },
+          { name: t('nav.vehicles'), path: '/vehicles' },
+        ].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: siteUrl + localePath(c.path) })),
+      }),
+    },
+  ],
+}));
 
 // Interactive state
 const filter = ref<'all' | 'car' | 'motorcycle'>('all');
@@ -286,8 +321,8 @@ function handleBookingSubmit() {
         <!-- Header -->
         <div class="px-6 py-4 bg-ocean text-white flex items-center justify-between">
           <div>
-            <h3 class="text-lg font-bold tracking-tight">Booking Sewa Kendaraan</h3>
-            <p class="text-xs text-blue-100">Reservasi instan langsung terhubung ke WhatsApp Admin</p>
+            <h3 class="text-lg font-bold tracking-tight">{{ t('vehicles.bookingTitle') }}</h3>
+            <p class="text-xs text-blue-100">{{ t('vehicles.bookingSubtitle') }}</p>
           </div>
           <button
             type="button"

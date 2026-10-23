@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { Car, Hotel, Ship, Utensils } from '@lucide/vue';
 
+import pkgData from '~/assets/data/packages.json';
+
 const { t } = useI18n();
-const { waUrl, pkgPrice } = useSite();
+const { waUrl, pkgPrice, loc } = useSite();
+const featured = pkgData.packages.find((p) => p.code === 'A4') ?? pkgData.packages[0]!;
 
 const vipChips = computed(() => [
   { icon: Utensils, label: t('package.facilities'), value: t('cta.vipChipMeals') },
@@ -55,11 +58,11 @@ const vipChips = computed(() => [
               {{ t('cta.vipPriceLabel') }}
             </span>
             <div class="text-3xl sm:text-4xl font-extrabold text-[#1E40AF] tabular-nums tracking-tight my-1 dark:text-sky-400">
-              {{ pkgPrice(666) }}
+              {{ pkgPrice(featured.price) }}
             </div>
             <span class="block text-xs text-slate-500 dark:text-slate-400 mb-5">{{ t('common.perPax') }} &bull; min 2 to go</span>
             <a
-              :href="waUrl(t('whatsapp.packageQuick', { name: '3D2N VIP Gourmet Barelang' }))"
+              :href="waUrl(t('whatsapp.packageQuick', { name: loc(featured.name) }))"
               target="_blank"
               rel="noopener"
               data-wa="cta"

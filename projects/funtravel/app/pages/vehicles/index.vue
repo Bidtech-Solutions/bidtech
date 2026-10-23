@@ -246,10 +246,6 @@ function handleBookingSubmit() {
                 </div>
               </div>
 
-              <div v-if="v.chips" class="flex flex-wrap gap-1.5 mb-4">
-                <span v-for="chip in locArray(v.chips)" :key="chip" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-blue-50 text-[#1E40AF] dark:bg-slate-800 dark:text-sky-400">{{ chip }}</span>
-              </div>
-
               <!-- Harga & aksi -->
               <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800">
                 <span class="block text-[10px] font-semibold text-slate-400">{{ t('common.from') }}</span>

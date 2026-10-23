@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   Building2,
-  Phone,
   PhoneCall,
 } from '@lucide/vue';
 const { t, locale } = useI18n();
@@ -52,7 +51,7 @@ useSeoMeta({
         <!-- CARD 1: Kontak Resmi Kantor (PT Fun Batam Holiday)    -->
         <!-- ==================================================== -->
         <article class="anim-card delay-150 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm flex flex-col justify-between dark:bg-slate-900 dark:border-slate-800">
-          <div class="space-y-4">
+          <div>
             <!-- Header -->
             <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
               <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#1E40AF] flex items-center justify-center dark:bg-slate-800 dark:text-sky-400">
@@ -63,19 +62,6 @@ useSeoMeta({
                 <p class="text-xs text-slate-400 font-medium">{{ t('contact.legalCompany') }}</p>
               </div>
             </div>
-
-            <!-- Hotline / Telepon Kantor -->
-            <div class="bg-[#F8FAFC] rounded-2xl p-4 flex items-start gap-3.5 border border-slate-100 dark:bg-slate-800/60 dark:border-slate-800">
-              <div class="w-10 h-10 rounded-xl bg-[#0047AB] text-white flex items-center justify-center shrink-0 shadow-xs">
-                <Phone class="w-5 h-5" />
-              </div>
-              <div class="min-w-0">
-                <span class="text-[11px] font-semibold text-slate-400 block">{{ t('common.hotline') }}</span>
-                <span class="text-base sm:text-lg font-black text-[#0047AB] dark:text-sky-400 block tracking-tight leading-snug">(0778) 456-890</span>
-                <span class="text-[11px] text-slate-400 block mt-0.5">{{ t('common.hours') }}: {{ t('contact.hotlineTime') }}</span>
-              </div>
-            </div>
-
           </div>
 
           <!-- Media Sosial Resmi -->
@@ -141,19 +127,14 @@ useSeoMeta({
             </div>
 
             <!-- Info Block -->
-            <div class="bg-[#F8FAFC] rounded-2xl p-4 border border-slate-100/90 space-y-3 dark:bg-slate-800/60 dark:border-slate-800">
-              <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-200/60 dark:border-slate-700/60">
+            <div class="bg-[#F8FAFC] rounded-2xl p-4 border border-slate-100/90 dark:bg-slate-800/60 dark:border-slate-800">
+              <div class="flex items-center justify-between gap-2">
                 <span class="inline-flex items-center gap-1.5 text-xs text-slate-500 font-semibold dark:text-slate-400">
                   <PhoneCall class="w-3.5 h-3.5 text-[#0047AB] dark:text-sky-400" />
                   {{ t('common.contactNumber') }}
                 </span>
                 <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">{{ site.admins[0]?.display || '+62 859 6057 7702' }}</span>
               </div>
-
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                <strong class="font-extrabold text-slate-900 dark:text-white">{{ t('common.serving') }}</strong>
-                {{ t('contact.budiServices') }}
-              </p>
             </div>
           </div>
 
@@ -194,19 +175,14 @@ useSeoMeta({
             </div>
 
             <!-- Info Block -->
-            <div class="bg-[#F8FAFC] rounded-2xl p-4 border border-slate-100/90 space-y-3 dark:bg-slate-800/60 dark:border-slate-800">
-              <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-200/60 dark:border-slate-700/60">
+            <div class="bg-[#F8FAFC] rounded-2xl p-4 border border-slate-100/90 dark:bg-slate-800/60 dark:border-slate-800">
+              <div class="flex items-center justify-between gap-2">
                 <span class="inline-flex items-center gap-1.5 text-xs text-slate-500 font-semibold dark:text-slate-400">
                   <PhoneCall class="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                   {{ t('common.contactNumber') }}
                 </span>
                 <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">{{ site.admins[1]?.display || '+62 852 7202 3809' }}</span>
               </div>
-
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                <strong class="font-extrabold text-slate-900 dark:text-white">{{ t('common.serving') }}</strong>
-                {{ t('contact.dewiServices') }}
-              </p>
             </div>
           </div>
 

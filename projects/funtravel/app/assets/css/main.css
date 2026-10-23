@@ -131,7 +131,7 @@ html[lang^='zh'] .font-script {
   @apply py-12 sm:py-16;
 }
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition hover:-translate-y-0.5;
+  @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 py-3 text-sm sm:text-base font-bold transition-all active:scale-[0.98] hover:-translate-y-0.5;
 }
 @utility btn-primary {
   @apply btn bg-ocean text-white shadow-card hover:bg-navy;

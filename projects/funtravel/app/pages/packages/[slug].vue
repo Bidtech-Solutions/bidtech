@@ -199,7 +199,7 @@ const detailTabs = computed(() => [
               :aria-selected="tab === tb.id"
               :aria-controls="`panel-${tb.id}`"
               :class="[
-                '-mb-px inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-3.5 text-sm font-bold transition-colors',
+                '-mb-px inline-flex min-h-[44px] shrink-0 items-center gap-1.5 border-b-2 px-3 py-3 sm:py-3.5 text-sm font-bold transition-colors active:scale-95',
                 tab === tb.id ? 'border-[#1E40AF] text-[#1E40AF] dark:border-sky-400 dark:text-sky-400' : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
               ]"
               @click="tab = tb.id"
@@ -324,11 +324,11 @@ const detailTabs = computed(() => [
               <ClientOnly>
                 <div>
                   <div class="flex items-center justify-between mb-2">
-                    <button type="button" :disabled="!canPrev" :aria-label="t('booking.prevMonth')" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800" @click="shift(-1)">
+                    <button type="button" :disabled="!canPrev" :aria-label="t('booking.prevMonth')" class="flex h-9 w-9 min-h-[36px] min-w-[36px] items-center justify-center rounded-full hover:bg-slate-100 disabled:opacity-30 active:scale-95 dark:hover:bg-slate-800" @click="shift(-1)">
                       <ChevronLeft aria-hidden="true" class="h-4 w-4" />
                     </button>
                     <span class="text-sm font-extrabold capitalize text-slate-900 notranslate dark:text-white" translate="no">{{ monthLabel }}</span>
-                    <button type="button" :aria-label="t('booking.nextMonth')" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" @click="shift(1)">
+                    <button type="button" :aria-label="t('booking.nextMonth')" class="flex h-9 w-9 min-h-[36px] min-w-[36px] items-center justify-center rounded-full hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-800" @click="shift(1)">
                       <ChevronRight aria-hidden="true" class="h-4 w-4" />
                     </button>
                   </div>
@@ -374,11 +374,11 @@ const detailTabs = computed(() => [
               <div v-for="row in [{ label: t('booking.adults'), model: adults, min: 1, set: (n: number) => (adults = n) }, { label: t('booking.children'), model: children, min: 0, set: (n: number) => (children = n) }]" :key="row.label">
                 <p class="mb-1 text-xs font-semibold text-slate-600 dark:text-slate-300">{{ row.label }}</p>
                 <div class="flex items-center justify-between rounded-xl border border-slate-200 px-1 py-1 dark:border-slate-700">
-                  <button type="button" :aria-label="`${row.label} −`" :disabled="row.model <= row.min" class="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800" @click="row.set(row.model - 1)">
+                  <button type="button" :aria-label="`${row.label} −`" :disabled="row.model <= row.min" class="flex h-9 w-9 min-w-[36px] min-h-[36px] items-center justify-center rounded-lg hover:bg-slate-100 disabled:opacity-30 active:scale-95 dark:hover:bg-slate-800" @click="row.set(row.model - 1)">
                     <Minus aria-hidden="true" class="h-4 w-4" />
                   </button>
                   <span class="text-sm font-extrabold tabular-nums text-slate-900 dark:text-white">{{ row.model }}</span>
-                  <button type="button" :aria-label="`${row.label} +`" :disabled="row.model >= 50" class="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800" @click="row.set(row.model + 1)">
+                  <button type="button" :aria-label="`${row.label} +`" :disabled="row.model >= 50" class="flex h-9 w-9 min-w-[36px] min-h-[36px] items-center justify-center rounded-lg hover:bg-slate-100 disabled:opacity-30 active:scale-95 dark:hover:bg-slate-800" @click="row.set(row.model + 1)">
                     <Plus aria-hidden="true" class="h-4 w-4" />
                   </button>
                 </div>
@@ -398,7 +398,7 @@ const detailTabs = computed(() => [
                 <button
                   type="button"
                   :class="[
-                    'py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer',
+                    'min-h-[42px] py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer',
                     terminal === 'MY'
                       ? 'bg-[#1E40AF] text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800',
@@ -411,7 +411,7 @@ const detailTabs = computed(() => [
                 <button
                   type="button"
                   :class="[
-                    'py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer',
+                    'min-h-[42px] py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer',
                     terminal === 'SG'
                       ? 'bg-[#1E40AF] text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800',
@@ -434,7 +434,7 @@ const detailTabs = computed(() => [
               target="_blank"
               rel="noopener"
               data-wa="package"
-              class="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#15803D] py-3.5 text-base font-bold text-white shadow-md transition-all hover:bg-[#166534] hover:shadow-lg active:scale-[0.99]"
+              class="mt-4 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full bg-[#15803D] py-3.5 text-sm sm:text-base font-bold text-white shadow-md transition-all hover:bg-[#166534] hover:shadow-lg active:scale-[0.98]"
             >
               <span aria-hidden="true" class="icon-wa h-5 w-5" />{{ t('common.bookWhatsApp') }}
             </a>
@@ -500,10 +500,10 @@ const detailTabs = computed(() => [
               </div>
               <NuxtLink
                 :to="localePath(`/packages/${p.slug}`)"
-                class="flex items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2.5 px-3 rounded-full transition-all dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200"
+                class="flex min-h-[44px] items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold py-2.5 sm:py-3 px-3 rounded-full transition-all active:scale-[0.98] dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200"
               >
                 <span>{{ t('common.viewDetails') }}</span>
-                <ArrowRight aria-hidden="true" class="h-3.5 w-3.5" />
+                <ArrowRight aria-hidden="true" class="h-4 w-4" />
               </NuxtLink>
             </div>
           </div>

@@ -217,7 +217,7 @@ function handleBookingSubmit() {
           type="button"
           @click="filter = tab.id as any"
           :class="[
-            'rounded-full px-4 py-2 text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer',
+            'min-h-[40px] rounded-full px-4 py-2 text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer active:scale-95',
             filter === tab.id ? 'bg-[#1E40AF] text-white' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-200 dark:border-slate-800',
           ]"
         >
@@ -242,7 +242,7 @@ function handleBookingSubmit() {
             v-for="(v, idx) in processedVehicles"
             :key="v.slug"
             :class="[
-              'anim-card group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+              'anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] dark:bg-slate-900',
               idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : idx === 2 ? 'delay-200' : idx === 3 ? 'delay-250' : idx === 4 ? 'delay-300' : 'delay-350',
               v.bestSeller ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
             ]"
@@ -271,7 +271,7 @@ function handleBookingSubmit() {
               <p class="text-xs text-slate-500 leading-relaxed mb-3.5 line-clamp-2 dark:text-slate-400">{{ loc(v.tagline) }}</p>
 
               <!-- Spesifikasi 2x2 (sama untuk mobil & motor) -->
-              <div class="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700 bg-slate-50 rounded-xl p-2.5 mb-3 border border-slate-100 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-800">
+              <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-semibold text-slate-700 bg-slate-50 rounded-xl p-2 sm:p-2.5 mb-3 border border-slate-100 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-800">
                 <div class="flex items-center gap-1.5"><Users aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.seatsCount', { count: v.seats }) }}</div>
                 <div class="flex items-center gap-1.5"><Luggage aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.luggageCount', { count: v.luggage }) }}</div>
                 <div class="flex items-center gap-1.5"><Cog aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t(`common.transmission.${v.transmission}`) }}</div>
@@ -279,10 +279,6 @@ function handleBookingSubmit() {
                   <component :is="v.type === 'car' ? UserCheck : KeyRound" aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
                   {{ v.type === 'car' ? t('common.driverService') : t('common.selfDriveService') }}
                 </div>
-              </div>
-
-              <div v-if="v.chips" class="flex flex-wrap gap-1.5 mb-4">
-                <span v-for="chip in locArray(v.chips)" :key="chip" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-blue-50 text-[#1E40AF] dark:bg-slate-800 dark:text-sky-400">{{ chip }}</span>
               </div>
 
               <!-- Harga & aksi -->
@@ -294,10 +290,10 @@ function handleBookingSubmit() {
                 </div>
                 <NuxtLink
                   :to="localePath(`/vehicles/${v.slug}`)"
-                  class="w-full inline-flex items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white text-xs font-bold py-2.5 px-4 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.99]"
+                  class="w-full inline-flex min-h-[44px] items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white text-sm font-bold py-2.5 sm:py-3 px-4 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.98]"
                 >
                   <span>{{ t('common.viewDetails') }}</span>
-                  <ArrowRight aria-hidden="true" class="h-3.5 w-3.5" />
+                  <ArrowRight aria-hidden="true" class="h-4 w-4" />
                 </NuxtLink>
               </div>
             </div>
@@ -327,7 +323,8 @@ function handleBookingSubmit() {
           <button
             type="button"
             @click="isModalOpen = false"
-            class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition cursor-pointer"
+            aria-label="Tutup modal"
+            class="w-9 h-9 min-w-[36px] min-h-[36px] rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition active:scale-95 cursor-pointer"
           >
             <X class="w-5 h-5" />
           </button>
@@ -418,7 +415,7 @@ function handleBookingSubmit() {
           <div class="pt-2">
             <button
               type="submit"
-              class="inline-flex items-center justify-center gap-2 bg-[#15803D] hover:bg-[#166534] text-white font-bold py-3.5 px-4 rounded-full w-full text-sm shadow-md transition-all cursor-pointer"
+              class="inline-flex min-h-[48px] items-center justify-center gap-2 bg-[#15803D] hover:bg-[#166534] text-white font-bold py-3.5 px-4 rounded-full w-full text-sm sm:text-base shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
               <span aria-hidden="true" class="icon-wa w-4 h-4 shrink-0" />
               <span>Konfirmasi &amp; Hubungi via WhatsApp</span>

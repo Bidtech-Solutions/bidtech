@@ -138,7 +138,7 @@ const sortOptions = computed(() => [
           type="button"
           :aria-selected="filter === tab.id"
           :class="[
-            'rounded-full px-4 py-2 text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer',
+            'min-h-[40px] rounded-full px-4 py-2 text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer active:scale-95',
             filter === tab.id ? 'bg-[#1E40AF] text-white' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-200 dark:border-slate-800',
           ]"
           @click="filter = tab.id"
@@ -161,7 +161,7 @@ const sortOptions = computed(() => [
           v-for="(p, idx) in list"
           :key="p.slug"
           :class="[
-            'anim-card group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+            'anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] dark:bg-slate-900',
             idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : idx === 2 ? 'delay-200' : idx === 3 ? 'delay-250' : idx === 4 ? 'delay-300' : 'delay-350',
             p.featured ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
           ]"
@@ -216,10 +216,10 @@ const sortOptions = computed(() => [
               </div>
               <NuxtLink
                 :to="localePath(`/packages/${p.slug}`)"
-                class="w-full inline-flex items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white text-xs font-bold py-2.5 px-4 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.99]"
+                class="w-full inline-flex min-h-[44px] items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white text-sm font-bold py-2.5 sm:py-3 px-4 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.98]"
               >
                 <span>{{ t('common.viewDetails') }}</span>
-                <ArrowRight aria-hidden="true" class="h-3.5 w-3.5" />
+                <ArrowRight aria-hidden="true" class="h-4 w-4" />
               </NuxtLink>
             </div>
           </div>

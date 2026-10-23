@@ -132,17 +132,17 @@ function handleBookingSubmit() {
           </p>
 
           <!-- Action CTA Buttons -->
-          <div class="anim-fade-up delay-200 flex flex-wrap items-center gap-3.5 pt-3">
+          <div class="anim-fade-up delay-200 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-3 w-full sm:w-auto">
             <a
               href="#packages"
-              class="inline-flex items-center gap-1.5 px-6 py-3.5 rounded-full bg-[#FFC72C] hover:bg-[#F2BD27] text-slate-950 font-black text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer"
+              class="inline-flex min-h-[48px] w-full sm:w-auto items-center justify-center gap-1.5 px-6 py-3.5 rounded-full bg-[#FFC72C] hover:bg-[#F2BD27] text-slate-950 font-black text-sm sm:text-base shadow-md hover:shadow-lg transition-all active:scale-[0.98] hover:-translate-y-0.5 cursor-pointer"
             >
               <span>{{ t('home.ctaPackages') }}</span>
               <ArrowDown class="w-4 h-4 stroke-[2.5]" />
             </a>
             <NuxtLink
               :to="localePath('/vehicles')"
-              class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#243c5a]/60 hover:bg-[#243c5a]/80 backdrop-blur-md border border-white/20 text-white font-bold text-sm transition-all hover:-translate-y-0.5 shadow-sm"
+              class="inline-flex min-h-[48px] w-full sm:w-auto items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-[#243c5a]/60 hover:bg-[#243c5a]/80 backdrop-blur-md border border-white/20 text-white font-bold text-sm sm:text-base transition-all active:scale-[0.98] hover:-translate-y-0.5 shadow-sm"
             >
               <Car class="w-4 h-4 text-slate-100" />
               <span>{{ t('home.ctaVehicles') }}</span>
@@ -168,8 +168,8 @@ function handleBookingSubmit() {
             </p>
           </div>
 
-          <!-- Category Filter Pills -->
-          <div class="p-1.5 bg-white rounded-full shadow-sm flex items-center gap-2 border border-[#E2E8F0] self-start md:self-auto overflow-x-auto max-w-full dark:bg-slate-900 dark:border-slate-800">
+          <!-- Category Filter Pills (Responsif mobile w-full 3-kolom tanpa clipping, desktop flex pill) -->
+          <div class="p-1 sm:p-1.5 bg-white rounded-2xl sm:rounded-full shadow-sm grid grid-cols-3 sm:flex items-center gap-1 sm:gap-2 border border-[#E2E8F0] w-full sm:w-auto dark:bg-slate-900 dark:border-slate-800">
             <button
               v-for="f in [
                 { id: 'ALL', label: t('common.allPackagesFilter') },
@@ -180,8 +180,8 @@ function handleBookingSubmit() {
               type="button"
               @click="activeCategory = f.id as any"
               :class="[
-                'px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer',
-                activeCategory === f.id ? 'bg-[#1E40AF] text-white' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-300',
+                'min-h-[38px] sm:min-h-[40px] px-1.5 sm:px-4 py-2 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center cursor-pointer active:scale-95',
+                activeCategory === f.id ? 'bg-[#1E40AF] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-300',
               ]"
             >
               {{ f.label }}
@@ -189,13 +189,13 @@ function handleBookingSubmit() {
           </div>
         </div>
 
-        <!-- Packages Grid (Limited to 3) -->
+        <!-- Packages Grid (Kembali ke awal: scroll ke bawah, 1 kolom di mobile, 2 di tablet, 3 di desktop) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <article
             v-for="(p, idx) in filteredPackages"
             :key="p.slug"
             :class="[
-              'anim-card bg-white rounded-2xl border border-[#E2E8F0] p-4 shadow-[0_4px_12px_rgba(30,64,175,0.08)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col dark:bg-slate-900 dark:border-slate-800',
+              'anim-card bg-white rounded-2xl border border-[#E2E8F0] p-4 shadow-[0_4px_12px_rgba(30,64,175,0.08)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between dark:bg-slate-900 dark:border-slate-800',
               idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : 'delay-200',
             ]"
           >
@@ -251,7 +251,7 @@ function handleBookingSubmit() {
 
               <NuxtLink
                 :to="localePath(`/packages/${p.slug}`)"
-                class="w-full inline-flex items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white font-bold text-xs sm:text-sm py-3 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.99]"
+                class="w-full inline-flex min-h-[44px] items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white font-bold text-sm py-3 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.98]"
               >
                 <span>{{ t('common.viewDetails') }}</span>
                 <ArrowRight class="h-4 w-4" />
@@ -264,7 +264,7 @@ function handleBookingSubmit() {
         <div class="flex justify-center pt-2">
           <NuxtLink
             :to="localePath('/packages')"
-            class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white hover:bg-slate-50 text-[#1E40AF] font-bold text-sm border border-[#E2E8F0] shadow-sm hover:shadow transition-all hover:-translate-y-0.5 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-sky-300 dark:border-slate-800"
+            class="inline-flex min-h-[44px] items-center justify-center gap-2 px-7 py-3 rounded-full bg-white hover:bg-slate-50 text-[#1E40AF] font-bold text-sm sm:text-base border border-[#E2E8F0] shadow-sm hover:shadow transition-all active:scale-[0.98] hover:-translate-y-0.5 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-sky-300 dark:border-slate-800"
           >
             <span>{{ t('common.allPackages') }}</span>
             <ArrowRight class="w-4 h-4 stroke-[2.5]" />
@@ -396,14 +396,15 @@ function handleBookingSubmit() {
           <button
             type="button"
             @click="isModalOpen = false"
-            class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition cursor-pointer"
+            aria-label="Tutup modal"
+            class="w-9 h-9 min-w-[36px] min-h-[36px] rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition active:scale-95 cursor-pointer"
           >
             <X class="w-5 h-5" />
           </button>
         </div>
 
         <!-- Form Body -->
-        <form @submit.prevent="handleBookingSubmit" class="p-6 space-y-4 overflow-y-auto">
+        <form @submit.prevent="handleBookingSubmit" class="p-5 sm:p-6 space-y-4 overflow-y-auto">
           <!-- Type Tabs -->
           <div>
             <label class="block text-xs font-bold text-navy uppercase mb-1.5 dark:text-white">Kategori Layanan</label>
@@ -412,7 +413,7 @@ function handleBookingSubmit() {
                 type="button"
                 @click="bookingCategory = 'package'"
                 :class="[
-                  'py-2 px-3 rounded-xl text-xs font-bold border text-center transition cursor-pointer',
+                  'min-h-[42px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border text-center transition active:scale-95 cursor-pointer',
                   bookingCategory === 'package' ? 'bg-ocean text-white border-ocean' : 'bg-slate-50 text-navy border-slate-200 dark:bg-slate-800/60 dark:text-white dark:border-slate-800',
                 ]"
               >
@@ -422,7 +423,7 @@ function handleBookingSubmit() {
                 type="button"
                 @click="bookingCategory = 'car'"
                 :class="[
-                  'py-2 px-3 rounded-xl text-xs font-bold border text-center transition cursor-pointer',
+                  'min-h-[42px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border text-center transition active:scale-95 cursor-pointer',
                   bookingCategory === 'car' ? 'bg-ocean text-white border-ocean' : 'bg-slate-50 text-navy border-slate-200 dark:bg-slate-800/60 dark:text-white dark:border-slate-800',
                 ]"
               >
@@ -432,7 +433,7 @@ function handleBookingSubmit() {
                 type="button"
                 @click="bookingCategory = 'scooter'"
                 :class="[
-                  'py-2 px-3 rounded-xl text-xs font-bold border text-center transition cursor-pointer',
+                  'min-h-[42px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border text-center transition active:scale-95 cursor-pointer',
                   bookingCategory === 'scooter' ? 'bg-ocean text-white border-ocean' : 'bg-slate-50 text-navy border-slate-200 dark:bg-slate-800/60 dark:text-white dark:border-slate-800',
                 ]"
               >
@@ -526,7 +527,7 @@ function handleBookingSubmit() {
           <div class="pt-2">
             <button
               type="submit"
-              class="inline-flex items-center justify-center gap-2 bg-[#15803D] hover:bg-[#166534] text-white font-bold py-3.5 px-4 rounded-full w-full text-sm shadow-md transition-all cursor-pointer"
+              class="inline-flex min-h-[48px] items-center justify-center gap-2 bg-[#15803D] hover:bg-[#166534] text-white font-bold py-3.5 px-4 rounded-full w-full text-sm sm:text-base shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
               <span aria-hidden="true" class="icon-wa w-4 h-4 shrink-0" />
               <span>Kirim &amp; Hubungi via WhatsApp</span>

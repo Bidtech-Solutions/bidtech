@@ -53,7 +53,7 @@ const vipChips = computed(() => [
 
         <!-- Right 4 Cols: Floating White Pricing Card -->
         <div class="lg:col-span-4 flex lg:justify-end">
-          <div class="anim-card delay-150 w-full max-w-xs bg-white rounded-2xl p-6 text-center shadow-2xl border border-white/40 dark:bg-slate-900">
+          <div class="anim-card delay-150 w-full max-w-xs bg-white rounded-2xl p-5 sm:p-6 text-center shadow-2xl border border-white/40 dark:bg-slate-900">
             <span class="block text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">
               {{ t('cta.vipPriceLabel') }}
             </span>
@@ -66,7 +66,7 @@ const vipChips = computed(() => [
               target="_blank"
               rel="noopener"
               data-wa="cta"
-              class="w-full inline-flex items-center justify-center gap-2 bg-[#15803D] hover:bg-[#166534] text-white font-bold text-xs sm:text-sm py-3 px-5 rounded-full shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+              class="w-full inline-flex min-h-[48px] items-center justify-center gap-2 bg-[#15803D] hover:bg-[#166534] text-white font-bold text-sm sm:text-base py-3.5 px-5 rounded-full shadow-md hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
             >
               <span aria-hidden="true" class="icon-wa w-4 h-4" />
               <span>{{ t('cta.vipBookButton') }}</span>

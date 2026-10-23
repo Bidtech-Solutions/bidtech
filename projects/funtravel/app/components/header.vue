@@ -295,7 +295,7 @@ onMounted(() => {
         <!-- Mobile Menu Toggle Button -->
         <button
           type="button"
-          class="inline-flex h-9 w-9 items-center justify-center rounded-2xl text-navy hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800 lg:hidden focus:outline-none"
+          class="inline-flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-2xl text-navy hover:bg-slate-100 active:scale-95 dark:text-slate-100 dark:hover:bg-slate-800 lg:hidden focus:outline-none"
           :aria-expanded="open"
           aria-controls="mobile-menu"
           @click="open = !open"
@@ -368,7 +368,7 @@ onMounted(() => {
                   :key="l.code"
                   type="button"
                   :class="[
-                    'flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition-all',
+                    'flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition-all min-h-[50px] active:scale-95',
                     locale === l.code ? 'bg-[#0047AB] text-white ring-2 ring-white/60 shadow-md' : 'bg-white/10 text-white/80 hover:bg-white/20'
                   ]"
                   @click="changeLocale(l.code)"
@@ -387,7 +387,7 @@ onMounted(() => {
                   :key="c.code"
                   type="button"
                   :class="[
-                    'flex items-center justify-center gap-2 p-2.5 rounded-xl text-xs font-bold transition-all',
+                    'flex items-center justify-center gap-2 p-2.5 rounded-xl text-xs font-bold transition-all min-h-[44px] active:scale-95',
                     currency === c.code ? 'bg-[#0047AB] text-white ring-2 ring-white/60 shadow-md' : 'bg-white/10 text-white/80 hover:bg-white/20'
                   ]"
                   @click="changeCurrency(c.code as 'IDR' | 'MYR' | 'SGD')"
@@ -405,7 +405,7 @@ onMounted(() => {
             target="_blank"
             rel="noopener"
             data-wa="menu"
-            class="mt-8 mb-4 inline-flex items-center justify-center gap-2 rounded-full bg-[#15803D] hover:bg-[#166534] px-5 py-3.5 text-center font-bold text-white shadow-lg transition"
+            class="mt-8 mb-4 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[#15803D] hover:bg-[#166534] px-5 py-3.5 text-center font-bold text-white shadow-lg transition active:scale-[0.98]"
             @click="open = false"
           >
             <span aria-hidden="true" class="icon-wa h-5 w-5" />

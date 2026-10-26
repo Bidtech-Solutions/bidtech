@@ -24,7 +24,6 @@ import {
   Shield,
   ShieldCheck,
   Sparkles,
-  Star,
   UserCheck,
   Users,
   Wallet,
@@ -300,9 +299,6 @@ const detailTabs = computed(() => [
           <header class="anim-fade-up delay-75 rounded-3xl border border-[#E2E8F0] bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-3 p-6 sm:p-8">
             <div class="flex flex-wrap items-center gap-2">
               <span class="rounded-full bg-slate-200/70 px-3 py-1 text-xs font-bold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">{{ t(`vehicle.category.${v.category}`) }}</span>
-              <span v-if="v.bestSeller" class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-extrabold uppercase text-amber-800 dark:bg-amber-950/70 dark:text-amber-300">
-                <Star aria-hidden="true" class="h-3 w-3 fill-current" /> {{ t('common.bestSeller') }}
-              </span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ name }}</h1>
             <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300">{{ loc(v.tagline) }}</p>
@@ -480,9 +476,8 @@ const detailTabs = computed(() => [
           v-for="(x, idx) in others"
           :key="x.slug"
           :class="[
-            'anim-card group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900',
+            'anim-card group bg-white rounded-2xl p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:bg-slate-900 dark:border-slate-800',
             idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : 'delay-200',
-            x.bestSeller ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
           ]"
         >
           <NuxtLink :to="localePath(`/vehicles/${x.slug}`)" class="relative block rounded-xl overflow-hidden aspect-[16/10] mb-4 bg-slate-100 dark:bg-slate-800">

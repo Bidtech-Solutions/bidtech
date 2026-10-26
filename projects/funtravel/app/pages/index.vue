@@ -1,7 +1,22 @@
 <script setup lang="ts">
-import { ArrowDown, ArrowRight, Car, Check, ChevronDown, Ship, X } from '@lucide/vue';
+import {
+  ArrowDown,
+  ArrowRight,
+  Bike,
+  Car,
+  Check,
+  ChevronDown,
+  Cog,
+  KeyRound,
+  Luggage,
+  Ship,
+  UserCheck,
+  Users,
+  X,
+} from '@lucide/vue';
 import faqs from '~/assets/data/faqs.json';
 import pkgData from '~/assets/data/packages.json';
+import vehData from '~/assets/data/vehicles.json';
 
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
@@ -30,6 +45,7 @@ useHead(() => ({
 // Interactive state
 const selectedDeparture = ref<'MY' | 'SG'>('MY');
 const activeCategory = ref<'ALL' | 'BATAM' | 'BINTAN' | 'FULL_BOARD'>('ALL');
+const activeVehicleTab = ref<'all' | 'car' | 'motorcycle'>('all');
 const openFaq = ref<string | null>(faqs[0]?.id || null);
 
 // Modal Booking
@@ -67,6 +83,21 @@ const filteredPackages = computed(() => {
   } else if (activeCategory.value === 'FULL_BOARD') {
     list = list.filter((p) => p.fullBoard);
   }
+  return list.slice(0, 3);
+});
+
+const vehTabs = computed(() => [
+  { id: 'all', label: t('vehicles.filterAll') },
+  { id: 'car', label: 'MOBIL' },
+  { id: 'motorcycle', label: 'MOTOR' },
+]);
+
+const filteredVehicles = computed(() => {
+  let list = [...vehData.vehicles];
+  if (activeVehicleTab.value !== 'all') {
+    list = list.filter((v) => v.type === activeVehicleTab.value);
+  }
+  list.sort((a, b) => (a.popularRank ?? 99) - (b.popularRank ?? 99));
   return list.slice(0, 3);
 });
 
@@ -274,11 +305,113 @@ function handleBookingSubmit() {
     </section>
 
     <!-- ========================================== -->
+    <!-- 3. POPULAR VEHICLES & RENTAL FLEET         -->
+    <!-- ========================================== -->
+    <section id="vehicles" class="wrap scroll-mt-24 py-8 sm:py-10">
+      <div class="space-y-8">
+        <!-- Section Header & Filter Pills -->
+        <div class="anim-fade-up flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
+              {{ t('home.popularVehicles') }}
+            </h2>
+            <p class="text-sm sm:text-base text-[#475569] mt-1 dark:text-slate-300">
+              {{ t('home.rentalBannerText') }}
+            </p>
+          </div>
+
+          <!-- Category Filter Pills (Responsif mobile w-full 3-kolom, desktop flex pill) -->
+          <div class="p-1 sm:p-1.5 bg-white rounded-2xl sm:rounded-full shadow-sm grid grid-cols-3 sm:flex items-center gap-1 sm:gap-2 border border-[#E2E8F0] w-full sm:w-auto dark:bg-slate-900 dark:border-slate-800">
+            <button
+              v-for="f in vehTabs"
+              :key="f.id"
+              type="button"
+              @click="activeVehicleTab = f.id as any"
+              :class="[
+                'min-h-[38px] sm:min-h-[40px] px-1.5 sm:px-4 py-2 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center cursor-pointer active:scale-95',
+                activeVehicleTab === f.id ? 'bg-[#1E40AF] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-300',
+              ]"
+            >
+              {{ f.label }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Vehicles Grid (Sama persis seperti halaman /vehicles: 1 kolom mobile, 2 tablet, 3 desktop) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <article
+            v-for="(v, idx) in filteredVehicles"
+            :key="v.slug"
+            :class="[
+              'anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:bg-slate-900 dark:border-slate-800',
+              idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : 'delay-200',
+            ]"
+          >
+            <!-- Foto + badge -->
+            <NuxtLink :to="localePath(`/vehicles/${v.slug}`)" class="relative block rounded-xl overflow-hidden aspect-[16/10] mb-4 bg-slate-100 dark:bg-slate-800">
+              <img
+                v-if="img(v.images[0])"
+                :src="img(v.images[0])"
+                :alt="`${v.brand} ${v.model}`"
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </NuxtLink>
+
+            <div class="flex-1 flex flex-col px-1">
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 mb-1 dark:text-white">
+                <NuxtLink :to="localePath(`/vehicles/${v.slug}`)" class="hover:text-[#1E40AF] transition-colors dark:hover:text-sky-400">{{ v.brand }} {{ v.model }}</NuxtLink>
+              </h3>
+              <p class="text-xs text-slate-500 leading-relaxed mb-3.5 line-clamp-2 dark:text-slate-400">{{ loc(v.tagline) }}</p>
+
+              <!-- Spesifikasi 2x2 (sama untuk mobil & motor) -->
+              <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-semibold text-slate-700 bg-slate-50 rounded-xl p-2 sm:p-2.5 mb-3 border border-slate-100 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-1.5"><Users aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.seatsCount', { count: v.seats }) }}</div>
+                <div class="flex items-center gap-1.5"><Luggage aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t('common.luggageCount', { count: v.luggage }) }}</div>
+                <div class="flex items-center gap-1.5"><Cog aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />{{ t(`common.transmission.${v.transmission}`) }}</div>
+                <div class="flex items-center gap-1.5">
+                  <component :is="v.type === 'car' ? UserCheck : KeyRound" aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-[#1E40AF] dark:text-sky-400" />
+                  {{ v.type === 'car' ? t('common.driverService') : t('common.selfDriveService') }}
+                </div>
+              </div>
+
+              <!-- Harga & aksi -->
+              <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800">
+                <span class="block text-[10px] font-semibold text-slate-400">{{ t('common.from') }}</span>
+                <div class="flex items-baseline gap-1 mb-3">
+                  <span class="text-xl sm:text-2xl font-extrabold text-[#1E40AF] tabular-nums dark:text-sky-400">{{ vehPrice(v.pricePerDay) }}</span>
+                  <span class="text-xs text-slate-400 font-medium">{{ t('common.perDay') }}</span>
+                </div>
+                <NuxtLink
+                  :to="localePath(`/vehicles/${v.slug}`)"
+                  class="w-full inline-flex min-h-[44px] items-center justify-center gap-1.5 bg-[#1E40AF] hover:bg-[#1D4ED8] text-white text-sm font-bold py-2.5 sm:py-3 px-4 rounded-full shadow-sm hover:shadow transition-all active:scale-[0.98]"
+                >
+                  <span>{{ t('common.viewDetails') }}</span>
+                  <ArrowRight aria-hidden="true" class="h-4 w-4" />
+                </NuxtLink>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- View All Vehicles Link -->
+        <div class="flex justify-center pt-2">
+          <NuxtLink
+            :to="localePath('/vehicles')"
+            class="inline-flex min-h-[44px] items-center justify-center gap-2 px-7 py-3 rounded-full bg-white hover:bg-slate-50 text-[#1E40AF] font-bold text-sm sm:text-base border border-[#E2E8F0] shadow-sm hover:shadow transition-all active:scale-[0.98] hover:-translate-y-0.5 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-sky-300 dark:border-slate-800"
+          >
+            <span>{{ t('common.allVehicles') }}</span>
+            <ArrowRight class="w-4 h-4 stroke-[2.5]" />
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
     <!-- 4. POPULAR DESTINATIONS BENTO GRID         -->
     <!-- ========================================== -->
     <section id="destinasi" class="wrap scroll-mt-24 py-8 sm:py-10 space-y-7">
       <div class="anim-fade-up">
-        <span class="block text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] mb-1 dark:text-sky-400">{{ t('home.destHighlights') }}</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
           {{ t('home.spotWisataTitle') }}
         </h2>
@@ -330,7 +463,6 @@ function handleBookingSubmit() {
     <!-- ========================================== -->
     <section id="faq" class="wrap scroll-mt-24 py-8 sm:py-10 space-y-7">
       <div class="anim-fade-up">
-        <span class="block text-[11px] font-extrabold uppercase tracking-widest text-[#1E40AF] mb-1 dark:text-sky-400">{{ t('faq.tag') }}</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-white">
           {{ t('faq.title') }}
         </h2>

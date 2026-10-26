@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, ArrowUpDown, Bike, Car, Cog, KeyRound, Luggage, Search, Star, UserCheck, Users, X } from '@lucide/vue';
+import { ArrowRight, ArrowUpDown, Bike, Car, Cog, KeyRound, Luggage, Search, UserCheck, Users, X } from '@lucide/vue';
 import data from '~/assets/data/vehicles.json';
 
 const { t, locale } = useI18n();
@@ -242,9 +242,8 @@ function handleBookingSubmit() {
             v-for="(v, idx) in processedVehicles"
             :key="v.slug"
             :class="[
-              'anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] dark:bg-slate-900',
+              'anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:bg-slate-900 dark:border-slate-800',
               idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : idx === 2 ? 'delay-200' : idx === 3 ? 'delay-250' : idx === 4 ? 'delay-300' : 'delay-350',
-              v.bestSeller ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
             ]"
           >
             <!-- Foto + badge -->
@@ -256,12 +255,6 @@ function handleBookingSubmit() {
                 loading="lazy"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <span
-                v-if="v.bestSeller"
-                class="absolute top-3 left-3 inline-flex items-center gap-1 bg-white/95 text-amber-700 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm"
-              >
-                <Star aria-hidden="true" class="h-3 w-3 fill-current" /> {{ t('common.bestSeller') }}
-              </span>
             </NuxtLink>
 
             <div class="flex-1 flex flex-col px-1">

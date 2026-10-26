@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   Building2,
+  ChevronDown,
   PhoneCall,
 } from '@lucide/vue';
 import faqs from '~/assets/data/faqs.json';
@@ -9,6 +10,8 @@ const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const siteUrl = useSiteConfig().url;
 const { site, loc, waUrl } = useSite();
+
+const openFaq = ref<string | null>(faqs[0]?.id || null);
 
 useSeoMeta({
   title: () => t('contact.metaTitle'),
@@ -23,7 +26,14 @@ useHead(() => ({
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
         inLanguage: locale.value,
-        mainEntity: faqs.map((f) => ({ '@type': 'Question', name: loc(f.q), acceptedAnswer: { '@type': 'Answer', text: loc(f.a) } })),
+        mainEntity: faqs.map((f) => ({
+          '@type': 'Question',
+          name: loc(f.q),
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: loc(f.a),
+          },
+        })),
       }),
     },
     {
@@ -232,20 +242,55 @@ useHead(() => ({
         </article>
       </section>
 
-      <!-- FAQ lengkap (FAQPage JSON-LD di atas) -->
-      <section id="faq" class="scroll-mt-24 max-w-3xl">
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ t('faq.title') }}</h2>
-        <p class="mt-1 mb-6 text-sm sm:text-base text-[#475569] dark:text-slate-300">{{ t('faq.subtitle') }}</p>
-        <div class="space-y-3">
-          <details
-            v-for="f in faqs"
-            :id="f.id"
+      <!-- ============================================================ -->
+      <!-- 3. PERTANYAAN YANG SERING DIAJUKAN (FAQ LENGKAP - RATA TENGAH)-->
+      <!-- ============================================================ -->
+      <section id="faq" class="scroll-mt-24 pt-6 space-y-8">
+        <!-- Header Rata Tengah -->
+        <div class="anim-fade-up text-center max-w-2xl mx-auto">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-white">
+            {{ t('faq.title') }}
+          </h2>
+          <p class="text-sm sm:text-base text-slate-500 mt-2 leading-relaxed dark:text-slate-300">
+            {{ t('faq.subtitle') }}
+          </p>
+        </div>
+
+        <!-- Akordion FAQ dengan lebar sama rata dengan card kontak di atasnya -->
+        <div class="w-full space-y-3">
+          <div
+            v-for="(f, idx) in faqs"
             :key="f.id"
-            class="group bg-white border border-[#E2E8F0] rounded-xl overflow-hidden shadow-xs dark:bg-slate-900 dark:border-slate-800"
+            :class="[
+              'anim-card bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-xs hover:border-slate-300 dark:bg-slate-900 dark:border-slate-800 dark:hover:border-slate-700 transition-colors',
+              idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : idx === 2 ? 'delay-200' : 'delay-250',
+            ]"
           >
-            <summary class="cursor-pointer list-none px-5 py-4 sm:px-6 font-bold text-sm sm:text-base text-slate-900 dark:text-white">{{ loc(f.q) }}</summary>
-            <p class="px-5 pb-5 pt-2 sm:px-6 text-xs sm:text-sm text-[#475569] leading-relaxed border-t border-slate-100 dark:text-slate-300 dark:border-slate-800">{{ loc(f.a) }}</p>
-          </details>
+            <button
+              type="button"
+              :aria-expanded="openFaq === f.id"
+              @click="openFaq = openFaq === f.id ? null : f.id"
+              class="w-full px-5 py-4 sm:px-6 sm:py-4.5 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-900 hover:bg-slate-50/80 transition-colors cursor-pointer dark:hover:bg-slate-800/50 dark:text-white"
+            >
+              <span>{{ loc(f.q) }}</span>
+              <ChevronDown
+                :class="[
+                  'w-4 h-4 shrink-0 stroke-[2.5] transition-transform duration-300 ease-in-out',
+                  openFaq === f.id ? 'rotate-180 text-[#1E40AF] dark:text-sky-400' : 'text-slate-400',
+                ]"
+              />
+            </button>
+            <div
+              class="grid transition-all duration-300 ease-in-out"
+              :class="openFaq === f.id ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
+            >
+              <div class="overflow-hidden">
+                <p class="px-5 pb-5 pt-2 sm:px-6 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 dark:text-slate-300 dark:border-slate-800">
+                  {{ loc(f.a) }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>

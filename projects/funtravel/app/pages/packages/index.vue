@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, ArrowUpDown, CalendarDays, Hotel, MapPin, Search, Ship, Star, Utensils, X } from '@lucide/vue';
+import { ArrowRight, ArrowUpDown, CalendarDays, Hotel, MapPin, Search, Ship, Utensils, X } from '@lucide/vue';
 import data from '~/assets/data/packages.json';
 
 const { t, locale } = useI18n();
@@ -161,17 +161,13 @@ const sortOptions = computed(() => [
           v-for="(p, idx) in list"
           :key="p.slug"
           :class="[
-            'anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] dark:bg-slate-900',
+            'anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:bg-slate-900 dark:border-slate-800',
             idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : idx === 2 ? 'delay-200' : idx === 3 ? 'delay-250' : idx === 4 ? 'delay-300' : 'delay-350',
-            p.featured ? 'border-2 border-amber-400/80 shadow-[0_6px_20px_rgba(250,204,21,0.12)]' : 'border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:border-slate-800',
           ]"
         >
           <NuxtLink :to="localePath(`/packages/${p.slug}`)" class="relative block rounded-xl overflow-hidden aspect-[16/10] mb-4 bg-slate-100 dark:bg-slate-800">
             <img v-if="img(p.images[0])" :src="img(p.images[0])" :alt="loc(p.name)" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             <span class="absolute top-3 left-3 rounded-lg bg-white/95 px-2.5 py-1 text-xs font-black text-[#1E40AF] shadow-sm">{{ p.code }}</span>
-            <span v-if="p.featured" class="absolute top-3 right-3 inline-flex items-center gap-1 bg-white/95 text-amber-700 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
-              <Star aria-hidden="true" class="h-3 w-3 fill-current" /> {{ t('common.popular') }}
-            </span>
           </NuxtLink>
 
           <div class="flex-1 flex flex-col px-1">

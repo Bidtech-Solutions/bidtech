@@ -48,6 +48,23 @@ const activeCategory = ref<'ALL' | 'BATAM' | 'BINTAN' | 'FULL_BOARD'>('ALL');
 const activeVehicleTab = ref<'all' | 'car' | 'motorcycle'>('all');
 const openFaq = ref<string | null>(faqs[0]?.id || null);
 
+// Carousel horizontal scroll refs for mobile
+const pkgScrollRef = ref<HTMLElement | null>(null);
+const vehScrollRef = ref<HTMLElement | null>(null);
+
+// Reset scroll carousel to start when filter changes
+watch(activeCategory, () => {
+  if (import.meta.client) {
+    pkgScrollRef.value?.scrollTo({ left: 0, behavior: 'smooth' });
+  }
+});
+
+watch(activeVehicleTab, () => {
+  if (import.meta.client) {
+    vehScrollRef.value?.scrollTo({ left: 0, behavior: 'smooth' });
+  }
+});
+
 // Modal Booking
 const isModalOpen = ref(false);
 const bookingCategory = ref<'package' | 'car' | 'scooter'>('package');
@@ -220,13 +237,16 @@ function handleBookingSubmit() {
           </div>
         </div>
 
-        <!-- Packages Grid (Kembali ke awal: scroll ke bawah, 1 kolom di mobile, 2 di tablet, 3 di desktop) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Packages Carousel (Swipeable di mobile dengan kartu Lihat Selengkapnya, Grid 3-kolom di desktop) -->
+        <div
+          ref="pkgScrollRef"
+          class="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-4 sm:gap-6 overflow-x-auto pt-1 pb-5 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:px-0 md:pt-0 md:pb-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible"
+        >
           <article
             v-for="(p, idx) in filteredPackages"
             :key="p.slug"
             :class="[
-              'anim-card bg-white rounded-2xl border border-[#E2E8F0] p-4 shadow-[0_4px_12px_rgba(30,64,175,0.08)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between dark:bg-slate-900 dark:border-slate-800',
+              'w-[84vw] max-w-[340px] sm:w-[340px] md:w-auto shrink-0 snap-center md:shrink md:snap-align-none anim-card bg-white rounded-2xl border border-[#E2E8F0] p-4 shadow-[0_4px_12px_rgba(30,64,175,0.08)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between self-stretch dark:bg-slate-900 dark:border-slate-800',
               idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : 'delay-200',
             ]"
           >
@@ -289,10 +309,26 @@ function handleBookingSubmit() {
               </NuxtLink>
             </div>
           </article>
+
+          <!-- Kartu Ujung Kanan 'Lihat Selengkapnya' (Khusus Mobile Beranda saat di-swipe ke kanan) -->
+          <NuxtLink
+            :to="localePath('/packages')"
+            class="w-[60vw] max-w-[240px] sm:w-[240px] shrink-0 snap-center md:hidden flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-blue-50/90 via-indigo-50/40 to-white border-2 border-dashed border-[#1E40AF]/30 text-center active:scale-95 transition-all self-stretch group dark:from-slate-900 dark:via-slate-850 dark:to-slate-900 dark:border-sky-500/30"
+          >
+            <div class="w-14 h-14 rounded-full bg-[#1E40AF] text-white flex items-center justify-center mb-3 shadow-md group-hover:scale-110 transition-transform dark:bg-sky-500">
+              <ArrowRight class="w-6 h-6 stroke-[2.5]" />
+            </div>
+            <span class="text-base font-extrabold text-[#1E40AF] dark:text-sky-300">
+              Lihat Selengkapnya
+            </span>
+            <span class="text-xs text-slate-500 mt-1 dark:text-slate-400">
+              {{ t('common.allPackages') }} →
+            </span>
+          </NuxtLink>
         </div>
 
-        <!-- View All Packages Link -->
-        <div class="flex justify-center pt-2">
+        <!-- View All Packages Link (Hanya di Desktop, di Mobile sudah ada kartu swipe) -->
+        <div class="hidden md:flex justify-center pt-2">
           <NuxtLink
             :to="localePath('/packages')"
             class="inline-flex min-h-[44px] items-center justify-center gap-2 px-7 py-3 rounded-full bg-white hover:bg-slate-50 text-[#1E40AF] font-bold text-sm sm:text-base border border-[#E2E8F0] shadow-sm hover:shadow transition-all active:scale-[0.98] hover:-translate-y-0.5 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-sky-300 dark:border-slate-800"
@@ -337,13 +373,16 @@ function handleBookingSubmit() {
           </div>
         </div>
 
-        <!-- Vehicles Grid (Sama persis seperti halaman /vehicles: 1 kolom mobile, 2 tablet, 3 desktop) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Vehicles Carousel (Swipeable di mobile dengan kartu Lihat Selengkapnya, Grid 3-kolom di desktop) -->
+        <div
+          ref="vehScrollRef"
+          class="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-4 sm:gap-6 overflow-x-auto pt-1 pb-5 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:px-0 md:pt-0 md:pb-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible"
+        >
           <article
             v-for="(v, idx) in filteredVehicles"
             :key="v.slug"
             :class="[
-              'anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:bg-slate-900 dark:border-slate-800',
+              'w-[84vw] max-w-[340px] sm:w-[340px] md:w-auto shrink-0 snap-center md:shrink md:snap-align-none anim-card group bg-white rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between self-stretch transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] border border-[#E2E8F0] shadow-[0_4px_12px_rgba(30,64,175,0.08)] dark:bg-slate-900 dark:border-slate-800',
               idx === 0 ? 'delay-75' : idx === 1 ? 'delay-150' : 'delay-200',
             ]"
           >
@@ -392,10 +431,26 @@ function handleBookingSubmit() {
               </div>
             </div>
           </article>
+
+          <!-- Kartu Ujung Kanan 'Lihat Selengkapnya' (Khusus Mobile Beranda saat di-swipe ke kanan) -->
+          <NuxtLink
+            :to="localePath('/vehicles')"
+            class="w-[60vw] max-w-[240px] sm:w-[240px] shrink-0 snap-center md:hidden flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-blue-50/90 via-indigo-50/40 to-white border-2 border-dashed border-[#1E40AF]/30 text-center active:scale-95 transition-all self-stretch group dark:from-slate-900 dark:via-slate-850 dark:to-slate-900 dark:border-sky-500/30"
+          >
+            <div class="w-14 h-14 rounded-full bg-[#1E40AF] text-white flex items-center justify-center mb-3 shadow-md group-hover:scale-110 transition-transform dark:bg-sky-500">
+              <ArrowRight class="w-6 h-6 stroke-[2.5]" />
+            </div>
+            <span class="text-base font-extrabold text-[#1E40AF] dark:text-sky-300">
+              Lihat Selengkapnya
+            </span>
+            <span class="text-xs text-slate-500 mt-1 dark:text-slate-400">
+              {{ t('common.allVehicles') }} →
+            </span>
+          </NuxtLink>
         </div>
 
-        <!-- View All Vehicles Link -->
-        <div class="flex justify-center pt-2">
+        <!-- View All Vehicles Link (Hanya di Desktop, di Mobile sudah ada kartu swipe) -->
+        <div class="hidden md:flex justify-center pt-2">
           <NuxtLink
             :to="localePath('/vehicles')"
             class="inline-flex min-h-[44px] items-center justify-center gap-2 px-7 py-3 rounded-full bg-white hover:bg-slate-50 text-[#1E40AF] font-bold text-sm sm:text-base border border-[#E2E8F0] shadow-sm hover:shadow transition-all active:scale-[0.98] hover:-translate-y-0.5 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-sky-300 dark:border-slate-800"

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Award, HeartHandshake, ShieldCheck } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -11,19 +12,19 @@ if (typeof window !== "undefined") {
 
 const stats = [
   {
-    icon: <Award className="w-6 h-6 text-[#D49E3C]" />,
+    icon: <Award className="w-6 h-6 text-gold-500" />,
     target: 6,
     suffix: "+",
     label: "Tahun Pengalaman",
   },
   {
-    icon: <HeartHandshake className="w-6 h-6 text-[#D49E3C]" />,
+    icon: <HeartHandshake className="w-6 h-6 text-gold-500" />,
     target: 5000,
     suffix: "+",
     label: "Pelanggan Puas",
   },
   {
-    icon: <ShieldCheck className="w-6 h-6 text-[#D49E3C]" />,
+    icon: <ShieldCheck className="w-6 h-6 text-gold-500" />,
     target: 100,
     suffix: "%",
     label: "Transaksi Aman",
@@ -34,6 +35,13 @@ export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
+
+  const statLabels = [
+    t.about.statYears,
+    t.about.statCustomers,
+    t.about.statTransactions,
+  ];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -88,7 +96,7 @@ export default function About() {
               toggleActions: "play none none none",
             },
             onUpdate: () => {
-              el.textContent = `${Math.floor(obj.val).toLocaleString()}${stat.suffix}`;
+              el.textContent = `${Math.floor(obj.val).toLocaleString('id-ID')}${stat.suffix}`;
             },
           });
         }
@@ -99,7 +107,7 @@ export default function About() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="tentang" className="py-20 sm:py-24 bg-[#FAFAF8] overflow-hidden">
+    <section ref={sectionRef} id="tentang" className="py-20 sm:py-24 bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           
@@ -125,19 +133,19 @@ export default function About() {
             className="lg:col-span-6 flex flex-col justify-center text-left"
           >
             <span className="text-xs sm:text-[13px] font-bold text-gold-500 uppercase tracking-[0.1em] mb-2 block">
-              + TENTANG KAMI
+              {t.about.eyebrow}
             </span>
             
             <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-ink-900 leading-[1.15] tracking-[-0.03em] mb-5">
-              Lebih dari Sekadar Toko HP
+              {t.about.title}
             </h2>
 
             <div className="space-y-3 text-txt-600 text-sm sm:text-base leading-relaxed mb-8">
               <p>
-                KONTERKU berdiri sejak 2018 dengan komitmen memberikan produk smartphone terbaik dengan harga bersaing dan pelayanan yang jujur &amp; ramah.
+                {t.about.story1}
               </p>
               <p className="font-medium text-ink-800">
-                Kepuasan pelanggan adalah prioritas kami.
+                {t.about.story2}
               </p>
             </div>
 
@@ -159,7 +167,7 @@ export default function About() {
                       {`0${stat.suffix}`}
                     </div>
                     <div className="text-xs text-txt-500 font-medium leading-tight">
-                      {stat.label}
+                      {statLabels[idx]}
                     </div>
                   </div>
                 </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, ShieldCheck, Award, Tag } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -59,6 +60,7 @@ export default function Hero() {
   const textRef = useRef<HTMLDivElement>(null);
   const marqueeTrackRef = useRef<HTMLDivElement>(null);
   const phoneVisualRef = useRef<HTMLDivElement>(null);
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     const mm = gsap.matchMedia();
@@ -138,7 +140,7 @@ export default function Hero() {
     <section 
       id="home"
       ref={containerRef}
-      className="relative min-h-[100svh] pt-20 sm:pt-24 lg:pt-16 overflow-hidden bg-[#FAFAF8] flex flex-col justify-between"
+      className="relative min-h-[100svh] pt-20 sm:pt-24 lg:pt-16 overflow-hidden bg-background flex flex-col justify-between"
     >
       {/* Top right corner radial glow positioned right at the top right corner */}
       <div 
@@ -155,11 +157,11 @@ export default function Hero() {
           <div ref={textRef} className="lg:col-span-5 z-20 space-y-6 sm:space-y-7 pb-6 lg:pb-16">
             
             {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-[72px] font-extrabold tracking-[-0.04em] text-ink-900 leading-[1.05]">
-              Temukan <br />
-              Smartphone <br />
+            <h1 className="text-4xl sm:text-6xl lg:text-[72px] font-extrabold tracking-[-0.04em] text-ink-900 leading-[1.08] sm:leading-[1.05]">
+              {t.hero.title1} <br />
+              {t.hero.title2} <br />
               <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#D9A441] via-[#E8B45E] to-[#C58E2E]">
-                Impianmu
+                {t.hero.title3}
                 {/* Curved artistic golden line */}
                 <svg
                   className="absolute -bottom-2.5 left-0 w-full h-3 text-[#E8B45E]/80"
@@ -179,19 +181,25 @@ export default function Hero() {
             
             {/* Description */}
             <p className="text-base sm:text-lg text-txt-600 max-w-lg leading-relaxed pt-1">
-              Smartphone baru & second berkualitas dengan harga terbaik, garansi resmi dan pelayanan terpercaya.
+              {t.hero.description}
             </p>
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 pt-2">
               <Link 
-                href="#produk"
+                href="/produk"
+                prefetch={true}
+                scroll={true}
                 className="inline-flex justify-center items-center rounded-2xl bg-gradient-to-r from-[#F4C87F] via-[#E8B45E] to-[#DC9F3C] px-7 py-3.5 text-sm sm:text-base font-bold text-ink-900 shadow-sm hover:shadow-md hover:brightness-105 active:scale-[0.98] transition-all duration-200"
               >
-                Lihat Produk <ArrowRight className="ml-2 w-4 h-4" />
+                {t.hero.viewProducts} <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
               <a
-                href="https://wa.me/123456789"
+                href={`https://wa.me/6281234567890?text=${encodeURIComponent(
+                  language === "en"
+                    ? "Hello KONTERKU, I would like to inquire about your smartphone products"
+                    : "Halo KONTERKU, saya ingin bertanya tentang produk smartphone"
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex justify-center items-center rounded-2xl bg-white px-7 py-3.5 text-sm sm:text-base font-bold text-ink-900 shadow-sm border border-border hover:bg-surface-soft hover:border-border-strong active:scale-[0.98] transition-all duration-200"
@@ -199,7 +207,7 @@ export default function Hero() {
                 <div className="w-5 h-5 rounded-full flex items-center justify-center mr-2">
                   <WhatsappIcon className="w-4 h-4 text-ink-900" />
                 </div>
-                Chat WhatsApp
+                {t.hero.chatWa}
               </a>
             </div>
             
@@ -211,8 +219,8 @@ export default function Hero() {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-ink-900 text-xs sm:text-[13px] leading-tight">Garansi Resmi</div>
-                  <div className="text-txt-400 text-[11px] leading-tight mt-0.5">Aman & Terpercaya</div>
+                  <div className="font-bold text-ink-900 text-xs sm:text-[13px] leading-tight">{t.hero.badge1}</div>
+                  <div className="text-txt-400 text-[11px] leading-tight mt-0.5">{t.hero.badge1Sub}</div>
                 </div>
               </div>
 
@@ -225,8 +233,8 @@ export default function Hero() {
                   <Award className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-ink-900 text-xs sm:text-[13px] leading-tight">Produk Original</div>
-                  <div className="text-txt-400 text-[11px] leading-tight mt-0.5">100% Original</div>
+                  <div className="font-bold text-ink-900 text-xs sm:text-[13px] leading-tight">{t.hero.badge2}</div>
+                  <div className="text-txt-400 text-[11px] leading-tight mt-0.5">{t.hero.badge2Sub}</div>
                 </div>
               </div>
 
@@ -239,8 +247,8 @@ export default function Hero() {
                   <Tag className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-ink-900 text-xs sm:text-[13px] leading-tight">Harga Terbaik</div>
-                  <div className="text-txt-400 text-[11px] leading-tight mt-0.5">Bersaing Setiap Hari</div>
+                  <div className="font-bold text-ink-900 text-xs sm:text-[13px] leading-tight">{t.hero.badge3}</div>
+                  <div className="text-txt-400 text-[11px] leading-tight mt-0.5">{t.hero.badge3Sub}</div>
                 </div>
               </div>
             </div>

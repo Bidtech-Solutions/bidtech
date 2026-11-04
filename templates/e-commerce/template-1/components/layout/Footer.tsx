@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 const WhatsappIcon = ({ className }: { className?: string }) => (
   <svg 
@@ -84,15 +85,17 @@ const MailIcon = ({ className }: { className?: string }) => (
 );
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
-    <footer className="bg-white border-t border-border/80 pt-16 pb-12 text-txt-600">
+    <footer className="bg-white border-t border-border/80 pt-16 pb-20 sm:pb-12 text-txt-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Responsive Grid: 2 Columns on Mobile, Multi-column on Desktop */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-8 lg:gap-10 mb-12 sm:mb-14">
+        {/* Responsive Grid: 2 Columns on Mobile, 5 Columns on Tablet & Desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-x-6 gap-y-8 md:gap-x-5 lg:gap-10 mb-12 sm:mb-14">
           
-          {/* Col 1: Brand Info (span 2 on mobile, span 4 on lg) */}
-          <div className="col-span-2 lg:col-span-4 space-y-3.5 pb-2 sm:pb-0 border-b border-border/50 sm:border-0">
+          {/* Col 1: Brand Info (span 2 on mobile, span 4 on md & desktop) */}
+          <div className="col-span-2 md:col-span-4 space-y-3.5 pb-2 sm:pb-0 border-b border-border/50 sm:border-0">
             <Link href="/" className="inline-flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -103,7 +106,7 @@ export default function Footer() {
             </Link>
             
             <p className="text-xs sm:text-[13.5px] text-txt-500 leading-relaxed max-w-sm">
-              Smartphone baru &amp; second berkualitas dengan harga terbaik dan pelayanan terpercaya.
+              {t.footer.tagline}
             </p>
 
             {/* Social Icons */}
@@ -150,112 +153,112 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 2: Menu (span 1 on mobile, span 2 on lg) */}
-          <div className="col-span-1 lg:col-span-2 space-y-3">
+          {/* Col 2: Menu (span 1 on mobile, span 2 on md/lg) */}
+          <div className="col-span-1 md:col-span-2 space-y-3">
             <h4 className="font-bold text-ink-900 text-sm sm:text-[15px]">
-              Menu
+              {t.footer.menu}
             </h4>
             <ul className="space-y-2 text-xs sm:text-[13.5px]">
               <li>
-                <Link href="#home" className="hover:text-gold-600 transition-colors">
-                  Home
+                <Link href="/" className="hover:text-gold-600 transition-colors">
+                  {t.nav.home}
                 </Link>
               </li>
               <li>
-                <Link href="#produk" className="hover:text-gold-600 transition-colors">
-                  Produk
+                <Link href="/produk" className="hover:text-gold-600 transition-colors">
+                  {t.nav.products}
                 </Link>
               </li>
               <li>
-                <Link href="#promo" className="hover:text-gold-600 transition-colors">
-                  Promo
+                <Link href="/aksesoris" className="hover:text-gold-600 transition-colors">
+                  {t.nav.accessories}
                 </Link>
               </li>
               <li>
-                <Link href="#tentang" className="hover:text-gold-600 transition-colors">
-                  Tentang Kami
+                <Link href="/tentang-kami" className="hover:text-gold-600 transition-colors">
+                  {t.nav.about}
                 </Link>
               </li>
               <li>
-                <Link href="#kontak" className="hover:text-gold-600 transition-colors">
-                  Kontak
+                <Link href="/kontak" className="hover:text-gold-600 transition-colors">
+                  {t.nav.contact}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Kategori (span 1 on mobile, span 2 on lg) */}
-          <div className="col-span-1 lg:col-span-2 space-y-3">
+          {/* Col 3: Kategori (span 1 on mobile, span 2 on md/lg) */}
+          <div className="col-span-1 md:col-span-2 space-y-3">
             <h4 className="font-bold text-ink-900 text-sm sm:text-[15px]">
-              Kategori
+              {t.footer.categories}
             </h4>
             <ul className="space-y-2 text-xs sm:text-[13.5px]">
               <li>
-                <Link href="#produk" className="hover:text-gold-600 transition-colors">
-                  Smartphone Baru
+                <Link href="/produk?category=HP+Baru" className="hover:text-gold-600 transition-colors">
+                  {t.footer.categoryNew}
                 </Link>
               </li>
               <li>
-                <Link href="#produk" className="hover:text-gold-600 transition-colors">
-                  Smartphone Second
+                <Link href="/produk?category=Second" className="hover:text-gold-600 transition-colors">
+                  {t.footer.categorySecond}
                 </Link>
               </li>
               <li>
-                <Link href="#produk" className="hover:text-gold-600 transition-colors">
-                  Aksesoris
+                <Link href="/aksesoris" className="hover:text-gold-600 transition-colors">
+                  {t.nav.accessories}
                 </Link>
               </li>
               <li>
-                <Link href="#produk" className="hover:text-gold-600 transition-colors">
-                  Tablet
+                <Link href="/produk?category=Tablet" className="hover:text-gold-600 transition-colors">
+                  {t.productCatalog.categories.tablet}
                 </Link>
               </li>
               <li>
-                <Link href="#produk" className="hover:text-gold-600 transition-colors">
-                  Audio
+                <Link href="/aksesoris?category=Audio" className="hover:text-gold-600 transition-colors">
+                  {t.accessoriesPage.categories.audio}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: Informasi (span 1 on mobile, span 2 on lg) */}
-          <div className="col-span-1 lg:col-span-2 space-y-3">
+          {/* Col 4: Informasi (span 1 on mobile, span 2 on md/lg) */}
+          <div className="col-span-1 md:col-span-2 space-y-3">
             <h4 className="font-bold text-ink-900 text-sm sm:text-[15px]">
-              Informasi
+              {t.footer.information}
             </h4>
             <ul className="space-y-2 text-xs sm:text-[13.5px]">
               <li>
-                <Link href="#" className="hover:text-gold-600 transition-colors">
-                  Cara Pembelian
+                <Link href="/tentang-kami#cara-pembelian" className="hover:text-gold-600 transition-colors">
+                  {t.footer.howToBuy}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-gold-600 transition-colors">
-                  Garansi &amp; Retur
+                <Link href="/tentang-kami#garansi-retur" className="hover:text-gold-600 transition-colors">
+                  {t.footer.warrantyReturn}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-gold-600 transition-colors">
-                  Pengiriman
+                <Link href="/tentang-kami#pengiriman" className="hover:text-gold-600 transition-colors">
+                  {t.footer.shipping}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-gold-600 transition-colors">
-                  Syarat &amp; Ketentuan
+                <Link href="/tentang-kami#syarat-ketentuan" className="hover:text-gold-600 transition-colors">
+                  {t.footer.terms}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-gold-600 transition-colors">
-                  Kebijakan Privasi
+                <Link href="/tentang-kami#kebijakan-privasi" className="hover:text-gold-600 transition-colors">
+                  {t.footer.privacy}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 5: Kontak (span 1 on mobile, span 2 on lg) */}
-          <div className="col-span-1 lg:col-span-2 space-y-3">
+          {/* Col 5: Kontak (span 1 on mobile, span 2 on md/lg) */}
+          <div className="col-span-1 md:col-span-2 space-y-3">
             <h4 className="font-bold text-ink-900 text-sm sm:text-[15px]">
-              Kontak
+              {t.footer.contact}
             </h4>
             <ul className="space-y-2.5 text-xs sm:text-[13.5px]">
               <li>
@@ -293,7 +296,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="pt-8 border-t border-border/70 text-center">
           <p className="text-xs sm:text-[13px] text-txt-400">
-            &copy; 2024 KONTERKU. All rights reserved.
+            &copy; 2024 KONTERKU. {t.footer.rights}
           </p>
         </div>
 

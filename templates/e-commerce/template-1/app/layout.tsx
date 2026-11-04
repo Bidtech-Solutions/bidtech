@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
 import '../styles/globals.css';
 import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider';
+import PageProgressBar from '@/components/common/PageProgressBar';
+import { LanguageProvider } from '@/context/LanguageContext';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -22,9 +24,12 @@ export default function RootLayout({
   return (
     <html lang="id" className={manrope.variable}>
       <body className="bg-background text-ink-900 antialiased font-sans selection:bg-gold-200">
-        <SmoothScrollProvider>
-          {children}
-        </SmoothScrollProvider>
+        <LanguageProvider>
+          <PageProgressBar />
+          <SmoothScrollProvider>
+            {children}
+          </SmoothScrollProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

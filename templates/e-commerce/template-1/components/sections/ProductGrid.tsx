@@ -5,6 +5,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -71,6 +72,7 @@ export default function ProductGrid() {
   const gridRef = useRef<HTMLDivElement>(null);
   const [activeProductIndex, setActiveProductIndex] = useState(0);
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const { t, language } = useLanguage();
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => ({
@@ -164,13 +166,13 @@ export default function ProductGrid() {
         <div ref={headerRef} className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 sm:mb-12">
           <div>
             <span className="text-[13px] font-bold text-gold-500 uppercase tracking-[0.08em] mb-2 block">
-              PILIHAN SMARTPHONE
+              {t.productGrid.eyebrow}
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-ink-900 tracking-[-0.03em] leading-tight mb-2">
-              Produk Terbaru &amp; Terlaris
+              {t.productGrid.title}
             </h2>
             <p className="text-txt-600 text-sm sm:text-base max-w-xl">
-              Berbagai pilihan smartphone dari brand terbaik dengan harga bersaing.
+              {t.productGrid.desc}
             </p>
           </div>
 
@@ -182,7 +184,7 @@ export default function ProductGrid() {
                 onClick={() => scrollMobile("prev")}
                 disabled={activeProductIndex === 0}
                 className="w-9 h-9 rounded-full bg-white border border-border/80 text-ink-900 shadow-xs flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all"
-                aria-label="Produk Sebelumnya"
+                aria-label="Previous"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -190,17 +192,19 @@ export default function ProductGrid() {
                 onClick={() => scrollMobile("next")}
                 disabled={activeProductIndex === showcaseProducts.length - 1}
                 className="w-9 h-9 rounded-full bg-white border border-border/80 text-ink-900 shadow-xs flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all"
-                aria-label="Produk Berikutnya"
+                aria-label="Next"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
             <Link
-              href="#produk"
+              href="/produk"
+              prefetch={true}
+              scroll={true}
               className="inline-flex items-center justify-center rounded-2xl bg-white px-5 py-3 text-xs sm:text-sm font-bold text-ink-900 shadow-sm border border-border hover:bg-surface-soft hover:border-border-strong active:scale-[0.98] transition-all duration-200 flex-shrink-0"
             >
-              Lihat Semua Produk <ArrowRight className="ml-2 w-4 h-4" />
+              {t.productGrid.viewAll} <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -260,13 +264,17 @@ export default function ProductGrid() {
 
                 {/* Tanya via WhatsApp Button */}
                 <a
-                  href={`https://wa.me/123456789?text=${encodeURIComponent(product.waMessage)}`}
+                  href={`https://wa.me/6281234567890?text=${encodeURIComponent(
+                    language === "en"
+                      ? `Hello KONTERKU, I am interested in ${product.name} (${product.specs}).`
+                      : product.waMessage
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-auto w-full inline-flex items-center justify-center rounded-xl bg-white border border-[#E8C27D] hover:bg-gold-50/60 active:scale-[0.98] py-2.5 px-4 text-xs sm:text-[13px] font-bold text-ink-900 shadow-sm transition-all duration-200"
+                  className="mt-auto w-full inline-flex items-center justify-center rounded-xl bg-white border border-gold-300 hover:bg-gold-50/60 active:scale-[0.98] py-2.5 px-4 text-xs sm:text-[13px] font-bold text-ink-900 shadow-sm transition-all duration-200"
                 >
                   <WhatsappIcon className="w-4 h-4 text-ink-900 mr-2 flex-shrink-0" />
-                  Tanya via WhatsApp
+                  {t.productGrid.orderWa}
                 </a>
               </div>
             </div>

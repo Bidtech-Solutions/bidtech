@@ -5,6 +5,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -27,64 +28,69 @@ interface PromoSlide {
   badgeShadow: string;
 }
 
-const promoSlides: PromoSlide[] = [
-  {
-    id: "promo-1",
-    eyebrow: "PROMO SPESIAL BULAN INI",
-    title: "Diskon Hingga 30%",
-    desc: "Dapatkan harga spesial untuk berbagai smartphone pilihan.",
-    btnText: "Lihat Promo",
-    btnLink: "#produk",
-    image: "/images/promo.webp",
-    badgeTop: "UP TO",
-    badgeMain: "30%",
-    badgeBottom: "OFF",
-    gradient: "linear-gradient(135deg, #FCF8F2 0%, #F8EFE0 50%, #F3E5CF 100%)",
-    borderColor: "border-[#EBD6B6]",
-    badgeColor: "text-[#DFB062]",
-    badgeShadow: "rgba(217,164,65,0.38)",
-  },
-  {
-    id: "promo-2",
-    eyebrow: "PROGRAM TUKAR TAMBAH",
-    title: "Extra Cashback Rp 1 Juta",
-    desc: "Tukar smartphone lama Anda ke flagship terbaru dengan proses instan dan taksiran tertinggi.",
-    btnText: "Tukar Tambah",
-    btnLink: "https://wa.me/123456789?text=Halo%20saya%20tertarik%20dengan%20program%20tukar%20tambah%20cashback%201%20juta",
-    image: "/images/promo-samsung.webp",
-    badgeTop: "EXTRA",
-    badgeMain: "1 JT",
-    badgeBottom: "CASHBACK",
-    gradient: "linear-gradient(135deg, #F0F4FC 0%, #E6EEFA 50%, #D8E5F7 100%)",
-    borderColor: "border-[#C8DAF2]",
-    badgeColor: "text-[#628FDF]",
-    badgeShadow: "rgba(98,143,223,0.38)",
-  },
-  {
-    id: "promo-3",
-    eyebrow: "PAKET BUNDLING SPESIAL",
-    title: "Free TWS & Fast Charger",
-    desc: "Setiap pembelian smartphone tertentu, gratis Wireless Earbuds & Original Adapter senilai Rp 850.000.",
-    btnText: "Klaim Bundling",
-    btnLink: "https://wa.me/123456789?text=Halo%20saya%20ingin%20klaim%20paket%20bundling%20TWS%20dan%20Charger",
-    image: "/images/promo-bundling.webp",
-    badgeTop: "BONUS",
-    badgeMain: "850K",
-    badgeBottom: "GRATIS",
-    gradient: "linear-gradient(135deg, #F2FAF5 0%, #E5F5EB 50%, #D2EEDE 100%)",
-    borderColor: "border-[#BEE5D0]",
-    badgeColor: "text-[#52B788]",
-    badgeShadow: "rgba(82,183,136,0.38)",
-  },
-];
-
 export default function Promo() {
+  const { language } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
   const slideContainerRef = useRef<HTMLDivElement>(null);
   const textContentRef = useRef<HTMLDivElement>(null);
   const visualContentRef = useRef<HTMLDivElement>(null);
+
+  const promoSlides: PromoSlide[] = [
+    {
+      id: "promo-1",
+      eyebrow: language === "en" ? "SPECIAL PROMO THIS MONTH" : "PROMO SPESIAL BULAN INI",
+      title: language === "en" ? "Discounts Up to 30%" : "Diskon Hingga 30%",
+      desc: language === "en" ? "Get special prices on selected smartphone flagships." : "Dapatkan harga spesial untuk berbagai smartphone pilihan.",
+      btnText: language === "en" ? "View Promo" : "Lihat Promo",
+      btnLink: "/produk",
+      image: "/images/promo.webp",
+      badgeTop: "UP TO",
+      badgeMain: "30%",
+      badgeBottom: "OFF",
+      gradient: "linear-gradient(135deg, #FCF8F2 0%, #F8EFE0 50%, #F3E5CF 100%)",
+      borderColor: "border-[#EBD6B6]",
+      badgeColor: "text-[#DFB062]",
+      badgeShadow: "rgba(217,164,65,0.38)",
+    },
+    {
+      id: "promo-2",
+      eyebrow: "FLASH SALE CASHBACK",
+      title: language === "en" ? "Extra Cashback Up to Rp 1 Million" : "Extra Cashback Rp 1 Juta",
+      desc: language === "en" ? "Buy selected Samsung & iPhone flagships this month and enjoy direct cashback up to Rp 1,000,000." : "Beli flagship Samsung & iPhone pilihan bulan ini dan nikmati potongan langsung hingga Rp 1.000.000.",
+      btnText: language === "en" ? "Claim Cashback" : "Klaim Cashback",
+      btnLink: `https://wa.me/6281234567890?text=${encodeURIComponent(
+        language === "en" ? "Hello KONTERKU, I am interested in the 1 million cashback promo" : "Halo KONTERKU, saya tertarik dengan promo cashback 1 juta"
+      )}`,
+      image: "/images/promo-samsung.webp",
+      badgeTop: "EXTRA",
+      badgeMain: "1 JT",
+      badgeBottom: "CASHBACK",
+      gradient: "linear-gradient(135deg, #F0F4FC 0%, #E6EEFA 50%, #D8E5F7 100%)",
+      borderColor: "border-[#C8DAF2]",
+      badgeColor: "text-[#628FDF]",
+      badgeShadow: "rgba(98,143,223,0.38)",
+    },
+    {
+      id: "promo-3",
+      eyebrow: language === "en" ? "SPECIAL BUNDLE PACKAGE" : "PAKET BUNDLING SPESIAL",
+      title: "Free TWS & Fast Charger",
+      desc: language === "en" ? "With every eligible smartphone purchase, get free Wireless Earbuds & Original Adapter worth Rp 850,000." : "Setiap pembelian smartphone tertentu, gratis Wireless Earbuds & Original Adapter senilai Rp 850.000.",
+      btnText: language === "en" ? "Claim Bundle" : "Klaim Bundling",
+      btnLink: `https://wa.me/6281234567890?text=${encodeURIComponent(
+        language === "en" ? "Hello KONTERKU, I would like to claim the TWS & Fast Charger bundle" : "Halo KONTERKU, saya ingin klaim paket bundling TWS dan Charger"
+      )}`,
+      image: "/images/promo-bundling.webp",
+      badgeTop: "BONUS",
+      badgeMain: "850K",
+      badgeBottom: language === "en" ? "FREE" : "GRATIS",
+      gradient: "linear-gradient(135deg, #F2FAF5 0%, #E5F5EB 50%, #D2EEDE 100%)",
+      borderColor: "border-[#BEE5D0]",
+      badgeColor: "text-[#52B788]",
+      badgeShadow: "rgba(82,183,136,0.38)",
+    },
+  ];
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % promoSlides.length);
@@ -138,7 +144,7 @@ export default function Promo() {
   const slide = promoSlides[currentSlide];
 
   return (
-    <section ref={sectionRef} id="promo" className="pt-4 pb-20 sm:pt-6 sm:pb-24 bg-[#FAFAF8] overflow-hidden">
+    <section ref={sectionRef} id="promo" className="pt-4 pb-20 sm:pt-6 sm:pb-24 bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Carousel Wrapper */}

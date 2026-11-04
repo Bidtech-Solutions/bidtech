@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import type Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -20,6 +21,34 @@ export default function SmoothScrollProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  // Reset scroll to top cleanly and purge obsolete ScrollTriggers whenever route changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (window.__lenis) {
+      window.__lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
+
+    // Kill any orphaned ScrollTriggers whose elements are unmounted
+    ScrollTrigger.getAll().forEach((trigger) => {
+      const el = trigger.trigger as HTMLElement | null;
+      if (el && !document.contains(el)) {
+        trigger.kill();
+      }
+    });
+
+    // Refresh ScrollTrigger cleanly after the new page DOM has painted
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 80);
+
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
   useEffect(() => {
     let cleanup: (() => void) | undefined;
     let cancelled = false;
@@ -27,15 +56,25 @@ export default function SmoothScrollProvider({
     void import("lenis").then(({ default: Lenis }) => {
       if (cancelled) return;
 
-      // Inisiasi Lenis Smooth Scroll
+      // Inisiasi Lenis Smooth Scroll - Tuned for fast, natural response
       const lenis = new Lenis({
-        duration: 1.2,
+        duration: 0.9,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: "vertical",
         gestureOrientation: "vertical",
         smoothWheel: true,
         wheelMultiplier: 1,
-        touchMultiplier: 1.5,
+        touchMultiplier: 1,
+        syncTouch: false,
+        prevent: (node) => {
+          const el = (node as HTMLElement)?.closest
+            ? (node as HTMLElement)
+            : ((node as Node)?.parentElement as HTMLElement | null);
+          return !!(
+            el?.hasAttribute?.('data-lenis-prevent') ||
+            el?.closest?.('[data-lenis-prevent]')
+          );
+        },
       });
 
       window.__lenis = lenis;
@@ -49,7 +88,7 @@ export default function SmoothScrollProvider({
       };
 
       gsap.ticker.add(updateTicker);
-      gsap.ticker.lagSmoothing(0);
+      gsap.ticker.lagSmoothing(500, 33);
 
       cleanup = () => {
         gsap.ticker.remove(updateTicker);

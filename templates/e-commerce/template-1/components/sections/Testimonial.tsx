@@ -4,60 +4,58 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const testimonials = [
+const baseTestimonials = [
   {
     id: 1,
     rating: 5,
-    text: "Pelayanan ramah, harga terbaik dan barang original. Recommended!",
     name: "Rizky Pratama",
-    role: "Pelanggan",
     avatar: "/images/avatars/rizky.webp",
   },
   {
     id: 2,
     rating: 5,
-    text: "Sudah langganan disini, selalu puas dengan produknya.",
     name: "Dewi Sartika",
-    role: "Pelanggan",
     avatar: "/images/avatars/dewi.webp",
   },
   {
     id: 3,
     rating: 5,
-    text: "Garansi resmi dan proses cepat. Top banget!",
     name: "Fajar Nugroho",
-    role: "Pelanggan",
     avatar: "/images/avatars/fajar.webp",
   },
   {
     id: 4,
     rating: 5,
-    text: "Unit iPhone 15 Pro Max BNIB segel resmi. CS sangat responsif dan informatif!",
     name: "Budi Santoso",
-    role: "Pelanggan",
     avatar: "/images/avatars/rizky.webp",
   },
   {
     id: 5,
     rating: 5,
-    text: "Tukar tambah Samsung S24 Ultra dinilai dengan harga pantas. Rekomendasi toko gadget terbaik.",
     name: "Siti Rahma",
-    role: "Pelanggan",
     avatar: "/images/avatars/dewi.webp",
   },
 ];
 
 export default function Testimonial() {
+  const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mobileIndex, setMobileIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const mobileTrackRef = useRef<HTMLDivElement>(null);
+
+  const testimonials = baseTestimonials.map((item, idx) => ({
+    ...item,
+    text: t.testimonial.quotes[idx]?.text || "",
+    role: t.testimonial.role,
+  }));
 
   const maxDesktopIndex = Math.max(0, testimonials.length - 3);
 
@@ -148,10 +146,10 @@ export default function Testimonial() {
         {/* Centered Heading */}
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
           <span className="text-xs sm:text-[13px] font-bold text-gold-500 tracking-[0.08em] mb-2 inline-block">
-            - TESTIMONI PELANGGAN
+            {t.testimonial.eyebrow}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-ink-900 tracking-[-0.03em] leading-tight">
-            Apa Kata Mereka?
+            {t.testimonial.title}
           </h2>
         </div>
 
@@ -161,7 +159,7 @@ export default function Testimonial() {
           <button
             onClick={prevSlide}
             className="w-11 h-11 rounded-full bg-white border border-border/90 text-ink-900 shadow-sm flex items-center justify-center hover:bg-surface-soft hover:scale-110 active:scale-95 transition-all mr-6 flex-shrink-0 z-10"
-            aria-label="Testimoni Sebelumnya"
+            aria-label={t.testimonial.ariaPrev}
           >
             <ChevronLeft className="w-5 h-5 text-ink-800" />
           </button>
@@ -215,7 +213,7 @@ export default function Testimonial() {
           <button
             onClick={nextSlide}
             className="w-11 h-11 rounded-full bg-white border border-border/90 text-ink-900 shadow-sm flex items-center justify-center hover:bg-surface-soft hover:scale-110 active:scale-95 transition-all ml-6 flex-shrink-0 z-10"
-            aria-label="Testimoni Berikutnya"
+            aria-label={t.testimonial.ariaNext}
           >
             <ChevronRight className="w-5 h-5 text-ink-800" />
           </button>
@@ -287,7 +285,7 @@ export default function Testimonial() {
               onClick={() => scrollMobile("prev")}
               disabled={mobileIndex === 0}
               className="w-9 h-9 rounded-full bg-white border border-border/80 text-ink-900 shadow-xs flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all"
-              aria-label="Testimoni Sebelumnya"
+              aria-label={t.testimonial.ariaPrev}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -315,7 +313,7 @@ export default function Testimonial() {
                       ? "w-6 h-2 bg-gold-500"
                       : "w-2 h-2 bg-txt-300"
                   }`}
-                  aria-label={`Ke Testimoni ${dot + 1}`}
+                  aria-label={`${t.testimonial.role} ${dot + 1}`}
                 />
               ))}
             </div>
@@ -324,7 +322,7 @@ export default function Testimonial() {
               onClick={() => scrollMobile("next")}
               disabled={mobileIndex === testimonials.length - 1}
               className="w-9 h-9 rounded-full bg-white border border-border/80 text-ink-900 shadow-xs flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all"
-              aria-label="Testimoni Berikutnya"
+              aria-label={t.testimonial.ariaNext}
             >
               <ChevronRight className="w-4 h-4" />
             </button>

@@ -89,5 +89,5 @@ export const usps = [
   { id: 1, title: "Garansi Resmi", description: "Semua produk bergaransi resmi", icon: "ShieldCheck" },
   { id: 2, title: "Pasti Original", description: "Jaminan 100% uang kembali", icon: "CheckCircle" },
   { id: 3, title: "Cicilan 0%", description: "Tersedia cicilan tanpa kartu kredit", icon: "CreditCard" },
-  { id: 4, title: "Tukar Tambah", description: "Bawa HP lama, bawa pulang HP baru", icon: "RefreshCw" },
+  { id: 4, title: "Pelayanan Ramah", description: "Konsultasi jujur dan solutif setiap hari", icon: "HeartHandshake" },
 ];

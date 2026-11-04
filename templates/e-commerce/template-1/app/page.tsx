@@ -7,6 +7,7 @@ import Promo from "@/components/sections/Promo";
 import About from "@/components/sections/About";
 import Testimonial from "@/components/sections/Testimonial";
 import Location from "@/components/sections/Location";
+import CTA from "@/app/cta";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
       <About />
       <Testimonial />
       <Location />
+      <CTA />
       <Footer />
     </main>
   );

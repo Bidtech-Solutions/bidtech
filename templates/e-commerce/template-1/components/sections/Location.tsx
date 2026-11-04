@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Clock, MapPin, Phone } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -26,36 +27,37 @@ const InstagramIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const contactInfo = [
-  {
-    icon: <MapPin className="w-5 h-5 text-[#D49E3C]" />,
-    title: "Alamat",
-    details: ["Jl. Raja H. Fisabilillah No. 123", "Batam, Kepulauan Riau"],
-  },
-  {
-    icon: <Clock className="w-5 h-5 text-[#D49E3C]" />,
-    title: "Jam Buka",
-    details: ["Setiap Hari 09.00 - 22.00"],
-  },
-  {
-    icon: <Phone className="w-5 h-5 text-[#D49E3C]" />,
-    title: "WhatsApp",
-    details: ["0812-3456-7890"],
-    href: "https://wa.me/6281234567890",
-  },
-  {
-    icon: <InstagramIcon className="w-5 h-5 text-[#D49E3C]" />,
-    title: "Instagram",
-    details: ["@kounterku.store"],
-    href: "https://instagram.com/kounterku.store",
-  },
-];
-
 export default function Location() {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
+  const { t, language } = useLanguage();
+
+  const contactInfo = [
+    {
+      icon: <MapPin className="w-5 h-5 text-gold-500" />,
+      title: language === "en" ? "Store Address" : "Alamat Toko",
+      details: ["Jl. Raja H. Fisabilillah No. 123", "Batam, Kepulauan Riau"],
+    },
+    {
+      icon: <Clock className="w-5 h-5 text-gold-500" />,
+      title: language === "en" ? "Opening Hours" : "Jam Buka",
+      details: [language === "en" ? "Every Day 09:00 AM - 10:00 PM" : "Setiap Hari 09.00 - 22.00"],
+    },
+    {
+      icon: <Phone className="w-5 h-5 text-gold-500" />,
+      title: "WhatsApp",
+      details: ["0812-3456-7890"],
+      href: "https://wa.me/6281234567890",
+    },
+    {
+      icon: <InstagramIcon className="w-5 h-5 text-gold-500" />,
+      title: "Instagram",
+      details: ["@kounterku.store"],
+      href: "https://instagram.com/kounterku.store",
+    },
+  ];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -126,16 +128,16 @@ export default function Location() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="kontak" className="py-20 sm:py-24 bg-[#FAFAF8] overflow-hidden">
+    <section ref={sectionRef} id="kontak" className="py-20 sm:py-24 bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Centered Heading */}
         <div ref={headerRef} className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <span className="text-xs sm:text-[13px] font-bold text-gold-500 uppercase tracking-[0.1em] mb-2 inline-block">
-            KUNJUNGI TOKO KAMI
+            {t.location.eyebrow}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-ink-900 tracking-[-0.03em] leading-tight">
-            Lokasi &amp; Kontak
+            {language === "en" ? "Location & Contact" : "Lokasi & Kontak"}
           </h2>
         </div>
 
@@ -146,7 +148,7 @@ export default function Location() {
           <div ref={leftColRef} className="lg:col-span-4 space-y-6 sm:space-y-7">
             {contactInfo.map((item, idx) => (
               <div key={idx} className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-[14px] border border-[#E8C27D]/70 bg-[#FDFBF7] flex items-center justify-center flex-shrink-0 shadow-xs">
+                <div className="w-12 h-12 rounded-[14px] border border-gold-300/70 bg-gold-50 flex items-center justify-center flex-shrink-0 shadow-xs">
                   {item.icon}
                 </div>
                 <div>
@@ -191,25 +193,6 @@ export default function Location() {
                 className="w-full h-full object-cover"
                 title="Peta Lokasi KONTERKU Batam"
               />
-
-              {/* Floating Info Box on Map */}
-              <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 bg-white/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-border/80 shadow-xl max-w-[280px] sm:max-w-[320px] pointer-events-auto">
-                <h4 className="font-bold text-sm sm:text-base text-ink-900 leading-snug mb-1">
-                  KONTERKU Smartphone Store
-                </h4>
-                <p className="text-[11px] sm:text-xs text-txt-500 leading-relaxed mb-3">
-                  Jl. Raja H. Fisabilillah No. 123, Batam, Kepulauan Riau
-                </p>
-                <a
-                  href="https://maps.google.com/?q=Jl.+Raja+H.+Fisabilillah+No.+123+Batam"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs sm:text-[13px] font-bold text-gold-600 hover:text-gold-700 transition-colors inline-flex items-center gap-1"
-                >
-                  Lihat di Google Maps &rarr;
-                </a>
-              </div>
-
             </div>
           </div>
 

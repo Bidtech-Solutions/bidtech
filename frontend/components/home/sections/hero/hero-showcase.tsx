@@ -1,229 +1,94 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Globe, LayoutTemplate, ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { motion } from "motion/react";
 import { useLanguage } from "@/lib/i18n";
-
-import { useHeroOrchestrator } from "./use-hero-orchestrator";
-import { useFitTextToLines } from "./use-fit-text-to-lines";
-import { HeroBlob } from "./hero-blob";
-import { HeroDecorativeCard } from "./hero-decorative-card";
-import { HeroDomainSearch } from "./hero-domain-search";
-import { heroSlides, HERO_RIGHT_BLOB_SRC } from "./hero-data";
-
-const TITLE_MAX_LINES = 3;
-const TITLE_LINE_HEIGHT = 1.25;
 
 export function HeroShowcase() {
   const { t } = useLanguage();
-  const localizedSlides = useMemo(
-    () =>
-      heroSlides.map((slide, slideIndex) => {
-        const copy = t.heroShowcase.slides[slideIndex];
 
-        return {
-          ...slide,
-          title: copy?.title ?? slide.title,
-          subtitle: copy?.subtitle ?? slide.subtitle,
-          modelAlt: copy?.modelAlt ?? slide.modelAlt,
-          decoratives: slide.decoratives.map((card, cardIndex) => ({
-            ...card,
-            label: copy?.decoratives[cardIndex] ?? card.label,
-          })),
-        };
-      }),
-    [t],
-  );
+  const heroCopy = t.heroShowcase as typeof t.heroShowcase & {
+    titlePart1?: string;
+    titlePart2?: string;
+    titlePartGreen?: string;
+    subtitleMain?: string;
+    ctaSolutions?: string;
+  };
 
-  // judul terpanjang jadi acuan auto-fit agar ukuran font stabil di semua slide
-  const longestTitle = useMemo(
-    () => localizedSlides.reduce((a, b) => (b.title.length > a.title.length ? b : a)),
-    [localizedSlides],
-  );
-  const longestSubtitle = useMemo(
-    () => localizedSlides.reduce((a, b) => (b.subtitle.length > a.subtitle.length ? b : a)),
-    [localizedSlides],
-  );
-
-  const {
-    currentSlide,
-    titleText,
-    cursorVisible,
-    decorativesVisible,
-    modelRef,
-    subtitleRef,
-    registerDecorative,
-  } = useHeroOrchestrator(localizedSlides);
-
-  // Batas ukuran font menyesuaikan ukuran layar (HP, Tablet, Desktop)
-  const [fontBounds, setFontBounds] = useState({ min: 26, max: 38 });
-
-  useEffect(() => {
-    const updateFontBounds = () => {
-      const w = window.innerWidth;
-      if (w < 640) {
-        setFontBounds({ min: 24, max: 36 });
-      } else if (w < 1024) {
-        setFontBounds({ min: 32, max: 48 });
-      } else {
-        setFontBounds({ min: 44, max: 64 });
-      }
-    };
-
-    updateFontBounds();
-    window.addEventListener("resize", updateFontBounds);
-    return () => window.removeEventListener("resize", updateFontBounds);
-  }, []);
-
-  const frontCards = currentSlide.decoratives.filter((c) => c.zLayer === "front");
-  const behindCards = currentSlide.decoratives.filter((c) => c.zLayer === "behind");
-
-  const { measureRef, fontSizePx } = useFitTextToLines({
-    text: longestTitle.title,
-    maxLines: TITLE_MAX_LINES,
-    minFontSizePx: fontBounds.min,
-    maxFontSizePx: fontBounds.max,
-  });
-
-  const resolvedFontSizePx = fontSizePx ?? fontBounds.min;
-  const titleBoxHeightPx = resolvedFontSizePx * TITLE_LINE_HEIGHT * TITLE_MAX_LINES;
-  const displayTitle = titleText || currentSlide.title;
+  const titlePart1 = heroCopy.titlePart1 || "Tingkatkan Skala Bisnis";
+  const titlePart2 = heroCopy.titlePart2 || "Anda dengan";
+  const titlePartGreen = heroCopy.titlePartGreen || "Solusi Digital Cerdas";
+  const subtitle =
+    heroCopy.subtitleMain ||
+    "Software house terdepan untuk pengembangan web skala enterprise, aplikasi mobile kustom, dan sistem automasi bisnis berbasis analitik cerdas.";
+  const ctaText = heroCopy.ctaSolutions || "Jelajahi Solusi";
 
   return (
-    /* Grid 1 kolom pada mobile & tablet (vertikal: teks diatas, model dibawah), 2 kolom pada desktop (lg:) */
-    <div className="relative grid items-stretch gap-8 md:gap-12 lg:grid-cols-[0.95fr_1.05fr]">
-      {/* BARIS 1 (Mobile/Tablet) & KOLOM KIRI (Desktop): Teks & CTA */}
-      <div className="relative flex flex-col justify-center text-center lg:text-left z-10">
-        <HeroBlob className="pointer-events-none left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 sm:h-[680px] sm:w-[680px] lg:left-[40%] lg:h-[820px] lg:w-[820px]" />
-
-        <div
-          className="relative mt-3 mx-auto max-w-4xl sm:mt-5 lg:mx-0"
-          style={{ height: `${titleBoxHeightPx}px` }}
-        >
-          <h1
-            className="font-[family-name:var(--font-sora)] relative font-bold tracking-tight text-slate-950"
-            style={{ fontSize: `${resolvedFontSizePx}px`, lineHeight: TITLE_LINE_HEIGHT }}
+    <div className="relative w-full">
+      {/* HERO CONTENT GRID: Aligned to Bottom (items-end) with pb-0 */}
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] items-end gap-6 lg:gap-6 min-h-[480px] sm:min-h-[540px] lg:min-h-[580px] xl:min-h-[640px] pt-2 sm:pt-8 pb-0">
+        {/* KOLOM KIRI: Headings, Subtitle & CTA Button */}
+        <div className="flex flex-col justify-center text-left max-w-2xl mx-auto lg:mx-0 self-center pb-4 sm:pb-12 lg:pb-16 pt-2 sm:pt-4 w-full">
+          {/* Main Title (3-line matching reference) */}
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="font-[family-name:var(--font-sora),var(--font-plus-jakarta),sans-serif] text-3xl xs:text-4xl sm:text-5xl lg:text-[50px] xl:text-[54px] font-extrabold tracking-tight text-slate-900 leading-[1.16]"
           >
-            <span>{displayTitle}</span>
-            <span
-              aria-hidden
-              className="ml-0.5 inline-block h-[0.9em] w-[3px] translate-y-[0.08em] bg-slate-950 align-middle"
-              style={{
-                opacity: cursorVisible ? 1 : 0,
-                animation: cursorVisible ? "hero-cursor-blink 0.9s step-end infinite" : "none",
-              }}
-            />
-          </h1>
+            <span className="block">{titlePart1}</span>
+            <span className="block mt-1 sm:mt-1.5">
+              {titlePart2}{" "}
+              <span className="text-[#45a02e] inline-block">{titlePartGreen.split(" ").slice(0, 2).join(" ")}</span>
+            </span>
+            <span className="block text-[#45a02e] mt-0.5">
+              {titlePartGreen.split(" ").slice(2).join(" ")}
+            </span>
+          </motion.h1>
+
+          {/* Subtitle Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-3.5 sm:mt-6 text-sm sm:text-base lg:text-[17px] text-slate-600 leading-relaxed max-w-xl"
+          >
+            {subtitle}
+          </motion.p>
+
+          {/* CTA Action Button: Full Width on Mobile (Panjang ke Kanan), Natural Pill on Desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-5 sm:mt-8 flex items-center justify-start w-full"
+          >
+            <Link
+              href="/solusi"
+              className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-full bg-[#52c41a] hover:bg-[#43a613] text-white px-6 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-bold shadow-[0_4px_16px_rgba(72,176,44,0.25)] hover:shadow-[0_8px_24px_rgba(72,176,44,0.35)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer text-center"
+            >
+              <span>{ctaText}</span>
+              <ArrowRight className="size-4 sm:size-4.5 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </motion.div>
         </div>
 
-        <div className="relative mt-4 sm:mt-6 w-full">
-          <p aria-hidden className="invisible text-sm leading-6 sm:text-base sm:leading-8 md:text-lg">
-            {longestSubtitle.subtitle}
-          </p>
-          <p
-            ref={subtitleRef}
-            className="absolute inset-0 text-sm leading-6 text-slate-600 opacity-100 sm:text-base sm:leading-8 md:text-lg"
-          >
-            {currentSlide.subtitle}
-          </p>
-        </div>
-
-        {/* CTA Buttons */}
-        <div
-          className="hero-fade-in mt-6 sm:mt-8 flex flex-col xs:flex-row items-stretch xs:items-center justify-center lg:justify-start gap-3 w-full max-w-sm mx-auto lg:mx-0 sm:max-w-none"
-          style={{ animationDelay: "180ms" }}
-        >
-          <button
-            type="button"
-            onClick={() => {
-              const input = document.querySelector<HTMLInputElement>("input[placeholder*='domain']");
-              if (input) { input.focus(); input.scrollIntoView({ behavior: "smooth", block: "center" }); }
-            }}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-primary hover:bg-brand-primary-hover px-6 py-3.5 text-sm font-bold text-white shadow-md hover:shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-          >
-            <Globe className="size-4" />
-            <span>{t.heroShowcase.ctaPrimary}</span>
-          </button>
-          <Link
-            href="/template-website"
-            className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-slate-200 bg-white hover:border-brand-primary hover:text-brand-primary px-6 py-3.5 text-sm font-bold text-slate-700 transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <LayoutTemplate className="size-4" />
-            <span>{t.heroShowcase.ctaSecondary}</span>
-          </Link>
-        </div>
-      </div>
-
-
-
-      {/* BARIS 2 (Mobile/Tablet) & KOLOM KANAN (Desktop): Visual & Model Showcase */}
-      <div className="relative mx-auto flex w-full max-w-[640px] items-stretch mt-4 lg:mt-0">
-        <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
-          <Image src={HERO_RIGHT_BLOB_SRC} alt="" fill className="object-contain opacity-90" priority />
-        </div>
-
-        <div className="relative h-full min-h-[320px] xs:min-h-[380px] sm:min-h-[440px] lg:min-h-[480px] w-full">
-          {decorativesVisible &&
-            behindCards.map((card) => (
-              <HeroDecorativeCard card={card} key={card.id} registerRef={registerDecorative} />
-            ))}
-
-          <div ref={modelRef} className="absolute inset-0" style={{ opacity: 1 }}>
+        {/* KOLOM KANAN: Model Showcase - Menyentuh Paling Bawah Section (Bottom-0 Flush) */}
+        <div className="relative flex items-end justify-center lg:justify-end h-[380px] xs:h-[440px] sm:h-[540px] lg:h-[600px] xl:h-[640px] w-full self-end">
+          <div className="relative h-full w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[440px] lg:max-w-[480px] xl:max-w-[510px]">
             <Image
-              src={currentSlide.modelSrc}
-              alt={currentSlide.modelAlt}
+              src="/images/assets/iconlanding.png"
+              alt="Bidtech Solusi Digital"
               fill
-              className="object-contain object-bottom"
               priority
-            />
-            <div
-              aria-hidden
-              className="absolute inset-x-0 -bottom-8 h-32 sm:h-36 bg-gradient-to-t from-white to-transparent"
+              className="object-contain object-bottom select-none pointer-events-none"
+              sizes="(max-width: 640px) 340px, (max-width: 1024px) 440px, 510px"
             />
           </div>
-
-          {decorativesVisible &&
-            frontCards.map((card) => (
-              <HeroDecorativeCard card={card} key={card.id} registerRef={registerDecorative} />
-            ))}
         </div>
       </div>
-
-      {/* Domain Search Bar — di bawah grid, full width */}
-      <div
-        className="hero-fade-in mt-6 lg:col-span-2 relative z-20"
-        style={{ animationDelay: "220ms" }}
-      >
-        <HeroDomainSearch />
-      </div>
-
-      <style jsx>{`
-        @keyframes hero-cursor-blink {
-          0%,
-          100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0;
-          }
-        }
-        .hero-fade-in {
-          opacity: 0;
-          animation: hero-fade-in 0.6s ease-out forwards;
-        }
-        @keyframes hero-fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(14px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

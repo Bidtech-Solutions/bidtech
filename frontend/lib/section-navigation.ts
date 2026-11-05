@@ -1,15 +1,21 @@
 "use client";
 
-export const HOME_SECTION_IDS = ["hero", "templates", "portfolio", "services", "mitra", "testimonials", "faq", "contact"] as const;
+export const HOME_SECTION_IDS = ["hero", "services", "featured-solutions", "mitra", "contact", "templates", "portfolio", "testimonials", "faq"] as const;
 
 const HEADER_OFFSET = 104;
 
 export function isHomePath(pathname: string | null) {
-  return pathname === "/" || pathname === "";
+  if (!pathname) return true;
+  const clean = pathname.replace(/\/+$/, "");
+  return clean === "" || clean === "/id" || clean === "/en";
 }
 
-export function getSectionHref(hash: string) {
-  return hash.startsWith("#") ? `/${hash}` : hash;
+export function getSectionHref(hash: string, currentPathname?: string | null) {
+  if (!hash.startsWith("#")) return hash;
+  if (currentPathname?.startsWith("/en")) {
+    return `/en${hash}`;
+  }
+  return `/id${hash}`;
 }
 
 export function scrollToSection(hash: string, behavior: ScrollBehavior = "auto") {
@@ -42,7 +48,16 @@ export function isNavItemActive(href: string, pathname: string | null, activeSec
     return isHomePath(pathname) && activeSection === hash;
   }
 
-  return pathname === href;
+  if (!pathname) return false;
+  const cleanPath = pathname.replace(/\/+$/, "");
+  const cleanHref = href.replace(/\/+$/, "");
+
+  return (
+    cleanPath === cleanHref ||
+    cleanPath === `/id${cleanHref}` ||
+    cleanPath === `/en${cleanHref}` ||
+    cleanPath.endsWith(cleanHref)
+  );
 }
 
 export function getActiveHomeSection() {

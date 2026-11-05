@@ -28,7 +28,7 @@ export function SmartNavLink({ children, className, href, onNavigate }: SmartNav
     event.preventDefault();
 
     if (!isHomePath(pathname)) {
-      router.push(getSectionHref(href));
+      router.push(getSectionHref(href, pathname));
       return;
     }
 
@@ -36,7 +36,11 @@ export function SmartNavLink({ children, className, href, onNavigate }: SmartNav
   };
 
   return (
-    <Link className={className} href={isHashLink && !isHomePath(pathname) ? getSectionHref(href) : href} onClick={handleClick}>
+    <Link
+      className={className}
+      href={isHashLink && !isHomePath(pathname) ? getSectionHref(href, pathname) : href}
+      onClick={handleClick}
+    >
       {children}
     </Link>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 import { id } from "./id";
 import { en } from "./en";
@@ -20,16 +21,37 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Render pertama harus sama dengan server ("id"); preferensi tersimpan dibaca setelah hydration.
-  const [lang, setLangState] = useState<Lang>("id");
-
-  useEffect(() => {
-    const savedLang = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (savedLang === "en" || savedLang === "id") {
-      setTimeout(() => setLangState(savedLang), 0);
+export function LanguageProvider({
+  children,
+  initialLang = "id",
+}: {
+  children: ReactNode;
+  initialLang?: Lang;
+}) {
+  const pathname = usePathname();
+  const [lang, setLangState] = useState<Lang>(() => {
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/en")) {
+      return "en";
     }
-  }, []);
+    return initialLang;
+  });
+
+  // Keep language in sync with URL pathname
+  useEffect(() => {
+    if (pathname) {
+      if (pathname === "/en" || pathname.startsWith("/en/")) {
+        setLangState("en");
+        return;
+      }
+      if (pathname === "/id" || pathname.startsWith("/id/")) {
+        setLangState("id");
+        return;
+      }
+    }
+    if (initialLang && (initialLang === "id" || initialLang === "en")) {
+      setLangState(initialLang);
+    }
+  }, [pathname, initialLang]);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -37,7 +59,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
-    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
+      document.cookie = `NEXT_LOCALE=${next};path=/;max-age=31536000;SameSite=Lax`;
+    }
   }, []);
 
   return (

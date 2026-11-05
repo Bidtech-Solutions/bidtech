@@ -31,6 +31,11 @@ export const id = {
     ctaSecondary: "Lihat Portfolio",
   },
   heroShowcase: {
+    titlePart1: "Tingkatkan Skala Bisnis",
+    titlePart2: "Anda dengan",
+    titlePartGreen: "Solusi Digital Cerdas",
+    subtitleMain: "Software house terdepan untuk pengembangan web skala enterprise, aplikasi mobile kustom, dan sistem automasi bisnis berbasis analitik cerdas.",
+    ctaSolutions: "Jelajahi Solusi",
     ctaPrimary: "Cek Domain Gratis",
     ctaSecondary: "Jelajahi Template",
     appStorePrefix: "Download on the",

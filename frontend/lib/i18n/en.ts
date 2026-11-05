@@ -31,6 +31,11 @@ export const en = {
     ctaSecondary: "View Portfolio",
   },
   heroShowcase: {
+    titlePart1: "Scale Your Business",
+    titlePart2: "With",
+    titlePartGreen: "Smart Digital Solutions",
+    subtitleMain: "Leading software house for enterprise-scale web development, custom mobile apps, and business automation systems powered by intelligent analytics.",
+    ctaSolutions: "Explore Solutions",
     ctaPrimary: "Checking Domain Free!",
     ctaSecondary: "Explore a Templates",
     appStorePrefix: "Download on the",

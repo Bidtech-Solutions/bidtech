@@ -72,12 +72,12 @@ button {
 }
 
 .mitra-marquee-window {
-  -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
 }
 
 .mitra-marquee-track {
-  animation: mitra-marquee 22s linear infinite;
+  animation: mitra-marquee 28s linear infinite;
   transform: translate3d(0, 0, 0);
 }
 

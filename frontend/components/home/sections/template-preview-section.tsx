@@ -82,10 +82,20 @@ export function TemplatePreviewSection() {
       className="landing-panel relative py-14 sm:py-20 md:py-24 overflow-hidden"
       id="templates"
     >
-      {/* Ambient green glow background */}
+      {/* Ambient green glow background (Connected from Services Section) */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-[radial-gradient(ellipse_75%_55%_at_50%_0%,rgba(95,201,74,0.12),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-[radial-gradient(ellipse_75%_55%_at_50%_0%,rgba(95,201,74,0.13),transparent_70%)]"
+      />
+
+      {/* Bottom ambient transition toward Portfolio Section */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-44 bg-gradient-to-b from-transparent to-[rgba(95,201,74,0.06)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-20 -bottom-20 -z-10 w-[480px] h-[480px] rounded-full bg-[radial-gradient(circle,rgba(69,160,46,0.10)_0%,transparent_70%)] filter blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 md:px-8">

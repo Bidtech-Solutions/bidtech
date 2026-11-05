@@ -297,7 +297,7 @@ export function PortfolioSection() {
       className="landing-panel relative overflow-hidden py-10 sm:py-16 md:py-20"
       id="portfolio"
     >
-      {/* Ambient green glow background */}
+      {/* Ambient green glow background (Connected from Template Section) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(ellipse_75%_55%_at_50%_0%,rgba(95,201,74,0.14),transparent_70%)]"
@@ -305,6 +305,16 @@ export function PortfolioSection() {
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 -z-10 h-56 w-full max-w-2xl rounded-full bg-[#5fc94a]/[0.08] blur-3xl"
+      />
+
+      {/* Bottom ambient transition toward Mitra Section */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-[rgba(95,201,74,0.06)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-20 -bottom-16 -z-10 w-[440px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(163,230,53,0.11)_0%,transparent_70%)] filter blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 md:px-8">

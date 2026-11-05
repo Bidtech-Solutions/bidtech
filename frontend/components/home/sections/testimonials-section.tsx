@@ -12,7 +12,7 @@ export function TestimonialsSection() {
       className="landing-panel relative overflow-hidden py-10 sm:py-16 md:py-24"
       id="testimonials"
     >
-      {/* Sapuan ambient hijau (ambient glow) */}
+      {/* Sapuan ambient hijau (Connected from Mitra Section) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[550px] bg-[radial-gradient(ellipse_75%_55%_at_50%_0%,rgba(95,201,74,0.14),transparent_70%)]"
@@ -20,6 +20,12 @@ export function TestimonialsSection() {
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 -z-10 h-64 w-full max-w-3xl rounded-full bg-[#5fc94a]/[0.08] blur-3xl"
+      />
+
+      {/* Bottom ambient transition toward FAQ Section */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-36 bg-gradient-to-b from-transparent to-[rgba(95,201,74,0.06)]"
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 md:px-8">

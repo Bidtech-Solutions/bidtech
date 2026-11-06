@@ -17,7 +17,7 @@ export function DomainSection() {
               <Globe className="size-3.5" />
               <span>Cek &amp; Daftarkan Domain</span>
             </div>
-            <h2 className="mt-3.5 font-[family-name:var(--font-sora),var(--font-plus-jakarta),sans-serif] text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">
+            <h2 className="mt-3.5 font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[-0.025em] text-slate-900">
               Temukan Domain Impian untuk <span className="text-[#45a02e]">Bisnis Anda</span>
             </h2>
             <p className="mt-2.5 text-xs sm:text-sm sm:text-base text-slate-600">

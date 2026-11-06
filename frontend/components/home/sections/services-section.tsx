@@ -130,7 +130,7 @@ export function ServicesSection() {
               {t.services.badge ?? "LAYANAN KUSTOM"}
             </span>
           </div>
-          <h2 className="mt-4 font-[family-name:var(--font-sora)] text-2xl min-[400px]:text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl lg:text-[42px] leading-tight">
+          <h2 className="mt-4 font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl min-[400px]:text-3xl font-bold tracking-[-0.025em] text-slate-900 sm:text-4xl lg:text-[42px] leading-tight">
             {lang === "id" ? (
               <>
                 Layanan <span className="text-[#45a02e]">Unggulan</span>
@@ -191,7 +191,7 @@ export function ServicesSection() {
                         <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[#edf8ea] text-[#45a02e] transition-colors duration-300 group-hover:bg-[#45a02e] group-hover:text-white">
                           <Icon className="size-5 transition-colors duration-300" />
                         </div>
-                        <h3 className="font-[family-name:var(--font-sora)] text-lg sm:text-xl font-bold tracking-tight text-slate-900">
+                        <h3 className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-lg sm:text-xl font-bold tracking-tight text-slate-900">
                           {service.title}
                         </h3>
                       </div>

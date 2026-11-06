@@ -41,7 +41,7 @@ export function FaqSection() {
 
           <h2
             id="faq-heading"
-            className="mt-4 font-[family-name:var(--font-sora)] text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl lg:text-[40px] leading-tight"
+            className="mt-4 font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl font-bold tracking-[-0.025em] text-slate-900 sm:text-3xl lg:text-[40px] leading-tight"
           >
             {t.faq.titlePrefix}{" "}
             <span className="text-[#45a02e]">{t.faq.titleHighlight}</span>
@@ -86,7 +86,7 @@ export function FaqSection() {
                       >
                         {index + 1}
                       </span>
-                      <span className="font-[family-name:var(--font-sora)] text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                      <span className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-sm sm:text-base font-bold text-slate-900 leading-snug">
                         {item.question}
                       </span>
                     </span>

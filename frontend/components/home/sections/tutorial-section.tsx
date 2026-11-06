@@ -17,7 +17,7 @@ export function TutorialSection() {
               {t.howItWorks.badge}
             </Badge>
           </div>
-          <h2 className="mt-4 font-[family-name:var(--font-sora)] text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+          <h2 className="mt-4 font-[family-name:var(--font-plus-jakarta),sans-serif] text-3xl font-bold tracking-[-0.025em] text-slate-900 sm:text-4xl">
             {t.howItWorks.titleWhite}{" "}
             <span className="text-brand-primary">{t.howItWorks.titleGreen}</span>
           </h2>
@@ -37,7 +37,7 @@ export function TutorialSection() {
                     </span>
                     <CheckCircle2 className="size-5 text-slate-300 group-hover:text-brand-primary transition-colors duration-300" />
                   </div>
-                  <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-slate-950 group-hover:text-brand-primary transition-colors duration-200">
+                  <h3 className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-lg font-bold text-slate-900 group-hover:text-brand-primary transition-colors duration-200">
                     {step.title}
                   </h3>
                   <p className="mt-2 text-sm text-slate-500 leading-relaxed">

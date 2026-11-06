@@ -36,7 +36,7 @@ export function TestimonialsSection() {
               {t.testimonials.badge}
             </span>
           </div>
-          <h2 className="mt-4 font-[family-name:var(--font-sora)] text-2xl min-[400px]:text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl lg:text-[42px] leading-tight">
+          <h2 className="mt-4 font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl min-[400px]:text-3xl font-bold tracking-[-0.025em] text-slate-900 sm:text-4xl lg:text-[42px] leading-tight">
             {t.testimonials.titlePrefix}{" "}
             <span className="text-[#45a02e]">{t.testimonials.titleHighlight}</span>
             {t.testimonials.titleSuffix}
@@ -79,7 +79,7 @@ export function TestimonialsSection() {
                     {item.initials}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-[family-name:var(--font-sora)] text-sm sm:text-base font-bold tracking-tight text-slate-950 truncate">
+                    <h3 className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-sm sm:text-base font-bold tracking-tight text-slate-900 truncate">
                       {item.name}
                     </h3>
                     <p className="mt-0.5 text-xs text-slate-500 truncate">

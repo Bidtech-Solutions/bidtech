@@ -325,7 +325,7 @@ export function PortfolioSection() {
               {t.portfolioSection.badge}
             </span>
           </div>
-          <h2 className="mt-3 sm:mt-4 font-[family-name:var(--font-sora)] text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl lg:text-[38px] leading-tight">
+          <h2 className="mt-3 sm:mt-4 font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl font-bold tracking-[-0.025em] text-slate-900 sm:text-3xl lg:text-[38px] leading-tight">
             {t.portfolioSection.titlePrefix}{" "}
             <span className="text-[#45a02e]">{t.portfolioSection.titleHighlight}</span>
           </h2>
@@ -405,7 +405,7 @@ export function PortfolioSection() {
                 <div className="p-3.5 sm:p-5">
                   {/* Title & Tag Row */}
                   <div className="mt-3 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
-                    <h3 className="font-[family-name:var(--font-sora)] text-sm sm:text-base lg:text-lg font-bold tracking-tight text-slate-900 truncate">
+                    <h3 className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-sm sm:text-base lg:text-lg font-bold tracking-tight text-slate-900 truncate">
                       {item.title}
                     </h3>
                     {item.tagType === "amber" ? (

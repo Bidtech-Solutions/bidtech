@@ -33,7 +33,7 @@ export function TemplateDesignCard({ template }: { template: (typeof TEMPLATES)[
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-primary">
             {template.category}
           </p>
-          <h3 className="mt-2 font-[family-name:var(--font-sora)] text-xl font-semibold text-slate-950">
+          <h3 className="mt-2 font-[family-name:var(--font-plus-jakarta),sans-serif] text-xl font-bold text-slate-900 tracking-tight">
             {template.name}
           </h3>
           <p className="mt-3 flex-1 text-sm leading-6 text-slate-500">{template.subcategory}</p>

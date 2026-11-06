@@ -107,7 +107,7 @@ export function TemplatePreviewSection() {
             </span>
           </div>
 
-          <h2 className="mt-4 font-[family-name:var(--font-sora)] text-2xl min-[400px]:text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl lg:text-[42px] leading-tight">
+          <h2 className="mt-4 font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl min-[400px]:text-3xl font-bold tracking-[-0.025em] text-slate-900 sm:text-4xl lg:text-[42px] leading-tight">
             {t.templatePreview.titlePrefix}{" "}
             <span className="text-[#45a02e]">{t.templatePreview.titleHighlight}</span>{" "}
             {t.templatePreview.titleSuffix}
@@ -202,7 +202,7 @@ export function TemplatePreviewSection() {
                       </div>
 
                       {/* Template Title */}
-                      <h3 className="mt-3 font-[family-name:var(--font-sora)] text-base sm:text-lg font-bold text-slate-950 tracking-tight transition-colors group-hover:text-[#45a02e]">
+                      <h3 className="mt-3 font-[family-name:var(--font-plus-jakarta),sans-serif] text-base sm:text-lg font-bold text-slate-900 tracking-tight transition-colors group-hover:text-[#45a02e]">
                         {template.name}
                       </h3>
 

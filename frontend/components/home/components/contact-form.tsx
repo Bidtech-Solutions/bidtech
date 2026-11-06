@@ -52,7 +52,7 @@ export function ContactForm({
     <div>
       {/* Form Header */}
       <div>
-        <h3 className="font-[family-name:var(--font-sora)] text-2xl sm:text-[28px] font-extrabold text-slate-900 tracking-tight leading-snug">
+        <h3 className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl sm:text-[28px] font-bold text-slate-900 tracking-[-0.02em] leading-snug">
           {t.contact.form.title}
         </h3>
         <p className="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed">

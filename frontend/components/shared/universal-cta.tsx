@@ -22,7 +22,7 @@ export function UniversalCta({ className = "" }: UniversalCtaProps) {
             {/* Left Content Column */}
             <div className="relative z-10 space-y-6 text-left lg:col-span-7 lg:self-center">
               <h2
-                className="font-[family-name:var(--font-sora)] text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight text-slate-950 leading-[1.18]"
+                className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-[44px] font-bold tracking-[-0.025em] text-slate-900 leading-[1.18]"
                 id="universal-cta-title"
               >
                 Wujudkan Website &amp; <br />

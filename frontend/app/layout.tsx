@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display, Sora } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
+import { SmoothScrollProvider } from "@/components/animations/smooth-scroll-provider";
 import { AnnouncementBar } from "@/components/layouts/announcement-bar";
 import { SiteHeader } from "@/components/layouts/site-header";
 import { SiteFooter } from "@/components/layouts/site-footer";
@@ -11,13 +12,18 @@ import { LanguageProvider } from "@/lib/i18n";
 
 import "../styles/global.css";
 
-const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const playfair = Playfair_Display({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-plus-jakarta",
   display: "swap",
-  weight: ["700"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const viewport: Viewport = {
@@ -125,20 +131,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" className={`${sora.variable} ${inter.variable} ${playfair.variable}`}>
+    <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable}`}>
       <head>
         <StructuredData />
       </head>
-      <body className="bg-white font-[family-name:var(--font-inter)] text-white antialiased">
-        <LanguageProvider>
-          <div className="min-h-screen bg-white">
-            <AnnouncementBar />
-            <SiteHeader />
-            {children}
-            <SiteFooter />
-          </div>
-          <WhatsAppFloat />
-        </LanguageProvider>
+      <body className="bg-white font-[family-name:var(--font-inter)] text-slate-900 antialiased selection:bg-[#45a02e]/20 selection:text-[#173b25]">
+        <SmoothScrollProvider>
+          <LanguageProvider>
+            <div className="min-h-screen bg-white">
+              <AnnouncementBar />
+              <SiteHeader />
+              {children}
+              <SiteFooter />
+            </div>
+            <WhatsAppFloat />
+          </LanguageProvider>
+        </SmoothScrollProvider>
         <GoogleAnalytics />
       </body>
     </html>

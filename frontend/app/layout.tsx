@@ -129,6 +129,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Bar promo disembunyikan sementara. Ubah ke true untuk menampilkannya lagi.
+const SHOW_ANNOUNCEMENT_BAR = false;
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable}`}>
@@ -139,7 +142,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SmoothScrollProvider>
           <LanguageProvider>
             <div className="min-h-screen bg-white">
-              <AnnouncementBar />
+              {SHOW_ANNOUNCEMENT_BAR && <AnnouncementBar />}
               <SiteHeader />
               {children}
               <SiteFooter />

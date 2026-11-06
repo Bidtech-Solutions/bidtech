@@ -113,11 +113,6 @@ export function SiteFooter() {
                   {isEn ? "Solutions" : "Solusi"}
                 </SmartNavLink>
               </li>
-              <li>
-                <Link href={`/${lang}/template-website`} className="transition-colors hover:text-[#45a02e]">
-                  {isEn ? "Pages" : "Halaman"}
-                </Link>
-              </li>
             </ul>
           </div>
 

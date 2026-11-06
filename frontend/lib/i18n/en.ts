@@ -27,17 +27,28 @@ export const en = {
     titleLine2Green: "Further",
     subtitle:
       "From websites to custom applications, BIDTECH builds digital solutions to make your operations more effective and measurable.",
-    ctaPrimary: "Free Consultation",
-    ctaSecondary: "View Portfolio",
   },
   heroShowcase: {
+    badge: "✨ Enterprise Software House & Digital Solutions",
     titlePart1: "Scale Your Business",
-    titlePart2: "With",
+    titlePart2: "Forward With",
     titlePartGreen: "Smart Digital Solutions",
     subtitleMain: "Leading software house for enterprise-scale web development, custom mobile apps, and business automation systems powered by intelligent analytics.",
     ctaSolutions: "Explore Solutions",
-    ctaPrimary: "Checking Domain Free!",
-    ctaSecondary: "Explore a Templates",
+    ctaSecondary: "View Portfolio",
+    stats: [
+      { value: "50+", label: "Delivered Projects" },
+      { value: "99.9%", label: "Uptime SLA" },
+      { value: "100%", label: "Client IP Rights" },
+    ],
+    floatingBadges: {
+      badge1Title: "High-Performance Arch",
+      badge1Sub: "Next.js & Cloud-Native",
+      badge2Title: "50+ Trusted Clients",
+      badge2Sub: "99%+ Satisfaction",
+    },
+    ctaCheckDomain: "Checking Domain Free!",
+    ctaExploreTemplates: "Explore a Templates",
     appStorePrefix: "Download on the",
     googlePlayPrefix: "GET IT ON",
     slides: [

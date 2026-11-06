@@ -27,17 +27,28 @@ export const id = {
     titleLine2Green: "Naik Level",
     subtitle:
       "Dari website hingga aplikasi custom, BIDTECH membangun solusi digital untuk membuat operasional lebih efektif dan terukur.",
-    ctaPrimary: "Konsultasi Gratis",
-    ctaSecondary: "Lihat Portfolio",
   },
   heroShowcase: {
+    badge: "✨ Software House & Solusi Rekayasa Digital",
     titlePart1: "Tingkatkan Skala Bisnis",
     titlePart2: "Anda dengan",
     titlePartGreen: "Solusi Digital Cerdas",
     subtitleMain: "Software house terdepan untuk pengembangan web skala enterprise, aplikasi mobile kustom, dan sistem automasi bisnis berbasis analitik cerdas.",
     ctaSolutions: "Jelajahi Solusi",
-    ctaPrimary: "Cek Domain Gratis",
-    ctaSecondary: "Jelajahi Template",
+    ctaSecondary: "Lihat Portofolio",
+    stats: [
+      { value: "50+", label: "Proyek Selesai" },
+      { value: "99.9%", label: "Uptime SLA" },
+      { value: "100%", label: "Hak Cipta Klien" },
+    ],
+    floatingBadges: {
+      badge1Title: "High-Performance Arch",
+      badge1Sub: "Next.js & Cloud-Native",
+      badge2Title: "50+ Klien Terpercaya",
+      badge2Sub: "Kepuasan 99%+",
+    },
+    ctaCheckDomain: "Cek Domain Gratis",
+    ctaExploreTemplates: "Jelajahi Template",
     appStorePrefix: "Download on the",
     googlePlayPrefix: "GET IT ON",
     slides: [

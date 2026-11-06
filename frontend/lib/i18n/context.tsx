@@ -21,6 +21,13 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
+function langFromPath(pathname: string | null): Lang | null {
+  if (!pathname) return null;
+  if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
+  if (pathname === "/id" || pathname.startsWith("/id/")) return "id";
+  return null;
+}
+
 export function LanguageProvider({
   children,
   initialLang = "id",
@@ -29,28 +36,14 @@ export function LanguageProvider({
   initialLang?: Lang;
 }) {
   const pathname = usePathname();
-  const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window !== "undefined" && window.location.pathname.startsWith("/en")) {
-      return "en";
-    }
-    return initialLang;
-  });
+  // Bahasa awal diambil dari URL (usePathname tersedia juga saat render di server),
+  // sehingga HTML server dan render pertama di browser sama-sama memakai bahasa yang benar.
+  // Sebelumnya server selalu merender "id" untuk /en, memicu hydration mismatch + render ulang penuh.
+  const [lang, setLangState] = useState<Lang>(() => langFromPath(pathname) ?? initialLang);
 
   // Keep language in sync with URL pathname
   useEffect(() => {
-    if (pathname) {
-      if (pathname === "/en" || pathname.startsWith("/en/")) {
-        setLangState("en");
-        return;
-      }
-      if (pathname === "/id" || pathname.startsWith("/id/")) {
-        setLangState("id");
-        return;
-      }
-    }
-    if (initialLang && (initialLang === "id" || initialLang === "en")) {
-      setLangState(initialLang);
-    }
+    setLangState(langFromPath(pathname) ?? initialLang);
   }, [pathname, initialLang]);
 
   useEffect(() => {

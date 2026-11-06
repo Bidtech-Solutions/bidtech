@@ -24,17 +24,19 @@ export function scrollToSection(hash: string, behavior: ScrollBehavior = "smooth
   const target = document.querySelector<HTMLElement>(hash);
   if (!target) return false;
 
+  // Section di bawah layar memakai content-visibility:auto (tinggi masih perkiraan sebelum dirender).
+  // Render penuh semua section dulu agar posisi tujuan dihitung dari tinggi asli dan tidak meleset.
+  document.documentElement.classList.add("cv-off");
+
+  // Posisi tujuan dihitung sama untuk Lenis (desktop) dan scroll bawaan (mobile).
+  // Lenis diberi angka, bukan elemen, agar scroll-margin-top CSS tidak ikut ditambahkan
+  // (sebelumnya desktop berhenti 88px lebih rendah dibanding mobile).
+  const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET);
+
   if (window.__lenis && behavior !== "instant") {
-    window.__lenis.scrollTo(target, {
-      offset: -HEADER_OFFSET,
-      duration: 1.1,
-    });
+    window.__lenis.scrollTo(top, { duration: 1.1 });
   } else {
-    const top = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-    window.scrollTo({
-      top: Math.max(0, top),
-      behavior,
-    });
+    window.scrollTo({ top, behavior });
   }
 
   const nextUrl = `${window.location.pathname}${hash}`;

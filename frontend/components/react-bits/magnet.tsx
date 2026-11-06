@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 
 interface MagnetProps {
   children: ReactNode;
@@ -20,9 +20,22 @@ export function Magnet({
   const magnetRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isActive, setIsActive] = useState(false);
+  // Efek magnet hanya untuk mouse/trackpad. Di perangkat sentuh (HP/tablet) tombol diam
+  // supaya tidak "melompat" saat disentuh.
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(hover: none), (pointer: coarse)");
+    const update = () => setIsTouch(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  const magnetOff = disabled || isTouch;
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (disabled || !magnetRef.current) return;
+    if (magnetOff || !magnetRef.current) return;
     const { left, top, width, height } = magnetRef.current.getBoundingClientRect();
     const centerX = left + width / 2;
     const centerY = top + height / 2;
@@ -51,13 +64,17 @@ export function Magnet({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={`inline-block ${className}`}
-      style={{
-        transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-        transition: isActive
-          ? "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
-          : "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)",
-        willChange: "transform",
-      }}
+      style={
+        magnetOff
+          ? undefined
+          : {
+              transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+              transition: isActive
+                ? "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+                : "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)",
+              willChange: "transform",
+            }
+      }
     >
       {children}
     </div>

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme {
+  --font-heading: var(--font-plus-jakarta), sans-serif;
+  --font-sans: var(--font-inter), sans-serif;
   --color-brand-primary: #5fc94a;
   --color-brand-primary-hover: #4cad3b;
   --color-brand-primary-dark: #173b25;
@@ -11,6 +13,7 @@
 }
 
 :root {
+  --font-sora: var(--font-plus-jakarta);
   color-scheme: light;
 }
 
@@ -28,9 +31,7 @@ body {
 
 @media (min-width: 1024px) {
   body:has(.landing-shell) {
-    background:
-      radial-gradient(circle at top left, rgba(95, 201, 74, 0.08), transparent 28%),
-      linear-gradient(180deg, #ffffff 0%, #f8fcf6 52%, #ffffff 100%);
+    background: #ffffff;
   }
 
   .landing-panel {
@@ -98,3 +99,69 @@ button {
   background: rgba(190, 242, 100, 0.36);
   color: inherit;
 }
+
+@keyframes shiny {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.animate-shiny {
+  animation: shiny 4s linear infinite;
+}
+
+@keyframes aurora-flow {
+  0% {
+    transform: translateY(0%) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8%) scale(1.08) rotate(4deg);
+  }
+  100% {
+    transform: translateY(4%) scale(0.96) rotate(-3deg);
+  }
+}
+
+@keyframes aurora-swirl {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.12);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(6deg);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+

@@ -100,6 +100,112 @@ button {
   color: inherit;
 }
 
+/* Performa: section di bawah layar pertama baru dirender browser saat hampir terlihat.
+   contain-intrinsic-size "auto" mengingat tinggi asli setelah section pernah dirender.
+   html.cv-off dipasang oleh navigasi section agar posisi tujuan dihitung dari tinggi asli. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
+html.cv-off .cv-auto {
+  content-visibility: visible;
+}
+
+/* SplitText animateOn="load": huruf muncul satu per satu murni dengan CSS (tanpa menunggu JS) */
+@keyframes split-char-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.split-char {
+  animation-name: split-char-in;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+/* Fade-up ringan untuk elemen hero di atas lipatan */
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-fade-up {
+  animation: hero-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Animasi berulang hero: murni transform/opacity agar dikerjakan GPU, bukan JS per frame */
+@keyframes hero-orb-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+
+.hero-orb {
+  transform: translate(-50%, -50%);
+  animation: hero-orb-pulse 8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes hero-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(var(--float-y, -6px));
+  }
+}
+
+.hero-twinkle {
+  animation: hero-twinkle 3.5s ease-in-out infinite;
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--float-y, -7px));
+  }
+}
+
+.hero-float {
+  animation: hero-float 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-char,
+  .hero-fade-up,
+  .hero-orb,
+  .hero-twinkle,
+  .hero-float {
+    animation: none;
+  }
+}
+
 @keyframes shiny {
   0% {
     background-position: 100% 0;

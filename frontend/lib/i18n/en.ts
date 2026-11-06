@@ -30,8 +30,8 @@ export const en = {
   },
   heroShowcase: {
     badge: "✨ Enterprise Software House & Digital Solutions",
-    titlePart1: "Scale Your Business",
-    titlePart2: "Forward With",
+    titlePart1: "Scale Your",
+    titlePart2: "Business Forward With",
     titlePartGreen: "Smart Digital Solutions",
     subtitleMain: "Leading software house for enterprise-scale web development, custom mobile apps, and business automation systems powered by intelligent analytics.",
     ctaSolutions: "Explore Solutions",

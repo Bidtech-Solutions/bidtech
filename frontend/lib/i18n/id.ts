@@ -30,8 +30,8 @@ export const id = {
   },
   heroShowcase: {
     badge: "✨ Software House & Solusi Rekayasa Digital",
-    titlePart1: "Tingkatkan Skala Bisnis",
-    titlePart2: "Anda dengan",
+    titlePart1: "Tingkatkan Skala",
+    titlePart2: "Bisnis Anda dengan",
     titlePartGreen: "Solusi Digital Cerdas",
     subtitleMain: "Software house terdepan untuk pengembangan web skala enterprise, aplikasi mobile kustom, dan sistem automasi bisnis berbasis analitik cerdas.",
     ctaSolutions: "Jelajahi Solusi",

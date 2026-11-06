@@ -51,16 +51,16 @@ export function TiltedCard({
     mouseY.set(0);
   };
 
-  if (isTouchDevice) {
-    return <div className={`relative ${className}`}>{children}</div>;
-  }
-
+  // Struktur DOM sengaja sama untuk perangkat sentuh maupun mouse.
+  // Sebelumnya perangkat sentuh merender pohon berbeda setelah hydration, sehingga children
+  // (termasuk gambar hero/LCP) di-mount ulang dan LCP di mobile tertunda menunggu JavaScript.
   return (
     <div
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={`relative [perspective:${perspective}px] ${className}`}
+      className={`relative ${className}`}
+      style={{ perspective: `${perspective}px` }}
     >
       <motion.div
         style={{
@@ -68,7 +68,7 @@ export function TiltedCard({
           rotateY,
           transformStyle: "preserve-3d",
         }}
-        whileHover={{ scale: scaleOnHover }}
+        whileHover={isTouchDevice ? undefined : { scale: scaleOnHover }}
         transition={{ duration: 0.25 }}
         className="w-full h-full relative"
       >

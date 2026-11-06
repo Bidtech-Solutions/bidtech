@@ -2,42 +2,112 @@ export interface FeaturedSolutionItem {
   id: string;
   title: string;
   description: string;
-  category: string;
+  descriptionEn: string;
   platforms: ("android" | "web" | "ios")[];
-  imageSrc: string;
-  href: string;
+  /** Kosongkan bila gambar belum ada; kartu akan menampilkan placeholder. */
+  imageSrc?: string;
+  /** Kosongkan bila situs belum tersedia; tombol "Lihat Situs" disembunyikan. */
+  href?: string;
 }
 
 export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
   {
-    id: "satu-rupiah",
-    title: "Satu Rupiah",
+    id: "fun-travel",
+    title: "Fun Travel & Transport",
     description:
-      "Aplikasi pencatatan arus kas operasional, invoice otomatis PDF, dan rekonsiliasi bank instan yang dirancang untuk UMKM hingga korporasi menengah.",
-    category: "Finansial App",
+      "Platform layanan wisata dan transportasi yang memudahkan pelanggan menjelajahi Batam dan Bintan, mulai dari pemesanan paket liburan, penyewaan kendaraan, hingga informasi destinasi wisata dalam satu website",
+    descriptionEn:
+      "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
     platforms: ["android", "web"],
-    imageSrc: "/images/assets/featured-satu-rupiah.png",
-    href: "/solusi#erp",
+    imageSrc: "/images/assets/Fun Travel Batam & Bintan Showcase 1.png",
+    href: "https://funtravelbatam.com",
   },
   {
     id: "ayo-cuci",
     title: "Ayo Cuci",
     description:
-      "Platform kasir cerdas dan pelacakan cucian terintegrasi WhatsApp bot notifikasi, kalkulasi multi-cabang, dan dashboard analitik omzet pemilik bisnis.",
-    category: "Kasir - Tracking",
+      "Aplikasi kasir laundry yang memudahkan pemilik usaha mengelola transaksi, pelanggan, karyawan, dan keuangan. Dilengkapi pemantauan status pesanan serta laporan bisnis dalam satu aplikasi yang praktis dan terintegrasi.",
+    descriptionEn:
+      "Smart laundry POS application helping business owners manage transactions, customers, staff, and finances with real-time order tracking and business analytics.",
     platforms: ["android", "web", "ios"],
-    imageSrc: "/images/assets/featured-ayocuci.png",
+    imageSrc: "/images/assets/image 968.png",
     href: "https://ayocuci.co.id/",
   },
   {
-    id: "stokin",
-    title: "Stokin",
+    id: "nadim-trans",
+    title: "NadimTrans Rentcar",
     description:
-      "Sistem manajemen pergudangan berkecepatan tinggi dengan barcode scan multi-rak, pelacakan expired dan date otomatis.",
-    category: "Smart Warehouse",
+      "Website layanan rental mobil di Batam yang memudahkan pelanggan menjelajahi pilihan kendaraan, melihat harga sewa, dan melakukan pemesanan. Menyediakan layanan lepas kunci maupun dengan sopir untuk kebutuhan wisata, bisnis, dan perjalanan pribadi",
+    descriptionEn:
+      "Car rental service website in Batam enabling customers to browse fleets, check rates, and book vehicles with self-drive or chauffeur options for business and leisure.",
     platforms: ["android", "web"],
-    imageSrc: "/images/assets/featured-stokin.png",
-    href: "/solusi#stokin",
+    imageSrc: "/images/assets/Nadimtrans Rentcar Luxury Web Showcase 1.png",
+    href: "https://nadimtrans.com/",
+  },
+  {
+    id: "masterpro",
+    title: "MasterPro Real Estate",
+    description:
+      "Website agen properti di Batam untuk jual beli dan sewa rumah. Pengunjung dapat mencari properti berdasarkan lokasi, tipe, dan harga, melihat listing terbaru, lalu langsung menghubungi agen profesional.",
+    descriptionEn:
+      "Property agency website in Batam for buying, selling, and renting homes. Visitors can search listings by location, type, and price, browse the latest properties, and contact a professional agent directly.",
+    platforms: ["web"],
+    imageSrc: "/images/assets/showcase-masterpro.png",
+    href: "https://masterpro.co.id/id",
+  },
+  {
+    id: "hkti-batam",
+    title: "HKTI Kota Batam",
+    description:
+      "Website resmi DPC Himpunan Kerukunan Tani Indonesia Kota Batam yang menyajikan profil organisasi, visi dan misi, struktur pengurus, program kerja, serta dokumentasi kegiatan untuk masyarakat dan anggota.",
+    descriptionEn:
+      "Official website of the Indonesian Farmers Association (HKTI) Batam chapter, presenting the organization profile, vision and mission, board structure, work programs, and activity documentation.",
+    platforms: ["web"],
+    imageSrc: "/images/assets/showcase-hkti.png",
+    href: "https://hktikotabatam.org/",
+  },
+  {
+    id: "vis-society",
+    title: "VIS Society",
+    description:
+      "Website komunitas yang membangun koneksi, kolaborasi, dan peluang tanpa batas. Menampilkan profil komunitas, agenda kegiatan, susunan pengurus, hingga pendaftaran keanggotaan secara online.",
+    descriptionEn:
+      "Community website built for connection, collaboration, and limitless opportunities, featuring the community profile, event agenda, leadership team, and online membership registration.",
+    platforms: ["web"],
+    imageSrc: "/images/assets/showcase-vis-society.png",
+    href: "https://www.vissociety.org/",
+  },
+  {
+    id: "semestapro",
+    title: "SemestaPro",
+    description:
+      "Platform jual beli properti di Batam yang fokus pada rumah secondary. Calon pembeli dapat menelusuri listing rumah, membandingkan harga, dan melihat lokasi properti dengan mudah dan cepat.",
+    descriptionEn:
+      "Property marketplace in Batam focused on secondary homes. Buyers can browse listings, compare prices, and check property locations quickly and easily.",
+    platforms: ["web"],
+    imageSrc: "/images/assets/showcase-semestapro.png",
+    href: "https://semestapro.co.id/",
+  },
+  {
+    // Gambar dan situs belum tersedia: kartu menampilkan placeholder tanpa tombol "Lihat Situs".
+    id: "login-rek",
+    title: "Login Rek",
+    description:
+      "Solusi digital terbaru yang sedang kami kembangkan. Detail proyek dan tampilan lengkapnya akan segera kami tampilkan di sini.",
+    descriptionEn:
+      "A new digital solution we are currently building. Full project details and visuals will be showcased here soon.",
+    platforms: ["web"],
+  },
+  {
+    // SEMENTARA: salinan Fun Travel sebagai pengisi slot ke-9. Ganti dengan proyek asli bila sudah ada.
+    id: "fun-travel-placeholder",
+    title: "Fun Travel & Transport",
+    description:
+      "Platform layanan wisata dan transportasi yang memudahkan pelanggan menjelajahi Batam dan Bintan, mulai dari pemesanan paket liburan, penyewaan kendaraan, hingga informasi destinasi wisata dalam satu website",
+    descriptionEn:
+      "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
+    platforms: ["android", "web"],
+    imageSrc: "/images/assets/Fun Travel Batam & Bintan Showcase 1.png",
+    href: "https://funtravelbatam.com",
   },
 ];
-

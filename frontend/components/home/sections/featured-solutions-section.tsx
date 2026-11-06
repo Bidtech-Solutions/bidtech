@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
-import { BlurText } from "@/components/react-bits";
+import { SplitText } from "@/components/react-bits";
 import { SolutionCard } from "@/components/home/components/solution-card";
 import { FEATURED_SOLUTIONS_DATA } from "@/lib/data/featured-solutions";
 import { useLanguage } from "@/lib/i18n";
@@ -20,7 +20,7 @@ export function FeaturedSolutionsSection() {
   return (
     <section
       id="featured-solutions"
-      className="landing-panel relative overflow-hidden py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-white via-slate-50/70 to-emerald-50/30"
+      className="landing-panel cv-auto relative overflow-hidden py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-white via-slate-50/70 to-emerald-50/30"
     >
       {/* Ambient background glows */}
       <div className="pointer-events-none absolute -top-32 -right-32 size-96 rounded-full bg-gradient-to-br from-[#45a02e]/10 to-transparent blur-3xl -z-10" />
@@ -30,9 +30,9 @@ export function FeaturedSolutionsSection() {
       <span id="portfolio" className="absolute -top-24 left-0 pointer-events-none" aria-hidden />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* 1. SECTION HEADER with BidTech Green Mix & React Bits BlurText */}
+        {/* 1. SECTION HEADER with BidTech Green Mix & React Bits SplitText */}
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14 lg:mb-16">
-          <BlurText
+          <SplitText
             as="h2"
             className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl sm:text-3xl lg:text-[38px] font-bold tracking-[-0.025em] text-slate-900 leading-tight"
             segments={
@@ -67,7 +67,7 @@ export function FeaturedSolutionsSection() {
               // Mobile: hanya 3 kartu pertama; sisanya tampil mulai tablet (md).
               className={`h-full ${index >= MOBILE_SOLUTIONS ? "hidden md:block" : ""}`}
             >
-              <SolutionCard item={item} isEn={isEn} priority={index === 0} />
+              <SolutionCard item={item} isEn={isEn} />
             </Reveal>
           ))}
         </div>

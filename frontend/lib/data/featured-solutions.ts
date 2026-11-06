@@ -18,7 +18,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
       "Platform layanan wisata dan transportasi yang memudahkan pelanggan menjelajahi Batam dan Bintan, mulai dari pemesanan paket liburan, penyewaan kendaraan, hingga informasi destinasi wisata dalam satu website",
     descriptionEn:
       "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
-    platforms: ["android", "web"],
+    platforms: ["web"],
     imageSrc: "/images/solutions/fun-travel.webp",
     href: "https://funtravelbatam.com",
   },
@@ -40,7 +40,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
       "Website layanan rental mobil di Batam yang memudahkan pelanggan menjelajahi pilihan kendaraan, melihat harga sewa, dan melakukan pemesanan. Menyediakan layanan lepas kunci maupun dengan sopir untuk kebutuhan wisata, bisnis, dan perjalanan pribadi",
     descriptionEn:
       "Car rental service website in Batam enabling customers to browse fleets, check rates, and book vehicles with self-drive or chauffeur options for business and leisure.",
-    platforms: ["android", "web"],
+    platforms: ["web"],
     imageSrc: "/images/solutions/nadimtrans.webp",
     href: "https://nadimtrans.com/",
   },
@@ -96,7 +96,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
       "Solusi digital terbaru yang sedang kami kembangkan. Detail proyek dan tampilan lengkapnya akan segera kami tampilkan di sini.",
     descriptionEn:
       "A new digital solution we are currently building. Full project details and visuals will be showcased here soon.",
-    platforms: ["web"],
+    platforms: ["android", "ios"],
   },
   {
     // SEMENTARA: salinan Fun Travel sebagai pengisi slot ke-9. Ganti dengan proyek asli bila sudah ada.
@@ -106,7 +106,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
       "Platform layanan wisata dan transportasi yang memudahkan pelanggan menjelajahi Batam dan Bintan, mulai dari pemesanan paket liburan, penyewaan kendaraan, hingga informasi destinasi wisata dalam satu website",
     descriptionEn:
       "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
-    platforms: ["android", "web"],
+    platforms: ["web"],
     imageSrc: "/images/solutions/fun-travel.webp",
     href: "https://funtravelbatam.com",
   },

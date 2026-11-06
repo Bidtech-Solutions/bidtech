@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa6";
 
 import { Reveal } from "@/components/animations/reveal";
-import { BlurText, SpotlightCard } from "@/components/react-bits";
+import { SplitText, SpotlightCard } from "@/components/react-bits";
 import { useLanguage } from "@/lib/i18n";
 
 export function ContactSection() {
@@ -22,7 +22,7 @@ export function ContactSection() {
 
   return (
     <section
-      className="landing-panel relative overflow-hidden py-10 sm:py-16 lg:py-24 bg-gradient-to-b from-white via-emerald-50/25 to-white"
+      className="landing-panel cv-auto relative overflow-hidden py-10 sm:py-16 lg:py-24 bg-gradient-to-b from-white via-emerald-50/25 to-white"
       id="contact"
     >
       {/* Background: Wavy dashed green curve line matching mockup */}
@@ -47,7 +47,7 @@ export function ContactSection() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* 1. SECTION HEADER */}
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10 lg:mb-14">
-          <BlurText
+          <SplitText
             as="h2"
             className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl sm:text-3xl lg:text-[40px] font-bold tracking-[-0.025em] text-slate-900 leading-tight"
             segments={[
@@ -168,12 +168,8 @@ export function ContactSection() {
 
               {/* Bento 2: LinkedIn */}
               <Reveal y={16} delay={100}>
-                <a
-                  href="https://www.linkedin.com/company/bidtech"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block group h-full"
-                >
+                {/* Link LinkedIn dikosongkan sementara */}
+                <a href="#" className="block group h-full">
                   <SpotlightCard
                     spotlightColor="rgba(2, 132, 199, 0.12)"
                     className="h-full rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-2.5 sm:p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-sky-400/50 hover:shadow-[0_8px_24px_rgba(2,132,199,0.08)] transition-all duration-300"
@@ -234,12 +230,8 @@ export function ContactSection() {
 
               {/* Bento 4: TikTok */}
               <Reveal y={16} delay={160}>
-                <a
-                  href="https://www.tiktok.com/@bidtech.official"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block group h-full"
-                >
+                {/* Link TikTok dikosongkan sementara */}
+                <a href="#" className="block group h-full">
                   <SpotlightCard
                     spotlightColor="rgba(15, 23, 42, 0.10)"
                     className="h-full rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-2.5 sm:p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-slate-400 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300"

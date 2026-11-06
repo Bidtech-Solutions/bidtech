@@ -26,7 +26,7 @@ const socialLinks = [
   },
   {
     icon: FaTiktok,
-    href: "https://www.tiktok.com/@bidtechsolutions",
+    href: "#", // Link TikTok dikosongkan sementara
     label: "TikTok",
   },
   {
@@ -78,8 +78,8 @@ export function SiteFooter() {
                     key={social.label}
                     href={social.href}
                     aria-label={social.label}
-                    target={social.href.startsWith("mailto:") ? undefined : "_blank"}
-                    rel={social.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                    target={social.href.startsWith("http") ? "_blank" : undefined}
+                    rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
                     className="flex size-10 items-center justify-center rounded-2xl border border-slate-200/90 bg-white text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#45a02e]/50 hover:bg-[#f0f9ea]/60 hover:text-[#45a02e] cursor-pointer"
                   >
                     <Icon className="size-4" />

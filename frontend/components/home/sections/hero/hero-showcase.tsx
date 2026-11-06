@@ -147,7 +147,7 @@ export function HeroShowcase() {
             {/* Main Consultant/Laptop Illustration (Flushed to bottom) */}
             <div className="relative h-full w-full">
               <Image
-                src="/images/assets/iconlanding.png"
+                src="/images/hero/iconlanding.webp"
                 alt="Bidtech Solusi Digital"
                 fill
                 priority

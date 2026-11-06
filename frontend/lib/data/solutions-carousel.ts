@@ -18,7 +18,7 @@ export const SOLUTIONS_DATA: SolutionItem[] = [
     descriptionEn:
       "Integrate business operations through a single system managing inventory, finance, purchasing, and workflows efficiently.",
     slug: "erp",
-    imageSrc: "/images/assets/erp-illustration.png",
+    imageSrc: "/images/services/erp.webp",
   },
   {
     id: "android",
@@ -29,7 +29,7 @@ export const SOLUTIONS_DATA: SolutionItem[] = [
     descriptionEn:
       "Bring your business to Android devices through responsive, intuitive mobile apps tailored to your users and business processes.",
     slug: "android",
-    imageSrc: "/images/assets/android-illustration.png",
+    imageSrc: "/images/services/android.webp",
   },
   {
     id: "ecommerce",
@@ -40,7 +40,7 @@ export const SOLUTIONS_DATA: SolutionItem[] = [
     descriptionEn:
       "Build professional online storefronts to market products, receive orders, and automate transactions with seamless shopping experiences.",
     slug: "ecommerce",
-    imageSrc: "/images/assets/ecommerce-showcase.png",
+    imageSrc: "/images/services/ecommerce.webp",
   },
   {
     id: "custom",
@@ -51,6 +51,6 @@ export const SOLUTIONS_DATA: SolutionItem[] = [
     descriptionEn:
       "Engineer tailored software solutions and custom dashboards built with precision for your exact workflows and enterprise scale.",
     slug: "custom",
-    imageSrc: "/images/assets/custom-illustration.png",
+    imageSrc: "/images/services/custom-software.webp",
   },
 ];

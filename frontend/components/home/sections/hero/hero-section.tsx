@@ -6,25 +6,25 @@ import { HeroShowcase } from "./hero-showcase";
 
 const HERO_PARTNER_LOGOS: LogoLoopItem[] = [
   {
-    src: "/images/mitra/mitra-kadin-batam-20260728.png",
+    src: "/images/mitra/mitra-kadin-batam-20260728.webp",
     alt: "Kadin Batam",
     width: 140,
     height: 60,
   },
   {
-    src: "/images/mitra/mitra-batamnow-20260728.png",
+    src: "/images/mitra/mitra-batamnow-20260728.webp",
     alt: "Koran Digital BatamNow",
     width: 210,
     height: 56,
   },
   {
-    src: "/images/mitra/mitra-appeknas-20260728.png",
+    src: "/images/mitra/mitra-appeknas-20260728.webp",
     alt: "APPEKNAS",
     width: 140,
     height: 60,
   },
   {
-    src: "/images/mitra/mitra-apindo-20260728.png",
+    src: "/images/mitra/mitra-apindo-20260728.webp",
     alt: "APINDO - Asosiasi Pengusaha Indonesia",
     width: 190,
     height: 60,

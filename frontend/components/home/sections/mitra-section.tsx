@@ -18,7 +18,7 @@ interface ClientLogoItem {
 const TRUSTED_CLIENTS_GRID: ClientLogoItem[] = [
   {
     id: "semestapro",
-    src: "/images/clients/semestapro.png",
+    src: "/images/clients/semestapro.webp",
     alt: "SemestaPro - Jual Beli Property",
     brandColor: "#1e3a8a",
     className: "max-h-12 sm:max-h-14 md:max-h-16 max-w-[155px] sm:max-w-[175px]",
@@ -46,7 +46,7 @@ const TRUSTED_CLIENTS_GRID: ClientLogoItem[] = [
   },
   {
     id: "ayocuci",
-    src: "/images/clients/ayocuci.png",
+    src: "/images/clients/ayocuci.webp",
     alt: "AyoCuci",
     brandColor: "#f97316",
     className: "max-h-10 sm:max-h-11 md:max-h-[48px] max-w-[145px] sm:max-w-[165px]",
@@ -60,7 +60,7 @@ const TRUSTED_CLIENTS_GRID: ClientLogoItem[] = [
   },
   {
     id: "masterpro",
-    src: "/images/clients/masterpro.png",
+    src: "/images/clients/masterpro.webp",
     alt: "Master Pro Real Estate",
     brandColor: "#2563eb",
     className: "max-h-14 sm:max-h-16 md:max-h-[72px] max-w-[145px] sm:max-w-[165px]",

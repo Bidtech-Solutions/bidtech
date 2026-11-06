@@ -83,7 +83,7 @@ export function UniversalCta({ className = "" }: UniversalCtaProps) {
                 {/* Main CTA Visual */}
                 <div className="relative h-full w-full origin-bottom filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.14)] max-sm:translate-y-6 max-sm:scale-[1.12]">
                   <Image
-                    src="/images/cta/model.png"
+                    src="/images/cta/model.webp"
                     alt="Konsultan BidTech menunjukkan website di ponsel"
                     fill
                     sizes="(min-width: 1024px) 500px, (min-width: 640px) 480px, 90vw"

@@ -82,7 +82,7 @@ export function ContactSection() {
                   {/* Left: Illustration */}
                   <div className="relative size-16 sm:size-24 shrink-0 overflow-hidden rounded-xl bg-emerald-50/50 flex items-center justify-center">
                     <Image
-                      src="/images/assets/cs-consultant-illustration.png"
+                      src="/images/contact/cs-consultant.webp"
                       alt="Konsultasi Tim Ahli BidTech"
                       width={100}
                       height={90}
@@ -381,7 +381,7 @@ export function ContactSection() {
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       fill
                       sizes="(min-width: 1024px) 460px, 90vw"
-                      src="/images/map-jakarta.jpg"
+                      src="/images/contact/map-jakarta.webp"
                     />
 
                     {/* Red Location Marker Pin */}
@@ -431,7 +431,7 @@ export function ContactSection() {
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       fill
                       sizes="(min-width: 1024px) 460px, 90vw"
-                      src="/images/map-batam.jpg"
+                      src="/images/contact/map-batam.webp"
                     />
 
                     {/* Red Location Marker Pin */}

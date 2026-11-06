@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { MessageCircle } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
 import { SolutionCard } from "@/components/home/components/solution-card";
+import { SplitText } from "@/components/react-bits/split-text";
 import { FEATURED_SOLUTIONS_DATA } from "@/lib/data/featured-solutions";
 
 const WHATSAPP_NUMBER = "628217601455";
@@ -83,12 +84,17 @@ export default async function SolusiPage({
           <span className="inline-flex items-center rounded-full border border-[#45a02e]/25 bg-[#f0f9ea] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#3d8f28]">
             {copy.eyebrow}
           </span>
-          <h1 className="mt-4 font-[family-name:var(--font-plus-jakarta),sans-serif] text-3xl font-bold leading-tight tracking-[-0.025em] text-slate-900 sm:text-4xl lg:text-[44px]">
-            {copy.titleLead}{" "}
-            <span className="bg-gradient-to-r from-[#45a02e] via-[#5fc94a] to-[#22c55e] bg-clip-text text-transparent">
-              {copy.titleHighlight}
-            </span>
-          </h1>
+          <SplitText
+            as="h1"
+            className="mt-4 font-[family-name:var(--font-plus-jakarta),sans-serif] text-3xl font-bold leading-tight tracking-[-0.025em] text-slate-900 sm:text-4xl lg:text-[44px]"
+            segments={[
+              { text: copy.titleLead },
+              {
+                text: copy.titleHighlight,
+                className: "bg-gradient-to-r from-[#45a02e] via-[#5fc94a] to-[#22c55e] bg-clip-text text-transparent",
+              },
+            ]}
+          />
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">{copy.subtitle}</p>
         </div>
 

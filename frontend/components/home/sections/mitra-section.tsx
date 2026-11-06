@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import { Reveal } from "@/components/animations/reveal";
-import { BlurText, SpotlightCard } from "@/components/react-bits";
+import { SplitText, SpotlightCard } from "@/components/react-bits";
 import { useLanguage } from "@/lib/i18n";
 
 interface ClientLogoItem {
@@ -81,7 +81,7 @@ export function MitraSection() {
   return (
     <section
       id="mitra"
-      className="landing-panel relative overflow-hidden py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-emerald-50/25 via-slate-50/50 to-white"
+      className="landing-panel cv-auto relative overflow-hidden py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-emerald-50/25 via-slate-50/50 to-white"
     >
       {/* Ambient central glow aura */}
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-72 bg-gradient-to-r from-emerald-400/8 via-[#5fc94a]/10 to-lime-400/8 blur-3xl -z-10 rounded-full" />
@@ -89,7 +89,7 @@ export function MitraSection() {
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* 1. SECTION HEADER: Klien yang Mempercayai Kami */}
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-          <BlurText
+          <SplitText
             as="h2"
             className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl sm:text-3xl lg:text-[38px] font-bold tracking-[-0.025em] text-slate-900 leading-tight"
             segments={

@@ -1,5 +1,6 @@
 export * from "./logo-loop";
 export * from "./blur-text";
+export * from "./split-text";
 export * from "./spotlight-card";
 export * from "./magnet";
 export * from "./shiny-text";

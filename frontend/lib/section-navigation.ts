@@ -18,18 +18,24 @@ export function getSectionHref(hash: string, currentPathname?: string | null) {
   return `/id${hash}`;
 }
 
-export function scrollToSection(hash: string, behavior: ScrollBehavior = "auto") {
+export function scrollToSection(hash: string, behavior: ScrollBehavior = "smooth") {
   if (typeof window === "undefined" || !hash.startsWith("#")) return false;
 
   const target = document.querySelector<HTMLElement>(hash);
   if (!target) return false;
 
-  const top = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-
-  window.scrollTo({
-    top: Math.max(0, top),
-    behavior,
-  });
+  if (window.__lenis && behavior !== "instant") {
+    window.__lenis.scrollTo(target, {
+      offset: -HEADER_OFFSET,
+      duration: 1.1,
+    });
+  } else {
+    const top = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior,
+    });
+  }
 
   const nextUrl = `${window.location.pathname}${hash}`;
   if (window.location.hash !== hash) {

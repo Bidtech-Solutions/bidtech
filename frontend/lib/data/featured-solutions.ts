@@ -20,7 +20,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
       "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
     platforms: ["web"],
     imageSrc: "/images/solutions/fun-travel.webp",
-    href: "https://funtravelbatam.com",
+    href: "https://fungetgo.com/id",
   },
   {
     id: "ayo-cuci",
@@ -108,6 +108,6 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
       "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
     platforms: ["web"],
     imageSrc: "/images/solutions/fun-travel.webp",
-    href: "https://funtravelbatam.com",
+    href: "https://fungetgo.com/id",
   },
 ];

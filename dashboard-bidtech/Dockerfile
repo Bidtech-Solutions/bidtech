@@ -4,7 +4,11 @@
 FROM composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --no-scripts
+# COMPOSER_AUTH (opsional) dikirim sebagai build secret, bukan ARG/ENV, jadi token tidak tersimpan di image.
+# Di CI berisi token GitHub agar unduhan paket dari api.github.com tidak dibatasi/diputus
+# (unduhan anonim dari runner sering timeout: curl error 28/56 -> composer exit code 100).
+RUN --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
+    composer install --no-dev --no-interaction --no-progress --prefer-dist --no-scripts
 COPY . .
 RUN composer dump-autoload --no-dev --optimize --no-interaction
 

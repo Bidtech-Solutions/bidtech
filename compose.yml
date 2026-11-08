@@ -13,6 +13,8 @@ services:
   app:
     build:
       context: ./dashboard-bidtech
+      secrets:
+        - composer_auth
     image: bidtech-dashboard:latest
     env_file:
       - ./dashboard-bidtech/.env
@@ -43,3 +45,9 @@ services:
 
 volumes:
   dashboard_mysql_data:
+
+secrets:
+  # Build secret untuk Composer (lihat dashboard-bidtech/Dockerfile).
+  # Di CI diisi token GitHub; di lokal boleh dibiarkan kosong.
+  composer_auth:
+    environment: COMPOSER_AUTH

@@ -114,6 +114,10 @@ jobs:
           PY
 
       - name: Build images
+        env:
+          # Token GitHub bawaan untuk Composer (build secret "composer_auth" di compose.yml).
+          # Tanpa token, unduhan paket dari api.github.com sering timeout di runner.
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
         run: docker compose build
 
       - name: Report frontend image size

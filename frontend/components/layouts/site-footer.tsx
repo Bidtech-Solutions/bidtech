@@ -26,12 +26,12 @@ const socialLinks = [
   },
   {
     icon: FaTiktok,
-    href: "#", // Link TikTok dikosongkan sementara
+    href: "https://www.tiktok.com/@bidtechsolutions",
     label: "TikTok",
   },
   {
     icon: FaFacebookF,
-    href: "https://www.facebook.com/bidtechsolutions",
+    href: "https://www.facebook.com/profile.php?id=61592059225349",
     label: "Facebook",
   },
   {

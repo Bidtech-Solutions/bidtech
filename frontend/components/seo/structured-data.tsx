@@ -102,6 +102,8 @@ export function StructuredData() {
         ],
         sameAs: [
           "https://www.instagram.com/bidtechsolutions/",
+          "https://www.facebook.com/profile.php?id=61592059225349",
+          "https://www.tiktok.com/@bidtechsolutions",
           "https://wa.me/628217601455",
           "https://bidtech.co.id",
         ],

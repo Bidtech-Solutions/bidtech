@@ -217,7 +217,7 @@ export function ContactSection() {
                           Instagram
                         </h4>
                         <p className="mt-0.5 text-[10px] sm:text-xs text-slate-600 font-medium truncate">
-                          @bidtech.id
+                          @bidtechsolutions
                         </p>
                         <p className="mt-0.5 text-[11px] text-slate-400 truncate hidden md:block">
                           {isEn ? "Activity & portfolio" : "Aktivitas & Portofolio"}
@@ -230,8 +230,12 @@ export function ContactSection() {
 
               {/* Bento 4: TikTok */}
               <Reveal y={16} delay={160}>
-                {/* Link TikTok dikosongkan sementara */}
-                <a href="#" className="block group h-full">
+                <a
+                  href="https://www.tiktok.com/@bidtechsolutions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block group h-full"
+                >
                   <SpotlightCard
                     spotlightColor="rgba(15, 23, 42, 0.10)"
                     className="h-full rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-2.5 sm:p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-slate-400 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300"
@@ -245,7 +249,7 @@ export function ContactSection() {
                           TikTok
                         </h4>
                         <p className="mt-0.5 text-[10px] sm:text-xs text-slate-600 font-medium truncate">
-                          @bidtech.official
+                          @bidtechsolutions
                         </p>
                         <p className="mt-0.5 text-[11px] text-slate-400 truncate hidden md:block">
                           {isEn ? "Tech insights & demo" : "Tech Insights & Demo"}
@@ -259,7 +263,7 @@ export function ContactSection() {
               {/* Bento 5: Facebook */}
               <Reveal y={16} delay={190}>
                 <a
-                  href="https://www.facebook.com/bidtech.official"
+                  href="https://www.facebook.com/profile.php?id=61592059225349"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block group h-full"
@@ -277,7 +281,7 @@ export function ContactSection() {
                           Facebook
                         </h4>
                         <p className="mt-0.5 text-[10px] sm:text-xs text-slate-600 font-medium truncate">
-                          bidtech.official
+                          Bidtech Id
                         </p>
                         <p className="mt-0.5 text-[11px] text-slate-400 truncate hidden md:block">
                           {isEn ? "Community & updates" : "Komunitas & Berita"}

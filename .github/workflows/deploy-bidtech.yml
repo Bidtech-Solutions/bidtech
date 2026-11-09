@@ -166,7 +166,8 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: docker compose down -v
+        # Abaikan error bila langkah sebelumnya gagal sebelum file .env dibuat.
+        run: docker compose down -v || true
 
       - name: Upload deploy config for VPS
         if: success()

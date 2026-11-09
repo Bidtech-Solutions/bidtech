@@ -231,7 +231,7 @@ export function ContactSection() {
               {/* Bento 4: TikTok */}
               <Reveal y={16} delay={160}>
                 <a
-                  href="https://www.tiktok.com/@bidtechsolutions"
+                  href="https://www.tiktok.com/@bidtechsolutions?is_from_webapp=1&sender_device=pc"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block group h-full"

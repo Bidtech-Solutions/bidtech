@@ -26,7 +26,7 @@ const socialLinks = [
   },
   {
     icon: FaTiktok,
-    href: "https://www.tiktok.com/@bidtechsolutions",
+    href: "https://www.tiktok.com/@bidtechsolutions?is_from_webapp=1&sender_device=pc",
     label: "TikTok",
   },
   {

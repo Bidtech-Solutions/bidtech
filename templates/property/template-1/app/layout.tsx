@@ -1,16 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+// Font di-host sendiri agar build demo tidak bergantung pada unduhan Google Fonts.
+import localFont from "next/font/local";
 import "../styles/globals.css";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: [
+    { path: "./fonts/inter-latin.woff2", weight: "100 900", style: "normal" },
+  ],
   variable: "--font-inter",
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
+const playfair = localFont({
+  src: [
+    { path: "./fonts/playfair-display-latin.woff2", weight: "400 900", style: "normal" },
+  ],
   variable: "--font-playfair",
   display: "swap",
 });

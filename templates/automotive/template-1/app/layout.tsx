@@ -1,15 +1,23 @@
 import type { Metadata } from 'next';
 import '../styles/globals.css';
-import { Inter, Bebas_Neue } from "next/font/google";
+// Font di-host sendiri agar build demo tidak bergantung pada unduhan Google Fonts.
+import localFont from "next/font/local";
 import { cn } from "@/lib/utils";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const bebasNeue = Bebas_Neue({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-bebas',
-  display: 'swap',
+const inter = localFont({
+  src: [
+    { path: "./fonts/inter-latin.woff2", weight: "100 900", style: "normal" },
+  ],
+  variable: "--font-sans",
+  display: "swap",
+});
+const bebasNeue = localFont({
+  src: [
+    { path: "./fonts/bebas-neue-latin.woff2", weight: "400", style: "normal" },
+  ],
+  variable: "--font-bebas",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Manrope, DM_Serif_Display } from "next/font/google";
+// Font di-host sendiri agar build demo tidak bergantung pada unduhan Google Fonts.
+import localFont from "next/font/local";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
 import { ConsultModalProvider } from "@/components/providers/consult-modal-provider";
 import { RouteLine } from "@/components/layout/route-line";
@@ -9,17 +10,19 @@ import { nivoraAssets } from "@/lib/data/asset-paths";
 import { organizationJsonLd } from "@/lib/seo";
 import "@/styles/globals.css";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+const manrope = localFont({
+  src: [
+    { path: "./fonts/manrope-latin.woff2", weight: "200 800", style: "normal" },
+  ],
   variable: "--font-sans",
   display: "swap",
 });
 
-const dmSerifDisplay = DM_Serif_Display({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
+const dmSerifDisplay = localFont({
+  src: [
+    { path: "./fonts/dm-serif-display-latin.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/dm-serif-display-latin-italic.woff2", weight: "400", style: "italic" },
+  ],
   variable: "--font-display",
   display: "swap",
 });

@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
-import { Manrope } from 'next/font/google';
+// Font di-host sendiri agar build demo tidak bergantung pada unduhan Google Fonts.
+import localFont from "next/font/local";
 import '../styles/globals.css';
 import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider';
 
-const manrope = Manrope({
-  subsets: ['latin'],
-  variable: '--font-manrope',
-  display: 'swap',
+const manrope = localFont({
+  src: [
+    { path: "./fonts/manrope-latin.woff2", weight: "200 800", style: "normal" },
+  ],
+  variable: "--font-manrope",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

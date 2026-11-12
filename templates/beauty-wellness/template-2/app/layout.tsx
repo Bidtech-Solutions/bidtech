@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Inter } from "next/font/google";
+// Font di-host sendiri agar build demo tidak bergantung pada unduhan Google Fonts.
+import localFont from "next/font/local";
 
 import '../styles/globals.css';
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: [
+    { path: "./fonts/inter-latin.woff2", weight: "100 900", style: "normal" },
+  ],
   variable: "--font-inter",
   display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
+const instrumentSerif = localFont({
+  src: [
+    { path: "./fonts/instrument-serif-latin.woff2", weight: "400", style: "normal" },
+  ],
   variable: "--font-instrument-serif",
   display: "swap",
 });

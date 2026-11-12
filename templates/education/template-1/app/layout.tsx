@@ -1,14 +1,16 @@
 import type { Metadata } from 'next';
-import { Nunito } from 'next/font/google';
+// Font di-host sendiri agar build demo tidak bergantung pada unduhan Google Fonts.
+import localFont from "next/font/local";
 import '@/styles/globals.css';
 import SmoothScrollProvider from '@/components/providers/SmoothScroll';
 import { ModalProvider } from '@/lib/ModalContext';
 
-const nunito = Nunito({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
-  variable: '--font-nunito',
-  display: 'swap',
+const nunito = localFont({
+  src: [
+    { path: "./fonts/nunito-latin.woff2", weight: "200 1000", style: "normal" },
+  ],
+  variable: "--font-nunito",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

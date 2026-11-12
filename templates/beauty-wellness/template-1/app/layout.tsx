@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Manrope, Space_Grotesk } from "next/font/google";
+// Font di-host sendiri agar build demo tidak bergantung pada unduhan Google Fonts.
+import localFont from "next/font/local";
 import '../styles/globals.css';
 
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
@@ -11,14 +12,18 @@ export const metadata: Metadata = {
   keywords: ['Gym', 'Fitness'],
 };
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
+const spaceGrotesk = localFont({
+  src: [
+    { path: "./fonts/space-grotesk-latin.woff2", weight: "300 700", style: "normal" },
+  ],
   variable: "--font-heading",
   display: "swap",
 });
 
-const manrope = Manrope({
-  subsets: ["latin"],
+const manrope = localFont({
+  src: [
+    { path: "./fonts/manrope-latin.woff2", weight: "200 800", style: "normal" },
+  ],
   variable: "--font-body",
   display: "swap",
 });

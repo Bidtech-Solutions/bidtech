@@ -30,7 +30,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Smart laundry POS application helping business owners manage transactions, customers, staff, and finances with real-time order tracking and business analytics.",
     platforms: ["android", "web", "ios"],
-    imageSrc: "/images/solutions/ayocuci-v2.webp",
+    imageSrc: "/images/solutions/ayocuci-v3.webp",
     href: "https://ayocuci.co.id/",
   },
   {

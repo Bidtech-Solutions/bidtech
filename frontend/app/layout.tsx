@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 
 import { SmoothScrollProvider } from "@/components/animations/smooth-scroll-provider";
 import { AnnouncementBar } from "@/components/layouts/announcement-bar";
@@ -12,18 +12,22 @@ import { LanguageProvider } from "@/lib/i18n";
 
 import "../styles/global.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
+// Font di-host sendiri (subset latin, variable) agar `next build` tidak bergantung
+// pada unduhan Google Fonts yang sering gagal di runner CI/Docker.
+const plusJakartaSans = localFont({
+  src: "./fonts/plus-jakarta-sans-latin-var.woff2",
   variable: "--font-plus-jakarta",
   display: "swap",
-  weight: ["600", "700", "800"],
+  weight: "600 800",
+  fallback: ["system-ui", "Arial", "sans-serif"],
 });
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: "./fonts/inter-latin-var.woff2",
   variable: "--font-inter",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: "400 700",
+  fallback: ["system-ui", "Arial", "sans-serif"],
 });
 
 export const viewport: Viewport = {

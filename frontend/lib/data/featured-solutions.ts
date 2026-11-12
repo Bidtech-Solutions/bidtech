@@ -89,7 +89,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     href: "https://semestapro.co.id/",
   },
   {
-    // Gambar dan situs belum tersedia: kartu menampilkan placeholder tanpa tombol "Lihat Situs".
+    // Situs belum tersedia: tombol "Lihat Situs" disembunyikan.
     id: "login-rek",
     title: "Login Rek",
     description:
@@ -97,6 +97,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "A new digital solution we are currently building. Full project details and visuals will be showcased here soon.",
     platforms: ["android", "ios"],
+    imageSrc: "/images/solutions/login-rek.webp",
   },
   {
     // SEMENTARA: salinan Fun Travel sebagai pengisi slot ke-9. Ganti dengan proyek asli bila sudah ada.

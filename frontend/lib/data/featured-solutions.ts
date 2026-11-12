@@ -19,7 +19,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
     platforms: ["web"],
-    imageSrc: "/images/solutions/fun-travel.webp",
+    imageSrc: "/images/solutions/fun-travel-v2.webp",
     href: "https://fungetgo.com/id",
   },
   {
@@ -30,7 +30,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Smart laundry POS application helping business owners manage transactions, customers, staff, and finances with real-time order tracking and business analytics.",
     platforms: ["android", "web", "ios"],
-    imageSrc: "/images/solutions/ayocuci.webp",
+    imageSrc: "/images/solutions/ayocuci-v2.webp",
     href: "https://ayocuci.co.id/",
   },
   {
@@ -41,7 +41,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Car rental service website in Batam enabling customers to browse fleets, check rates, and book vehicles with self-drive or chauffeur options for business and leisure.",
     platforms: ["web"],
-    imageSrc: "/images/solutions/nadimtrans.webp",
+    imageSrc: "/images/solutions/nadimtrans-v2.webp",
     href: "https://nadimtrans.com/",
   },
   {
@@ -52,7 +52,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Property agency website in Batam for buying, selling, and renting homes. Visitors can search listings by location, type, and price, browse the latest properties, and contact a professional agent directly.",
     platforms: ["web"],
-    imageSrc: "/images/solutions/masterpro.webp",
+    imageSrc: "/images/solutions/masterpro-v2.webp",
     href: "https://masterpro.co.id/id",
   },
   {
@@ -63,7 +63,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Official website of the Indonesian Farmers Association (HKTI) Batam chapter, presenting the organization profile, vision and mission, board structure, work programs, and activity documentation.",
     platforms: ["web"],
-    imageSrc: "/images/solutions/hkti.webp",
+    imageSrc: "/images/solutions/hkti-v2.webp",
     href: "https://hktikotabatam.org/",
   },
   {
@@ -74,7 +74,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Community website built for connection, collaboration, and limitless opportunities, featuring the community profile, event agenda, leadership team, and online membership registration.",
     platforms: ["web"],
-    imageSrc: "/images/solutions/vis-society.webp",
+    imageSrc: "/images/solutions/vis-society-v2.webp",
     href: "https://www.vissociety.org/",
   },
   {
@@ -85,7 +85,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Property marketplace in Batam focused on secondary homes. Buyers can browse listings, compare prices, and check property locations quickly and easily.",
     platforms: ["web"],
-    imageSrc: "/images/solutions/semestapro.webp",
+    imageSrc: "/images/solutions/semestapro-v2.webp",
     href: "https://semestapro.co.id/",
   },
   {
@@ -97,7 +97,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "A new digital solution we are currently building. Full project details and visuals will be showcased here soon.",
     platforms: ["android", "ios"],
-    imageSrc: "/images/solutions/login-rek.webp",
+    imageSrc: "/images/solutions/login-rek-v2.webp",
   },
   {
     // SEMENTARA: salinan Fun Travel sebagai pengisi slot ke-9. Ganti dengan proyek asli bila sudah ada.
@@ -108,7 +108,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
     platforms: ["web"],
-    imageSrc: "/images/solutions/fun-travel.webp",
+    imageSrc: "/images/solutions/fun-travel-v2.webp",
     href: "https://fungetgo.com/id",
   },
 ];

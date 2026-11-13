@@ -89,15 +89,15 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     href: "https://semestapro.co.id/",
   },
   {
-    // Situs belum tersedia: tombol "Lihat Situs" disembunyikan.
-    id: "login-rek",
-    title: "Login Rek",
+    id: "sapa-kerja",
+    title: "Sapa Kerja",
     description:
       "Sistem presensi dan manajemen kehadiran tim berbasis web dan aplikasi mobile. Memudahkan perusahaan memantau absensi secara real-time, mengelola rekap keterlambatan, dan melihat analitik operasional dalam satu layar.",
     descriptionEn:
-      "A new digital solution we are currently building. Full project details and visuals will be showcased here soon.",
-    platforms: ["android", "ios"],
+      "Smart attendance and team presence management system across web and mobile apps. Enables companies to monitor attendance in real-time, track tardiness, and view operational analytics on a single dashboard.",
+    platforms: ["web", "android", "ios"],
     imageSrc: "/images/solutions/login-rek-v2.webp",
+    href: "https://sapakerja.com",
   },
   {
     id: "sony-christanto",
@@ -107,7 +107,7 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     descriptionEn:
       "Official public profile and personal branding website for Batam City DPRD Member, presenting biography, legislative track record, organizational initiatives, and a digital channel for public aspirations.",
     platforms: ["web"],
-    imageSrc: "/images/solutions/fun-travel-v2.webp",
-    href: "https://fungetgo.com/id",
+    imageSrc: "/images/solutions/sony-christanto-v2.webp",
+    href: "https://sonychristanto.com/id",
   },
 ];

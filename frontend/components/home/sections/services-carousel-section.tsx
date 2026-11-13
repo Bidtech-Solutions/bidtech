@@ -10,14 +10,20 @@ import { SOLUTIONS_DATA, type SolutionItem } from "@/lib/data/solutions-carousel
 import { useLanguage } from "@/lib/i18n";
 
 const N = SOLUTIONS_DATA.length; // 4
+const SET_COUNT = 9; // 9 set kartu (36 item) sebagai buffer infinite loop luas dari segala arah
+const CENTER_SET = 4; // Set tengah (indeks 16..19)
+const START_INDEX = CENTER_SET * N; // 16: Mulai di set tengah
+const TRANSITION_DURATION = 400; // ms
 
-// 3 set kartu (12 item) sebagai buffer infinite loop. Posisi selalu dijaga di set tengah,
-// cukup untuk menampilkan hingga 3 kartu sekaligus tanpa celah (DOM lebih ringan dari 5 set).
-const EXTENDED_ITEMS: (SolutionItem & { uniqueKey: string; itemIndex: number })[] = [0, 1, 2].flatMap((set) =>
-  SOLUTIONS_DATA.map((item, i) => ({ ...item, uniqueKey: `set${set}-${item.id}-${i}`, itemIndex: i })),
-);
-
-const START_INDEX = N; // Mulai di set tengah
+const EXTENDED_ITEMS: (SolutionItem & { uniqueKey: string; itemIndex: number })[] = Array.from(
+  { length: SET_COUNT },
+  (_, set) =>
+    SOLUTIONS_DATA.map((item, i) => ({
+      ...item,
+      uniqueKey: `set${set}-${item.id}-${i}`,
+      itemIndex: i,
+    }))
+).flat();
 
 export function ServicesCarouselSection() {
   const { lang } = useLanguage();
@@ -25,101 +31,100 @@ export function ServicesCarouselSection() {
   const [currentIndex, setCurrentIndex] = useState(START_INDEX);
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [, setActiveCardId] = useState<string>("erp");
-  // Kartu utuh: 3 di desktop lebar, 2 di tablet, 1 di mobile
-  const [cardsPerView, setCardsPerView] = useState(3);
 
   const isMoving = useRef(false);
+  const safetyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchEnd = useRef<{ x: number; y: number } | null>(null);
 
-  // Deteksi jumlah kartu per view
+  // Bersihkan semua timer saat unmount
   useEffect(() => {
-    const updateCards = () => {
-      const w = window.innerWidth;
-      if (w >= 1024) setCardsPerView(3);
-      else if (w >= 640) setCardsPerView(2);
-      else setCardsPerView(1);
+    return () => {
+      if (safetyTimer.current) clearTimeout(safetyTimer.current);
+      if (resetTimer.current) clearTimeout(resetTimer.current);
     };
-    updateCards();
-    window.addEventListener("resize", updateCards);
-    return () => window.removeEventListener("resize", updateCards);
   }, []);
 
   // Hitung indeks solusi aktif dalam siklus berulang (0 .. N-1)
   const realIndex = ((currentIndex % N) + N) % N;
 
-  // Mobile (1 kartu per view): kartu tidak berubah warna saat digeser,
-  // hanya kartu yang disentuh yang disorot hijau.
-  const isMobile = cardsPerView === 1;
-  const [tappedIndex, setTappedIndex] = useState<number | null>(null);
-
-  // Sorotan sentuhan dilepas saat carousel digeser ke kartu lain
-  useEffect(() => {
-    setTappedIndex(null);
-  }, [realIndex]);
-
-  // Sinkronisasi activeCardId dengan kartu paling kiri
+  // Sinkronisasi activeCardId dengan kartu tengah
   useEffect(() => {
     if (SOLUTIONS_DATA[realIndex]) {
       setActiveCardId(SOLUTIONS_DATA[realIndex].id);
     }
   }, [realIndex]);
 
-  // Aktifkan kembali transisi setelah reset posisi seketika
-  useEffect(() => {
-    if (!isTransitioning) {
-      const timer = setTimeout(() => {
+  // Normalisasi posisi: jika currentIndex keluar dari batas aman Set 4 (16..19),
+  // lakukan teleportasi diam-diam (transition: none) kembali ke indeks ekuivalen di Set 4.
+  const checkAndNormalizePosition = useCallback((targetIndex: number) => {
+    if (safetyTimer.current) {
+      clearTimeout(safetyTimer.current);
+      safetyTimer.current = null;
+    }
+
+    const minCenterIndex = CENTER_SET * N; // 16
+    const maxCenterIndex = (CENTER_SET + 1) * N - 1; // 19
+
+    if (targetIndex < minCenterIndex || targetIndex > maxCenterIndex) {
+      const normalized = ((targetIndex % N) + N) % N + minCenterIndex;
+      // Matikan transisi untuk reset instan tanpa lonjakan visual
+      setIsTransitioning(false);
+      setCurrentIndex(normalized);
+
+      if (resetTimer.current) clearTimeout(resetTimer.current);
+      resetTimer.current = setTimeout(() => {
         setIsTransitioning(true);
-      }, 25);
-      return () => clearTimeout(timer);
-    }
-  }, [isTransitioning]);
-
-  const nextSlide = useCallback(() => {
-    if (isMoving.current) return;
-    isMoving.current = true;
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + 1);
-    setTimeout(() => {
+        isMoving.current = false;
+      }, 40);
+    } else {
       isMoving.current = false;
-    }, 550);
+    }
   }, []);
 
-  const prevSlide = useCallback(() => {
-    if (isMoving.current) return;
-    isMoving.current = true;
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev - 1);
-    setTimeout(() => {
-      isMoving.current = false;
-    }, 550);
-  }, []);
+  const stepSlide = useCallback(
+    (diff: number) => {
+      if (isMoving.current || diff === 0) return;
+      isMoving.current = true;
+      setIsTransitioning(true);
 
-  const goToSlide = useCallback((targetRealIndex: number) => {
-    if (isMoving.current) return;
-    const currentReal = ((currentIndex % N) + N) % N;
-    let diff = targetRealIndex - currentReal;
-    if (diff > N / 2) diff -= N;
-    if (diff < -N / 2) diff += N;
-    if (diff === 0) return;
-    isMoving.current = true;
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + diff);
-    setTimeout(() => {
-      isMoving.current = false;
-    }, 550);
-  }, [currentIndex]);
+      setCurrentIndex((prev) => {
+        const nextIdx = prev + diff;
+        if (safetyTimer.current) clearTimeout(safetyTimer.current);
+        safetyTimer.current = setTimeout(() => {
+          checkAndNormalizePosition(nextIdx);
+        }, TRANSITION_DURATION + 100);
+        return nextIdx;
+      });
+    },
+    [checkAndNormalizePosition]
+  );
 
-  const handleTransitionEnd = () => {
-    isMoving.current = false;
-    // Boundary check: Pertahankan currentIndex di set tengah secara seamless
-    if (currentIndex >= N * 2) {
-      setIsTransitioning(false);
-      setCurrentIndex((prev) => prev - N);
-    } else if (currentIndex < N) {
-      setIsTransitioning(false);
-      setCurrentIndex((prev) => prev + N);
-    }
+  const nextSlide = useCallback(() => stepSlide(1), [stepSlide]);
+  const prevSlide = useCallback(() => stepSlide(-1), [stepSlide]);
+
+  const goToSlide = useCallback(
+    (targetRealIndex: number) => {
+      if (isMoving.current) return;
+      const currentReal = ((currentIndex % N) + N) % N;
+      let diff = targetRealIndex - currentReal;
+      if (diff > N / 2) diff -= N;
+      if (diff < -N / 2) diff += N;
+      if (diff === 0) return;
+
+      stepSlide(diff);
+    },
+    [currentIndex, stepSlide]
+  );
+
+  const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
+    // KRUSIAL: Hanya tangani event yang berasal langsung dari kontainer slider itu sendiri
+    // dan khusus properti transform, abaikan event dari kartu anak (hover, border, button scale dsb).
+    if (e.target !== e.currentTarget) return;
+    if (e.propertyName !== "transform") return;
+
+    checkAndNormalizePosition(currentIndex);
   };
 
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
@@ -152,219 +157,245 @@ export function ServicesCarouselSection() {
   return (
     <section
       id="services"
-      className="landing-panel cv-auto relative overflow-hidden bg-gradient-to-b from-white via-emerald-50/40 to-white py-16 sm:py-20 lg:py-24"
+      className="landing-panel cv-auto relative overflow-hidden bg-gradient-to-b from-white via-emerald-50/20 to-white py-16 sm:py-20 lg:py-24"
     >
-      {/* Ambient background glow mesh */}
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(69,160,46,0.08),transparent_75%)]" />
+      {/* Ambient background wavy lines matching design screenshot */}
+      <svg
+        viewBox="0 0 1440 600"
+        fill="none"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute inset-0 h-full w-full select-none"
+      >
+        <defs>
+          <linearGradient id="servicesWaveGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#84cc16" stopOpacity="0.35" />
+            <stop offset="40%" stopColor="#45a02e" stopOpacity="0.65" />
+            <stop offset="70%" stopColor="#5fc94a" stopOpacity="0.75" />
+            <stop offset="100%" stopColor="#84cc16" stopOpacity="0.30" />
+          </linearGradient>
+          <linearGradient id="servicesWaveGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#84cc16" stopOpacity="0.25" />
+            <stop offset="45%" stopColor="#3ea023" stopOpacity="0.55" />
+            <stop offset="75%" stopColor="#65d44f" stopOpacity="0.60" />
+            <stop offset="100%" stopColor="#84cc16" stopOpacity="0.25" />
+          </linearGradient>
+          <linearGradient id="servicesWaveGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#84cc16" stopOpacity="0.30" />
+            <stop offset="40%" stopColor="#45a02e" stopOpacity="0.60" />
+            <stop offset="75%" stopColor="#5fc94a" stopOpacity="0.65" />
+            <stop offset="100%" stopColor="#84cc16" stopOpacity="0.25" />
+          </linearGradient>
+        </defs>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 my-auto flex flex-col justify-center">
-        {/* 1. SECTION HEADER (Centered Title & Subtitle) */}
-        <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8 lg:mb-10">
-          <SplitText
-            as="h2"
-            className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl sm:text-3xl lg:text-[36px] xl:text-[40px] font-bold tracking-[-0.025em] text-slate-900 leading-tight"
-            segments={
-              isEn
-                ? [
-                    { text: "What Would You Like to" },
-                    { text: "Build Today?", className: "bg-gradient-to-r from-[#45a02e] via-[#5fc94a] to-[#22c55e] bg-clip-text text-transparent" },
-                  ]
-                : [
-                    { text: "Apa yang Ingin" },
-                    { text: "Anda Bangun", className: "bg-gradient-to-r from-[#45a02e] via-[#5fc94a] to-[#22c55e] bg-clip-text text-transparent" },
-                    { text: "Hari Ini?" },
-                  ]
-            }
-          />
-          <Reveal y={12} delay={100}>
-            <p className="mt-2 sm:mt-3 text-xs sm:text-sm lg:text-[15px] text-slate-600 leading-relaxed max-w-xl mx-auto">
-              {isEn
-                ? "We provide comprehensive technology solutions designed to accelerate your digital business growth."
-                : "Kami memberikan solusi teknologi komprehensif yang dirancang untuk mempercepat pertumbuhan bisnis digital Anda."}
-            </p>
-          </Reveal>
-        </div>
+        {/* Top Dashed Wave (Melengkung di belakang judul) */}
+        <path
+          d="M -40 75 C 220 85, 440 45, 720 115 C 1000 185, 1260 75, 1480 95"
+          stroke="url(#servicesWaveGrad1)"
+          strokeWidth="1.15"
+          strokeDasharray="6 8"
+          strokeLinecap="round"
+        />
 
-        {/* 2. CAROUSEL WRAPPER WITH SIDE CONTROLS */}
+        {/* Top Solid Wave */}
+        <path
+          d="M -40 135 C 240 145, 460 105, 740 175 C 1020 245, 1280 135, 1480 155"
+          stroke="url(#servicesWaveGrad2)"
+          strokeWidth="1.0"
+          strokeLinecap="round"
+        />
+
+        {/* Bottom Dashed Wave (Melengkung di bawah kartu) */}
+        <path
+          d="M -40 515 C 240 505, 520 555, 800 495 C 1080 435, 1300 515, 1480 485"
+          stroke="url(#servicesWaveGrad3)"
+          strokeWidth="1.1"
+          strokeDasharray="6 8"
+          strokeLinecap="round"
+        />
+      </svg>
+
+      {/* 1. SECTION HEADER (Centered Title & Subtitle in max-w-7xl) */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-center mb-6 sm:mb-8 lg:mb-10">
+        <SplitText
+          as="h2"
+          className="font-[family-name:var(--font-plus-jakarta),sans-serif] text-2xl sm:text-3xl lg:text-[36px] xl:text-[40px] font-bold tracking-[-0.025em] text-slate-900 leading-tight"
+          segments={
+            isEn
+              ? [
+                  { text: "What Would You Like to" },
+                  { text: "Build Today?", className: "bg-gradient-to-r from-[#45a02e] via-[#5fc94a] to-[#22c55e] bg-clip-text text-transparent" },
+                ]
+              : [
+                  { text: "Apa yang Ingin" },
+                  { text: "Anda Bangun", className: "bg-gradient-to-r from-[#45a02e] via-[#5fc94a] to-[#22c55e] bg-clip-text text-transparent" },
+                  { text: "Hari Ini?" },
+                ]
+          }
+        />
+        <Reveal y={12} delay={100}>
+          <p className="mt-2 sm:mt-3 text-xs sm:text-sm lg:text-[15px] text-slate-600 leading-relaxed max-w-xl mx-auto">
+            {isEn
+              ? "We provide comprehensive technology solutions designed to accelerate your digital business growth."
+              : "Kami memberikan solusi teknologi komprehensif yang dirancang untuk mempercepat pertumbuhan bisnis digital Anda."}
+          </p>
+        </Reveal>
+      </div>
+
+      {/* 2. FULL-BLEED INFINITE CAROUSEL (Hingga 5+ item di desktop lebar, ukuran kartu konsisten & proporsional) */}
+      <div
+        className="relative z-10 w-full overflow-hidden [--card-w:300px] sm:[--card-w:330px] md:[--card-w:350px] lg:[--card-w:365px] xl:[--card-w:380px]"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Left Blur & Hard Fade Overlay (sesuai layer Figma: 'Left & Right Blur Overlay Gradients: mask-group') */}
         <div
-          className="relative"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {/* Floating Left Chevron (Desktop) */}
-          <button
-            type="button"
-            onClick={prevSlide}
-            aria-label="Layanan sebelumnya"
-            className="hidden lg:flex absolute -left-5 top-1/2 -translate-y-1/2 z-20 items-center justify-center size-11 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="pointer-events-none absolute inset-y-0 left-0 z-20 w-24 sm:w-40 md:w-56 lg:w-72 xl:w-80 backdrop-blur-md"
+          style={{
+            WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0) 100%)",
+            maskImage: "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0) 100%)",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-24 sm:w-40 md:w-56 lg:w-72 xl:w-80 bg-gradient-to-r from-white via-white/85 to-transparent" />
+
+        {/* Right Blur & Hard Fade Overlay (sesuai layer Figma: 'Left & Right Blur Overlay Gradients: mask-group') */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 z-20 w-24 sm:w-40 md:w-56 lg:w-72 xl:w-80 backdrop-blur-md"
+          style={{
+            WebkitMaskImage: "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0) 100%)",
+            maskImage: "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0) 100%)",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-24 sm:w-40 md:w-56 lg:w-72 xl:w-80 bg-gradient-to-l from-white via-white/85 to-transparent" />
+
+        {/* SLIDER VIEWPORT (Kartu Tengah Selalu Tepat di Center Sumbu Layar, Kiri-Kanan Mengalir Mulus Tanpa Batas) */}
+        <div className="w-full py-4 sm:py-6">
+          <div
+            className="flex will-change-transform items-center relative left-1/2"
+            style={
+              {
+                transform: `translateX(calc(-1 * (${currentIndex} + 0.5) * var(--card-w)))`,
+                transition: isTransitioning
+                  ? `transform ${TRANSITION_DURATION}ms cubic-bezier(0.25, 1, 0.5, 1)`
+                  : "none",
+              } as CSSProperties
+            }
+            onTransitionEnd={handleTransitionEnd}
           >
-            <ChevronLeft className="size-5" />
-          </button>
+            {EXTENDED_ITEMS.map((item, index) => {
+              // Kartu di tengah adalah kartu pada indeks tepat currentIndex
+              const isCenterCard = index === currentIndex;
 
-          {/* Floating Right Chevron (Desktop) */}
-          <button
-            type="button"
-            onClick={nextSlide}
-            aria-label="Layanan berikutnya"
-            className="hidden lg:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20 items-center justify-center size-11 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-          >
-            <ChevronRight className="size-5" />
-          </button>
+              const cardStateClass = isCenterCard
+                ? "scale-100 z-20 border-2 border-[#45a02e] shadow-[0_12px_36px_rgba(69,160,46,0.18)] opacity-100"
+                : "scale-[0.93] z-10 border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.04)] opacity-70 hover:opacity-95 hover:scale-[0.96] transition-all duration-300";
 
-          {/* SLIDER VIEWPORT (Clean, no shadows, no clipping) */}
-          <div className="overflow-hidden py-4 sm:py-6 px-1 sm:px-2">
-            {/* Lebar kartu & geseran ditentukan CSS per breakpoint (1 / 2 / 3 kartu),
-                jadi tampilan sudah benar sejak HTML pertama, sebelum JavaScript jalan. */}
-            <div
-              className="flex will-change-transform items-center [transform:translateX(calc(var(--slide)*-100%))] sm:[transform:translateX(calc(var(--slide)*-50%))] lg:[transform:translateX(calc(var(--slide)*-100%/3))]"
-              style={
-                {
-                  "--slide": currentIndex,
-                  transition: isTransitioning
-                    ? "transform 500ms cubic-bezier(0.25, 1, 0.5, 1)"
-                    : "none",
-                } as CSSProperties
-              }
-              onTransitionEnd={handleTransitionEnd}
-            >
-              {EXTENDED_ITEMS.map((item, index) => {
-                // Kartu paling kiri adalah kartu pada index tepat currentIndex
-                const isLeftCard = index === currentIndex;
-                // Desktop/tablet: kartu paling kiri disorot. Mobile: hanya kartu yang disentuh.
-                const isHighlighted = isMobile ? tappedIndex === item.itemIndex : isLeftCard;
-
-                const cardStateClass = isMobile
-                  ? isHighlighted
-                    ? "z-10 border-2 border-[#45a02e]"
-                    : "border-2 border-slate-200/90"
-                  : isHighlighted
-                    ? "scale-[1.02] lg:scale-[1.03] z-10 border-2 border-[#45a02e]"
-                    : "scale-[0.98] border border-slate-200/90 hover:border-[#45a02e] hover:scale-[0.99]";
-
-                return (
-                  <div
-                    key={item.uniqueKey}
-                    className="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-2.5 sm:px-3.5 py-2 transition-transform duration-500 ease-out"
-                    onClick={() => {
-                      if (isMobile) {
-                        setTappedIndex(item.itemIndex);
-                        return;
-                      }
-                      goToSlide(item.itemIndex);
-                      setActiveCardId(item.id);
-                    }}
+              return (
+                <div
+                  key={item.uniqueKey}
+                  style={{ width: "var(--card-w)" }}
+                  className="shrink-0 px-2.5 sm:px-3 lg:px-3.5 py-2 transition-transform duration-500 ease-out"
+                  onClick={() => {
+                    if (index === currentIndex) return;
+                    stepSlide(index - currentIndex);
+                  }}
+                >
+                  <SpotlightCard
+                    spotlightColor="rgba(69, 160, 46, 0.10)"
+                    className={`group relative flex flex-col justify-between h-full min-h-[440px] sm:min-h-[460px] lg:min-h-[470px] rounded-[24px] sm:rounded-[28px] bg-white p-6 sm:p-7 lg:p-8 transition-all duration-300 ease-out cursor-pointer ${cardStateClass}`}
                   >
-                    <SpotlightCard
-                      spotlightColor="rgba(69, 160, 46, 0.12)"
-                      className={`group relative flex flex-col justify-between h-full min-h-[390px] sm:min-h-[410px] lg:min-h-[430px] rounded-[22px] sm:rounded-[24px] bg-white p-5 sm:p-6 lg:p-7 transition-all duration-300 ease-out origin-center cursor-pointer ${cardStateClass}`}
-                    >
-                      {/* Top: Panel ilustrasi full-bleed (menempel ke tepi kartu) dengan latar hijau lembut,
-                          pola titik halus, dan lingkaran glow agar area atas kartu terlihat penuh.
-                          Margin negatif = padding kartu (p-5 / sm:p-6 / lg:p-7). */}
-                      <div className="relative -mx-5 -mt-5 sm:-mx-6 sm:-mt-6 lg:-mx-7 lg:-mt-7 mb-5 flex h-44 sm:h-48 lg:h-52 items-center justify-center overflow-hidden border-b border-emerald-100/70 bg-gradient-to-br from-[#eef8ec] via-[#f6fbf4] to-[#e6f5e1]">
-                        {/* Pola titik halus */}
-                        <div
-                          aria-hidden
-                          className="pointer-events-none absolute inset-0 opacity-60 [background-image:radial-gradient(rgba(69,160,46,0.16)_1px,transparent_1px)] [background-size:14px_14px] [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]"
-                        />
-                        {/* Lingkaran glow di belakang ilustrasi */}
-                        <div
-                          aria-hidden
-                          className="pointer-events-none absolute left-1/2 top-1/2 size-36 sm:size-40 lg:size-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/80 shadow-[0_0_0_10px_rgba(255,255,255,0.35),0_12px_32px_rgba(69,160,46,0.12)] transition-transform duration-500 ease-out group-hover:scale-105"
-                        />
-                        <Image
-                          src={item.imageSrc}
-                          alt={item.title}
-                          width={220}
-                          height={165}
-                          className="relative h-[78%] w-auto max-w-[80%] object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.08)] transition-transform duration-500 ease-out group-hover:scale-105 group-hover:-translate-y-1 select-none"
-                        />
-                      </div>
+                    {/* Top: Ilustrasi bersih di atas latar putih murni */}
+                    <div className="relative flex items-center justify-center h-40 sm:h-44 mb-3 overflow-visible">
+                      <Image
+                        src={item.imageSrc}
+                        alt={item.title}
+                        width={240}
+                        height={180}
+                        className="relative h-36 sm:h-40 w-auto max-w-[85%] object-contain drop-shadow-[0_8px_18px_rgba(15,23,42,0.06)] transition-transform duration-500 ease-out group-hover:scale-105 group-hover:-translate-y-1 select-none"
+                      />
+                    </div>
 
-                      {/* Middle: Content (No badges, clean Title & Description) */}
-                      <div className="flex-1 text-left flex flex-col justify-start">
-                        <h3
-                          className={`font-[family-name:var(--font-plus-jakarta),sans-serif] text-lg sm:text-xl font-bold tracking-tight transition-colors duration-300 group-hover:text-[#45a02e] ${
-                            isMobile && isHighlighted ? "text-[#45a02e]" : "text-slate-900"
+                    {/* Middle: Judul & Deskripsi */}
+                    <div className="flex-1 text-left flex flex-col justify-start">
+                      <h3
+                        className={`font-[family-name:var(--font-plus-jakarta),sans-serif] text-lg sm:text-[20px] font-bold tracking-tight mb-2 transition-colors duration-300 ${
+                          isCenterCard ? "text-[#45a02e]" : "text-slate-900 group-hover:text-[#45a02e]"
+                        }`}
+                      >
+                        {isEn ? item.titleEn : item.title}
+                      </h3>
+                      <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed line-clamp-4">
+                        {isEn ? item.descriptionEn : item.description}
+                      </p>
+                    </div>
+
+                    {/* Bottom: Action CTA Button */}
+                    <div className="mt-5 pt-1 w-full">
+                      <Magnet padding={16} magnetStrength={3} className="w-full">
+                        <Link
+                          href={`/solusi#${item.slug}`}
+                          className={`inline-flex items-center justify-center gap-2 w-full min-h-10 rounded-full py-2.5 px-5 text-xs sm:text-sm font-bold transition-all duration-300 active:scale-[0.98] cursor-pointer ${
+                            isCenterCard
+                              ? "border-2 border-[#45a02e] text-[#45a02e] bg-white hover:bg-[#45a02e] hover:text-white"
+                              : "bg-[#45a02e] hover:bg-[#388e22] text-white shadow-[0_4px_16px_rgba(69,160,46,0.25)]"
                           }`}
                         >
-                          {isEn ? item.titleEn : item.title}
-                        </h3>
-                        <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-3 sm:line-clamp-4">
-                          {isEn ? item.descriptionEn : item.description}
-                        </p>
-                      </div>
-
-                      {/* Bottom: Action CTA Button with React Bits Magnet */}
-                      <div className="mt-5 pt-1 w-full">
-                        <Magnet padding={18} magnetStrength={3} className="w-full">
-                          <Link
-                            href={`/solusi#${item.slug}`}
-                            className={`inline-flex items-center justify-center gap-2 w-full min-h-11 sm:min-h-0 rounded-full py-3 px-5 text-sm font-bold transition-all duration-300 active:scale-[0.98] cursor-pointer ${
-                              isHighlighted
-                                ? "border-2 border-[#45a02e] text-[#45a02e] hover:bg-[#45a02e] hover:text-white"
-                                : "bg-[#45a02e] hover:bg-[#388e22] text-white"
-                            }`}
-                          >
-                            <span>{isEn ? "View Solution" : "Lihat Layanan"}</span>
-                            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
-                          </Link>
-                        </Magnet>
-                      </div>
-                    </SpotlightCard>
-                  </div>
-                );
-              })}
-            </div>
+                          <span>{isEn ? "View Solution" : "Lihat Layanan"}</span>
+                          <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+                        </Link>
+                      </Magnet>
+                    </div>
+                  </SpotlightCard>
+                </div>
+              );
+            })}
           </div>
         </div>
+      </div>
 
-        {/* 3. BOTTOM PAGINATION CONTROLS (← • • • • →) */}
-        <div className="mt-5 sm:mt-7 lg:mt-8 flex items-center justify-center gap-4">
-          {/* Arrow Left */}
-          <button
-            type="button"
-            onClick={prevSlide}
-            aria-label="Sebelumnya"
-            className="flex items-center justify-center size-9 rounded-full border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition active:scale-90 cursor-pointer"
-          >
-            <ArrowLeft className="size-4" />
-          </button>
+      {/* 3. BOTTOM PAGINATION CONTROLS (← • • • • →) */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 flex items-center justify-center gap-4">
+        {/* Arrow Left */}
+        <button
+          type="button"
+          onClick={prevSlide}
+          aria-label="Sebelumnya"
+          className="flex items-center justify-center size-9 rounded-full border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition active:scale-90 cursor-pointer shadow-xs"
+        >
+          <ChevronLeft className="size-4" />
+        </button>
 
-          {/* Dots Indicator (Siklus 4 Solusi) */}
-          <div className="flex items-center gap-0.5">
-            {SOLUTIONS_DATA.map((item, idx) => (
-              // Area sentuh 24x24px (standar aksesibilitas), titik di dalamnya tetap kecil
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => goToSlide(idx)}
-                aria-label={`Slide ${idx + 1}`}
-                aria-current={realIndex === idx ? "true" : undefined}
-                className="group/dot flex h-6 min-w-6 items-center justify-center cursor-pointer"
-              >
-                <span
-                  className={`block transition-all duration-300 rounded-full ${
-                    realIndex === idx
-                      ? "w-6 h-2 bg-[#45a02e]"
-                      : "w-2 h-2 bg-slate-300 group-hover/dot:bg-slate-400"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* Arrow Right */}
-          <button
-            type="button"
-            onClick={nextSlide}
-            aria-label="Berikutnya"
-            className="flex items-center justify-center size-9 rounded-full border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition active:scale-90 cursor-pointer"
-          >
-            <ArrowRight className="size-4" />
-          </button>
+        {/* Dots Indicator (Siklus 4 Solusi) */}
+        <div className="flex items-center gap-1.5">
+          {SOLUTIONS_DATA.map((item, idx) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => goToSlide(idx)}
+              aria-label={`Slide ${idx + 1}`}
+              aria-current={realIndex === idx ? "true" : undefined}
+              className="group/dot flex h-6 min-w-5 items-center justify-center cursor-pointer"
+            >
+              <span
+                className={`block transition-all duration-300 rounded-full ${
+                  realIndex === idx
+                    ? "w-6 h-2 bg-[#45a02e]"
+                    : "w-2 h-2 bg-slate-200 group-hover/dot:bg-slate-300"
+                }`}
+              />
+            </button>
+          ))}
         </div>
+
+        {/* Arrow Right */}
+        <button
+          type="button"
+          onClick={nextSlide}
+          aria-label="Berikutnya"
+          className="flex items-center justify-center size-9 rounded-full border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition active:scale-90 cursor-pointer shadow-xs"
+        >
+          <ChevronRight className="size-4" />
+        </button>
       </div>
     </section>
   );

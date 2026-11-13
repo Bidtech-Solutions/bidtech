@@ -26,12 +26,12 @@ const socialLinks = [
   },
   {
     icon: FaTiktok,
-    href: "https://www.tiktok.com/@bidtechsolutions?is_from_webapp=1&sender_device=pc",
+    href: "https://www.tiktok.com/@bidtech_indonesia",
     label: "TikTok",
   },
   {
     icon: FaFacebookF,
-    href: "https://www.facebook.com/profile.php?id=61592059225349",
+    href: "https://www.facebook.com/profile.php?id=61593083046844",
     label: "Facebook",
   },
   {
@@ -46,11 +46,11 @@ export function SiteFooter() {
   const isEn = lang === "en";
 
   return (
-    <footer className="relative bg-white text-slate-900 border-t border-slate-200/80 pt-12 pb-8 sm:pt-16 sm:pb-10">
+    <footer className="relative bg-slate-50 text-slate-900 border-t border-slate-200/80 pt-12 pb-8 sm:pt-16 sm:pb-10">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
         {/* Main 4-Column Grid: Brand Info & 3 Navigation Columns */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 pb-10 sm:pb-12">
-          {/* Column 1: Brand Logo, Description & 5 Rounded Square Social Buttons */}
+          {/* Column 1: Brand Logo, Description & Social Buttons */}
           <div className="md:col-span-5 lg:col-span-4 space-y-5 text-left">
             <Link href={isEn ? "/en" : "/id"} className="inline-block">
               <Image
@@ -65,11 +65,11 @@ export function SiteFooter() {
 
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm">
               {isEn
-                ? "AI-powered instant website creation platform with high-speed, secure, and scale-up ready cloud hosting performance."
-                : "Platform pembuatan website instan bertenaga AI dengan performa cloud hosting berkecepatan tinggi, aman, dan siap scale-up."}
+                ? "A software house company headquartered in Batam City, serving mobile, web, and desktop application development for business needs: CRM, ERP, POS, E-Commerce, etc."
+                : "Perusahaan software house berkantor pusat di Kota Batam melayani pengembangan aplikasi mobile, web, desktop untuk kebutuhan bisnis: CRM, ERP, POS, E-Commerce, dll."}
             </p>
 
-            {/* 5 Social / Contact Action Buttons in rounded-square containers */}
+            {/* Social / Contact Action Buttons */}
             <div className="flex items-center gap-2.5 pt-1">
               {socialLinks.map((social) => {
                 const Icon = social.icon;
@@ -92,10 +92,10 @@ export function SiteFooter() {
           {/* Spacer Column on Large screens */}
           <div className="hidden lg:block lg:col-span-1" />
 
-          {/* Column 2: Navigasi / Navigation */}
+          {/* Column 2: Jelajahi / Explore */}
           <div className="md:col-span-2 lg:col-span-2 text-left">
             <h4 className="text-sm sm:text-base font-bold text-slate-900 mb-4 sm:mb-5">
-              {isEn ? "Navigation" : "Navigasi"}
+              {isEn ? "Explore" : "Jelajahi"}
             </h4>
             <ul className="space-y-3 sm:space-y-3.5 text-xs sm:text-sm font-medium text-slate-600">
               <li>
@@ -110,21 +110,26 @@ export function SiteFooter() {
               </li>
               <li>
                 <SmartNavLink href="#featured-solutions" className="transition-colors hover:text-[#45a02e]">
-                  {isEn ? "Solutions" : "Solusi"}
+                  {isEn ? "Portfolio" : "Portofolio"}
+                </SmartNavLink>
+              </li>
+              <li>
+                <SmartNavLink href="#contact" className="transition-colors hover:text-[#45a02e]">
+                  {isEn ? "About Us" : "Tentang Kami"}
                 </SmartNavLink>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Layanan / Services */}
+          {/* Column 3: Layanan Kami / Our Services */}
           <div className="md:col-span-2 lg:col-span-2 text-left">
             <h4 className="text-sm sm:text-base font-bold text-slate-900 mb-4 sm:mb-5">
-              {isEn ? "Services" : "Layanan"}
+              {isEn ? "Our Services" : "Layanan Kami"}
             </h4>
             <ul className="space-y-3 sm:space-y-3.5 text-xs sm:text-sm font-medium text-slate-600">
               <li>
                 <SmartNavLink href="#services" className="transition-colors hover:text-[#45a02e]">
-                  {isEn ? "Website Development" : "Pengembangan Website"}
+                  {isEn ? "CRM Solutions" : "Solusi CRM"}
                 </SmartNavLink>
               </li>
               <li>
@@ -182,8 +187,8 @@ export function SiteFooter() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-500">
           <p className="text-center sm:text-left font-normal">
             {isEn
-              ? "© 2026 Bidtech. All rights reserved."
-              : "© 2026 Bidtech. Seluruh hak cipta dilindungi undang-undang."}
+              ? "© 2026 PT Solusi Bisnis Jalanin Aja Dulu. All rights reserved."
+              : "© 2026 PT Solusi Bisnis Jalanin Aja Dulu. Seluruh hak cipta dilindungi undang-undang."}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-7 font-normal">
@@ -192,9 +197,6 @@ export function SiteFooter() {
             </SmartNavLink>
             <SmartNavLink href="#contact" className="hover:text-[#45a02e] transition-colors">
               {isEn ? "Privacy Policy" : "Kebijakan Privasi"}
-            </SmartNavLink>
-            <SmartNavLink href="#contact" className="hover:text-[#45a02e] transition-colors">
-              {isEn ? "Cloud Security" : "Keamanan Cloud"}
             </SmartNavLink>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import { LogoLoop, type LogoLoopItem } from "@/components/react-bits";
 import { useLanguage } from "@/lib/i18n";
 import { HeroShowcase } from "./hero-showcase";
+import { HeroWaves } from "./hero-waves";
 
 const HERO_PARTNER_LOGOS: LogoLoopItem[] = [
   {
@@ -36,14 +37,11 @@ export function HeroSection() {
 
   return (
     <section
-      className="landing-panel relative overflow-hidden bg-white text-slate-950 pt-8 sm:pt-12 lg:pt-16 pb-0"
+      className="landing-panel relative overflow-hidden bg-white text-slate-950 pt-4 sm:pt-6 lg:pt-8 pb-0"
       id="hero"
     >
-      {/* Subtle clean ambient lighting at top */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[500px] bg-[radial-gradient(ellipse_at_top,_rgba(95,201,74,0.06),_transparent_70%)] z-0"
-      />
+      {/* Background Gelombang Hijau, Garis Kontur & Pencahayaan Halus sesuai Desain */}
+      <HeroWaves />
 
       {/* Centered Hero Showcase Container */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

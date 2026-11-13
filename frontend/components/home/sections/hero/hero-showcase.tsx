@@ -45,9 +45,9 @@ export function HeroShowcase() {
   return (
     <div className="relative w-full">
       {/* HERO CONTENT GRID: Aligned to Bottom (items-end) with pb-0 */}
-      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] items-end gap-6 lg:gap-8 min-h-[460px] sm:min-h-[520px] lg:min-h-[560px] xl:min-h-[600px] pt-4 sm:pt-8 pb-0">
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] items-end gap-6 lg:gap-8 min-h-[440px] sm:min-h-[480px] lg:min-h-[520px] xl:min-h-[560px] pt-1 sm:pt-2 pb-0">
         {/* KOLOM KIRI: Headings, Subtitle & Single Focused CTA */}
-        <div className="flex flex-col justify-center text-center lg:text-left items-center lg:items-start max-w-2xl mx-auto lg:mx-0 self-center pb-6 sm:pb-12 lg:pb-16 pt-2 sm:pt-4 w-full">
+        <div className="flex flex-col justify-center text-center lg:text-left items-center lg:items-start max-w-2xl mx-auto lg:mx-0 self-center pb-6 sm:pb-10 lg:pb-12 pt-0 w-full">
           {/* Main Title: 3 baris seimbang ("Tingkatkan Skala / Bisnis Anda dengan / Solusi Digital Cerdas").
               Di bawah lg setiap baris tidak boleh patah; ukuran huruf mengikuti lebar layar (vw) agar memenuhi layar mobile.
               Animasi huruf memakai CSS (animateOn="load") supaya mulai saat halaman tampil, tanpa menunggu JavaScript. */}

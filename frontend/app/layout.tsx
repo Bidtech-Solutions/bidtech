@@ -138,7 +138,7 @@ const SHOW_ANNOUNCEMENT_BAR = false;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable}`}>
+    <html lang="en" className={`${plusJakartaSans.variable} ${inter.variable}`}>
       <head>
         <StructuredData />
       </head>

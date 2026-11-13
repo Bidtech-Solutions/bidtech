@@ -30,7 +30,7 @@ function langFromPath(pathname: string | null): Lang | null {
 
 export function LanguageProvider({
   children,
-  initialLang = "id",
+  initialLang = "en",
 }: {
   children: ReactNode;
   initialLang?: Lang;

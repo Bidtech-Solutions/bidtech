@@ -1,76 +1,65 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import { Reveal } from "@/components/animations/reveal";
-import { SplitText, SpotlightCard } from "@/components/react-bits";
+import { SplitText } from "@/components/react-bits";
 import { useLanguage } from "@/lib/i18n";
 
 interface ClientLogoItem {
   id: string;
   src: string;
   alt: string;
-  /** Warna utama logo (hex 6 digit), dipakai untuk efek hover kartu. */
-  brandColor: string;
   className?: string;
 }
 
-const TRUSTED_CLIENTS_GRID: ClientLogoItem[] = [
+const TRUSTED_CLIENTS: ClientLogoItem[] = [
   {
     id: "semestapro",
     src: "/images/clients/semestapro.webp",
     alt: "SemestaPro - Jual Beli Property",
-    brandColor: "#1e3a8a",
-    className: "max-h-12 sm:max-h-14 md:max-h-16 max-w-[155px] sm:max-w-[175px]",
+    className: "max-h-14 sm:max-h-16 md:max-h-20 max-w-[200px] sm:max-w-[240px] md:max-w-[260px]",
   },
   {
     id: "funtravel",
     src: "/images/clients/funtravel.webp",
     alt: "Fun Travel & Transport",
-    brandColor: "#f59e0b",
-    className: "max-h-14 sm:max-h-16 md:max-h-[72px] max-w-[160px] sm:max-w-[180px]",
+    className: "max-h-18 sm:max-h-22 md:max-h-26 max-w-[220px] sm:max-w-[260px] md:max-w-[280px]",
   },
   {
-    id: "hkti-1",
+    id: "hkti",
     src: "/images/clients/hkti.webp",
     alt: "HKTI DPC Kota Batam",
-    brandColor: "#dc2626",
-    className: "max-h-16 sm:max-h-18 md:max-h-[80px] max-w-[120px] sm:max-w-[140px]",
+    className: "max-h-22 sm:max-h-26 md:max-h-32 max-w-[150px] sm:max-w-[170px] md:max-w-[190px]",
   },
   {
     id: "ntr",
     src: "/images/clients/ntr.webp",
     alt: "NTR - Nadim Trans RentCar",
-    brandColor: "#c9a227",
-    className: "max-h-16 sm:max-h-18 md:max-h-[80px] max-w-[115px] sm:max-w-[130px] rounded-xs",
+    className: "max-h-20 sm:max-h-24 md:max-h-28 max-w-[160px] sm:max-w-[180px] md:max-w-[200px] rounded-sm",
   },
   {
     id: "ayocuci",
     src: "/images/clients/ayocuci.webp",
     alt: "AyoCuci",
-    brandColor: "#f97316",
-    className: "max-h-10 sm:max-h-11 md:max-h-[48px] max-w-[145px] sm:max-w-[165px]",
+    className: "max-h-12 sm:max-h-14 md:max-h-18 max-w-[200px] sm:max-w-[240px] md:max-w-[260px]",
   },
   {
     id: "vis-society",
     src: "/images/clients/vis-society.webp",
     alt: "VIS Society",
-    brandColor: "#0f4c6e",
-    className: "max-h-12 sm:max-h-14 md:max-h-16 max-w-[155px] sm:max-w-[175px]",
+    className: "max-h-16 sm:max-h-18 md:max-h-22 max-w-[210px] sm:max-w-[250px] md:max-w-[280px]",
   },
   {
     id: "masterpro",
     src: "/images/clients/masterpro.webp",
     alt: "Master Pro Real Estate",
-    brandColor: "#2563eb",
-    className: "max-h-14 sm:max-h-16 md:max-h-[72px] max-w-[145px] sm:max-w-[165px]",
+    className: "max-h-18 sm:max-h-22 md:max-h-26 max-w-[200px] sm:max-w-[240px] md:max-w-[260px]",
   },
   {
-    id: "hkti-2",
-    src: "/images/clients/hkti.webp",
-    alt: "HKTI DPC Kota Batam",
-    brandColor: "#dc2626",
-    className: "max-h-16 sm:max-h-18 md:max-h-[80px] max-w-[120px] sm:max-w-[140px]",
+    id: "sony-christanto",
+    src: "/images/clients/sony-christanto.webp",
+    alt: "Sahabat Sony Christanto",
+    className: "max-h-20 sm:max-h-24 md:max-h-28 max-w-[150px] sm:max-w-[170px] md:max-w-[190px]",
   },
 ];
 
@@ -113,35 +102,24 @@ export function MitraSection() {
           </Reveal>
         </div>
 
-        {/* 2. 4x2 SPOTLIGHT MICRO-CARDS GRID (Opsi 2) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-5 items-stretch justify-items-center py-2">
-          {TRUSTED_CLIENTS_GRID.map((client, index) => (
+        {/* 2. LOGO KLIEN BERSIH, BESAR, 2 BARIS RAPI (4 LOGO PER BARIS DI DESKTOP/TABLET) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 items-center justify-items-center gap-x-8 sm:gap-x-12 md:gap-x-14 lg:gap-x-16 gap-y-8 sm:gap-y-12 md:gap-y-14 max-w-5xl mx-auto py-6 sm:py-8">
+          {TRUSTED_CLIENTS.map((client, index) => (
             <Reveal
-              key={`${client.id}-${index}`}
-              delay={index * 60}
+              key={client.id}
+              delay={index * 50}
               y={16}
-              className="w-full h-full"
+              className="flex items-center justify-center w-full"
             >
-              <SpotlightCard
-                spotlightColor={`${client.brandColor}24`}
-                style={
-                  {
-                    "--brand": client.brandColor,
-                    "--brand-shadow": `${client.brandColor}40`,
-                  } as CSSProperties
-                }
-                className="group relative flex items-center justify-center h-28 sm:h-32 lg:h-36 w-full rounded-[20px] sm:rounded-[22px] bg-gradient-to-b from-white via-white to-slate-50/40 border border-slate-200/80 hover:border-[var(--brand)] hover:shadow-[0_8px_24px_var(--brand-shadow)] transition-all duration-300 p-4 sm:p-5 hover:-translate-y-1 cursor-pointer"
-              >
-                <div className="flex w-full h-full items-center justify-center select-none">
-                  <Image
-                    src={client.src}
-                    alt={client.alt}
-                    width={220}
-                    height={110}
-                    className={`w-auto object-contain transition-all duration-300 opacity-85 group-hover:opacity-100 group-hover:scale-106 ${client.className ?? ""}`}
-                  />
-                </div>
-              </SpotlightCard>
+              <div className="group relative flex items-center justify-center h-20 sm:h-24 md:h-28 w-full max-w-[220px] select-none">
+                <Image
+                  src={client.src}
+                  alt={client.alt}
+                  width={320}
+                  height={160}
+                  className={`w-auto object-contain opacity-85 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:scale-110 cursor-pointer ${client.className ?? ""}`}
+                />
+              </div>
             </Reveal>
           ))}
         </div>

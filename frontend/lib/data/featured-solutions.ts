@@ -93,20 +93,19 @@ export const FEATURED_SOLUTIONS_DATA: FeaturedSolutionItem[] = [
     id: "login-rek",
     title: "Login Rek",
     description:
-      "Solusi digital terbaru yang sedang kami kembangkan. Detail proyek dan tampilan lengkapnya akan segera kami tampilkan di sini.",
+      "Sistem presensi dan manajemen kehadiran tim berbasis web dan aplikasi mobile. Memudahkan perusahaan memantau absensi secara real-time, mengelola rekap keterlambatan, dan melihat analitik operasional dalam satu layar.",
     descriptionEn:
       "A new digital solution we are currently building. Full project details and visuals will be showcased here soon.",
     platforms: ["android", "ios"],
     imageSrc: "/images/solutions/login-rek-v2.webp",
   },
   {
-    // SEMENTARA: salinan Fun Travel sebagai pengisi slot ke-9. Ganti dengan proyek asli bila sudah ada.
-    id: "fun-travel-placeholder",
-    title: "Fun Travel & Transport",
+    id: "sony-christanto",
+    title: "Sony Christanto",
     description:
-      "Platform layanan wisata dan transportasi yang memudahkan pelanggan menjelajahi Batam dan Bintan, mulai dari pemesanan paket liburan, penyewaan kendaraan, hingga informasi destinasi wisata dalam satu website",
+      "Website profil publik dan personal branding Anggota DPRD Kota Batam yang menyajikan biografi, rekam jejak legislatif, kiprah organisasi, serta kanal penyampaian aspirasi masyarakat secara digital.",
     descriptionEn:
-      "Tourism and transportation service platform that allows customers to explore Batam and Bintan, from booking holiday packages, vehicle rentals, to travel destination info in one website.",
+      "Official public profile and personal branding website for Batam City DPRD Member, presenting biography, legislative track record, organizational initiatives, and a digital channel for public aspirations.",
     platforms: ["web"],
     imageSrc: "/images/solutions/fun-travel-v2.webp",
     href: "https://fungetgo.com/id",
